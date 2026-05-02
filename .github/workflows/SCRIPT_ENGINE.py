@@ -44,7 +44,7 @@ st.markdown("""
     .sky-y { color: #4ECDC4; text-shadow: 0 0 28px #4ECDC4, 0 0 56px rgba(78,205,196,0.45); }
     .sky-acad {
         color: rgba(255,255,255,0.92); font-size: 0.88rem;
-        font-weight: 800; letter-spacing: 12px; margin: 4px 0 0;
+        font-weight: 800; letter-spacing: 3px; margin: 4px 0 0;
         text-transform: uppercase;
     }
     .sky-tagline {
@@ -129,13 +129,6 @@ st.markdown("""
         font-size: 0.85rem; color: #302b63; margin: 4px 0 10px 0;
     }
 
-    /* ══ Warn box ══ */
-    .warn-box {
-        background: #fff7ed; border-left: 4px solid #ea580c;
-        padding: 8px 12px; border-radius: 0 8px 8px 0;
-        font-size: 0.82rem; color: #9a3412; margin-top: 6px;
-    }
-
     /* ══ Empty preview ══ */
     .empty-preview {
         background: linear-gradient(135deg, #f8faff, #f0f2f6);
@@ -165,7 +158,7 @@ st.markdown("""
     <div class="sky-logo">
         <span class="sky-s">S</span><span class="sky-k">K</span><span class="sky-y">Y</span>
     </div>
-    <div class="sky-acad">A &nbsp; C &nbsp; A &nbsp; D &nbsp; E &nbsp; M &nbsp; Y</div>
+    <div class="sky-acad">ACADEMY</div>
     <div class="sky-tagline">🎬 SCRIPT ENGINE v3.0</div>
     <div class="sky-sub">Telugu Video Script Generator &nbsp;·&nbsp; Internal Tool &nbsp;·&nbsp; AP Tutor Voice</div>
     <div class="sky-pills">
@@ -181,7 +174,6 @@ st.markdown("""
 # ============================================================
 PAGEGRID_BASE_URL = "https://api.pagegrid.in"
 WORDS_PER_SEGMENT = 120
-MAX_INPUT_CHARS   = 80_000
 
 SHEET_ID      = "1dNHDgkX6vhdhZSi5SavBgNihWe04zayRQwyMcCwNlOI"
 SCRIPTS_TAB   = "Scripts_bot"
@@ -372,7 +364,7 @@ If you need to explain the hint, it is a BAD hint. Start over.
   → "SEBI = Stock Exchange Board of India → 'SEBI watches the stock market' like a
       sebilu (servant) watching over valuables → SEBI is the watchman of markets"
   → "Current Account Deficit → CAD → 'CAD' drawing tool = India's economic blueprint has a gap"
-  → "Inflation and Interest Rate: they're married → one goes up, other follows → 
+  → "Inflation and Interest Rate: they're married → one goes up, other follows →
       like husband-wife argument — RBI raises interest rate to 'cool down' inflation"
 
 ── NUMBERS / EXAM FACTS:
@@ -585,10 +577,6 @@ def build_prompts_multi_transcript(
     special_instructions: str,
     merge_mode: str = "auto",
 ):
-    """
-    transcripts: list of {"filename": str, "text": str}
-    merge_mode: "auto" | "synthesize" | "merge_aspects"
-    """
     system = _inject_counts(_SYSTEM_TRANSCRIPT, num_segs)
     n      = len(transcripts)
 
@@ -711,7 +699,6 @@ def extract_docx_text(file_bytes: bytes):
         from docx import Document
         doc   = Document(io.BytesIO(file_bytes))
         parts = [p.text.strip() for p in doc.paragraphs if p.text.strip()]
-        # Also pull text from tables
         for tbl in doc.tables:
             for row in tbl.rows:
                 for cell in row.cells:
@@ -845,18 +832,55 @@ def push_to_gsheet(chunks: list, creds_json_str: str):
 
 
 # ============================================================
+# ERROR HANDLER  ← ✅ DEFINED HERE — before gen_btn block
+# ============================================================
+def _handle_api_error(exc: Exception, model_choice: str):
+    """Friendly error messages for common API failures."""
+    err = str(exc)
+    if "401" in err or "authentication_error" in err:
+        st.error(
+            "❌ **401 — Invalid API key.**\n\n"
+            "• PageGrid key must start with `sk-pgrid-`\n"
+            "• Regenerate at pagegrid.in → Dashboard → API Keys"
+        )
+    elif "402" in err or "billing_error" in err:
+        st.error(
+            "❌ **402 — Wallet balance is $0.**\n\n"
+            "Add funds at pagegrid.in → Dashboard → Wallet & Billing"
+        )
+    elif "404" in err or "not found or inactive" in err:
+        st.error(
+            f"❌ **404 — Model `{model_choice}` not found.**\n\n"
+            f"✅ Valid PageGrid models: `claude-opus-4-6`, "
+            f"`claude-sonnet-4-6`, `claude-haiku-4-5`"
+        )
+    elif "403" in err or "permission_error" in err:
+        st.error(
+            "❌ **403 — Permission denied.**\n\n"
+            "Check key permissions in the PageGrid dashboard."
+        )
+    elif "429" in err or "rate_limit" in err:
+        st.error(
+            "❌ **429 — Rate limited.**\n\n"
+            "Default limit: 10 RPM. Wait ~60 sec and retry."
+        )
+    else:
+        st.error(f"❌ Generation error: {exc}")
+
+
+# ============================================================
 # SESSION STATE INIT
 # ============================================================
 _defaults = {
-    "chunks":              None,
-    "raw_response":        "",
-    "last_topic":          "",
-    "last_source":         "",
-    "pdf_text":            "",
-    "last_pdf_sig":        "",
-    "last_pdf_lib":        "",
-    "transcript_extractions": [],    # list of {"filename","text","words","ok","error"}
-    "transcript_files_sig":   "",    # pipe-joined "name_size" keys to detect change
+    "chunks":                 None,
+    "raw_response":           "",
+    "last_topic":             "",
+    "last_source":            "",
+    "pdf_text":               "",
+    "last_pdf_sig":           "",
+    "last_pdf_lib":           "",
+    "transcript_extractions": [],
+    "transcript_files_sig":   "",
 }
 for _k, _v in _defaults.items():
     if _k not in st.session_state:
@@ -951,7 +975,6 @@ with st.sidebar:
 # ============================================================
 left, right = st.columns([1, 1], gap="large")
 
-# Safe defaults so NameError never happens
 topic_input      = ""
 topic_hint_input = ""
 input_mode       = ""
@@ -1010,7 +1033,6 @@ with left:
             placeholder="e.g.  UPSC 2025 Cutoff, TSPSC Exam Date, SSC CGL Strategy...",
         )
 
-        # ── Merge strategy ──────────────────────────────
         merge_label = st.radio(
             "🔀 How should multiple files be merged?",
             options=[
@@ -1021,25 +1043,20 @@ with left:
             horizontal=False,
         )
         merge_mode_val = {
-            "🤖 Auto-detect  (AI decides)":                         "auto",
+            "🤖 Auto-detect  (AI decides)":                              "auto",
             "🔄 Synthesize same topic  (different data on same subject)": "synthesize",
             "🧩 Merge different topics  (weave different aspects together)": "merge_aspects",
         }[merge_label]
 
-        # ── File upload ──────────────────────────────────
         transcript_files = st.file_uploader(
             "📤 Upload Transcript Files *",
             type=["docx", "txt", "pdf"],
             accept_multiple_files=True,
-            help=(
-                "Upload 1–10 competitor transcript files. "
-                "Supported: Word (.docx), Plain text (.txt), PDF (.pdf)"
-            ),
+            help="Upload 1–10 competitor transcript files. Supported: .docx, .txt, .pdf",
         )
-        topic_input = ""  # will be set after extraction
+        topic_input = ""
 
         if transcript_files:
-            # Build a signature to detect if files changed
             new_sig = "|".join(
                 f"{f.name}_{len(f.getvalue())}" for f in transcript_files
             )
@@ -1047,7 +1064,7 @@ with left:
                 extractions = []
                 with st.spinner(f"🔍 Extracting text from {len(transcript_files)} file(s)..."):
                     for f in transcript_files:
-                        fb   = f.getvalue()
+                        fb         = f.getvalue()
                         text, info = extract_any_file(fb, f.name)
                         if text:
                             extractions.append({
@@ -1070,8 +1087,7 @@ with left:
                 st.session_state.transcript_extractions = extractions
                 st.session_state.transcript_files_sig   = new_sig
 
-            # ── Show extraction results ──────────────────
-            exts = st.session_state.transcript_extractions
+            exts      = st.session_state.transcript_extractions
             ok_count  = sum(1 for e in exts if e["ok"])
             err_count = len(exts) - ok_count
 
@@ -1098,17 +1114,6 @@ with left:
                         unsafe_allow_html=True,
                     )
 
-            # Total char check
-            total_chars = sum(len(e["text"]) for e in exts if e["ok"])
-            if total_chars > MAX_INPUT_CHARS:
-                st.markdown(
-                    f'<div class="warn-box">⚠️ Combined input is very large '
-                    f'({total_chars:,} chars). Only the first {MAX_INPUT_CHARS:,} chars '
-                    f'per file will be sent. Upload fewer files or trimmed versions for '
-                    f'best results.</div>',
-                    unsafe_allow_html=True,
-                )
-
             # Preview expander
             ok_exts = [e for e in exts if e["ok"]]
             if ok_exts:
@@ -1121,7 +1126,6 @@ with left:
                         st.markdown("---")
 
         elif st.session_state.transcript_extractions:
-            # Files were removed — clear state
             st.session_state.transcript_extractions = []
             st.session_state.transcript_files_sig   = ""
 
@@ -1165,17 +1169,9 @@ with left:
 
             if st.session_state.pdf_text:
                 wc = len(st.session_state.pdf_text.split())
-                cc = len(st.session_state.pdf_text)
                 st.success(
                     f"✅ Extracted: ~{wc:,} words · {st.session_state.last_pdf_lib}"
                 )
-                if cc > MAX_INPUT_CHARS:
-                    st.markdown(
-                        f'<div class="warn-box">⚠️ PDF is very long ({cc:,} chars). '
-                        f'Only the first {MAX_INPUT_CHARS:,} chars will be sent. '
-                        f'Upload one chapter at a time for best results.</div>',
-                        unsafe_allow_html=True,
-                    )
                 with st.expander("👁️ Preview extracted text", expanded=False):
                     st.text(
                         st.session_state.pdf_text[:800]
@@ -1235,35 +1231,28 @@ if gen_btn:
     elif input_mode.startswith("📝"): mode_name = "transcript"
     else:                              mode_name = "pdf"
 
-    # ── Validation ────────────────────────────────────────
     if not api_key.strip():
         st.error("❌ Please enter your API key in the sidebar!")
+
     elif mode_name == "topic" and not topic_input.strip():
         st.error("❌ Please enter a topic!")
+
     elif mode_name == "transcript":
-        ok_exts = [
-            e for e in st.session_state.transcript_extractions if e["ok"]
-        ]
+        ok_exts = [e for e in st.session_state.transcript_extractions if e["ok"]]
         if not ok_exts:
             st.error(
                 "❌ Please upload at least one transcript file "
                 "(.docx / .txt / .pdf) and make sure it extracts successfully."
             )
         else:
-            # ── Build combined prompt ──────────────────────
+            # ── send full text — no truncation ────────────
             safe_transcripts = [
-                {
-                    "filename": e["filename"],
-                    "text":     e["text"][:MAX_INPUT_CHARS],
-                }
+                {"filename": e["filename"], "text": e["text"]}
                 for e in ok_exts
             ]
-
-            spinner_msg = (
-                f"🔄 Merging {len(safe_transcripts)} transcript(s) → "
-                f"SKY Academy voice…"
-            )
-            with st.spinner(spinner_msg + " (20–90 sec)"):
+            with st.spinner(
+                f"🔄 Merging {len(safe_transcripts)} transcript(s) → SKY Academy voice… (20–90 sec)"
+            ):
                 try:
                     system_p, user_p = build_prompts_multi_transcript(
                         safe_transcripts,
@@ -1301,38 +1290,27 @@ if gen_btn:
                             "Expand Raw AI Response below to inspect."
                         )
                 except Exception as exc:
-                    _handle_api_error(exc, model_choice)   # defined below
+                    _handle_api_error(exc, model_choice)
 
     elif mode_name == "pdf" and not topic_input.strip():
-        st.error(
-            "❌ Please upload a PDF. "
-            "Make sure text was extracted successfully."
-        )
+        st.error("❌ Please upload a PDF. Make sure text was extracted successfully.")
+
     else:
-        # topic or pdf
-        safe_input = (
-            topic_input[:MAX_INPUT_CHARS]
-            if len(topic_input) > MAX_INPUT_CHARS
-            else topic_input
-        )
-        spinner_map = {
-            "topic": (
-                f"✍️ Generating {num_segs} original segments via "
-                f"{'PageGrid → Claude' if 'PageGrid' in provider else provider.split()[1]}…"
-            ),
-            "pdf": "📚 Converting PDF content → SKY Academy voice…",
-        }
-        with st.spinner(spinner_map[mode_name] + " (20–90 sec)"):
+        # ── topic or pdf — send full text, no truncation ──
+        with st.spinner(
+            ("✍️ Generating script…" if mode_name == "topic"
+             else "📚 Converting PDF → SKY Academy voice…") + " (20–90 sec)"
+        ):
             try:
                 if mode_name == "topic":
                     system_p, user_p = build_prompts_topic(
-                        safe_input, num_segs, special_instructions
+                        topic_input, num_segs, special_instructions
                     )
                     display_topic  = topic_input.strip()[:60]
                     display_source = "📌 Topic"
                 else:
                     system_p, user_p = build_prompts_pdf(
-                        safe_input, topic_hint_input, num_segs, special_instructions
+                        topic_input, topic_hint_input, num_segs, special_instructions
                     )
                     display_topic  = topic_hint_input.strip()[:60] or "PDF Content"
                     display_source = "📚 PDF → SKY"
@@ -1358,40 +1336,6 @@ if gen_btn:
                     )
             except Exception as exc:
                 _handle_api_error(exc, model_choice)
-
-
-def _handle_api_error(exc: Exception, model_choice: str):
-    """Friendly error messages for common API failures."""
-    err = str(exc)
-    if "401" in err or "authentication_error" in err:
-        st.error(
-            "❌ **401 — Invalid API key.**\n\n"
-            "• PageGrid key must start with `sk-pgrid-`\n"
-            "• Regenerate at pagegrid.in → Dashboard → API Keys"
-        )
-    elif "402" in err or "billing_error" in err:
-        st.error(
-            "❌ **402 — Wallet balance is $0.**\n\n"
-            "Add funds at pagegrid.in → Dashboard → Wallet & Billing"
-        )
-    elif "404" in err or "not found or inactive" in err:
-        st.error(
-            f"❌ **404 — Model `{model_choice}` not found.**\n\n"
-            f"✅ Valid PageGrid models: `claude-opus-4-6`, "
-            f"`claude-sonnet-4-6`, `claude-haiku-4-5`"
-        )
-    elif "403" in err or "permission_error" in err:
-        st.error(
-            "❌ **403 — Permission denied.**\n\n"
-            "Check key permissions in the PageGrid dashboard."
-        )
-    elif "429" in err or "rate_limit" in err:
-        st.error(
-            "❌ **429 — Rate limited.**\n\n"
-            "Default limit: 10 RPM. Wait ~60 sec and retry."
-        )
-    else:
-        st.error(f"❌ Generation error: {exc}")
 
 
 # ============================================================
@@ -1421,7 +1365,6 @@ with right:
         )
         st.markdown("")
 
-        # ── Segment tabs ──────────────────────────────────
         tabs = st.tabs([f"▶ {i + 1}" for i in range(len(chunks))])
         for tab, chunk, idx in zip(tabs, chunks, range(len(chunks))):
             with tab:
@@ -1447,7 +1390,6 @@ with right:
                     label_visibility="collapsed",
                 )
 
-        # ── Full continuous script ────────────────────────
         with st.expander("📜 Full Script — Continuous Flow", expanded=False):
             full = "\n\n".join(c.get("telugu_text", "") for c in chunks)
             st.text_area(
@@ -1457,16 +1399,13 @@ with right:
 
         st.divider()
 
-        # ── Action buttons ────────────────────────────────
         ba, bb, bc = st.columns(3)
         _fname = st.session_state.last_topic[:20].replace(" ", "_")
 
         with ba:
             st.download_button(
                 "⬇️ Download JSON",
-                data=json.dumps(
-                    chunks, ensure_ascii=False, indent=2
-                ).encode("utf-8"),
+                data=json.dumps(chunks, ensure_ascii=False, indent=2).encode("utf-8"),
                 file_name=f"sky_script_{_fname}.json",
                 mime="application/json",
                 use_container_width=True,
