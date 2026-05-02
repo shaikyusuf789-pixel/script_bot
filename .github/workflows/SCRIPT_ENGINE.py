@@ -599,7 +599,7 @@ def extract_any_file(file_bytes: bytes, filename: str):
 
 
 # ============================================================
-# ✅ AI CALL FUNCTIONS — ALL USE STREAMING (fixes 524 timeout)
+# AI CALL FUNCTIONS — ALL USE STREAMING (fixes 524 timeout)
 # ============================================================
 
 def call_claude_pagegrid(
@@ -615,7 +615,7 @@ def call_claude_pagegrid(
     client = anthropic.Anthropic(
         api_key=api_key,
         base_url=PAGEGRID_BASE_URL,
-        timeout=300.0,          # 5-minute hard timeout on the SDK side
+        timeout=300.0,
     )
     full = ""
     with client.messages.stream(
@@ -640,7 +640,6 @@ def call_openai(
     is_reasoning = model.startswith("o1") or model.startswith("o3")
 
     if is_reasoning:
-        # o-series models don't support streaming — use regular call
         resp = client.chat.completions.create(
             model=model,
             max_completion_tokens=16000,
@@ -682,7 +681,7 @@ def call_gemini(
 
 
 # ============================================================
-# STREAMING DISPATCHER — single entry point for all providers
+# STREAMING DISPATCHER
 # ============================================================
 
 def run_generation(
@@ -693,11 +692,6 @@ def run_generation(
     user_p: str,
     status_placeholder,
 ) -> str:
-    """
-    Call the correct provider with streaming.
-    Updates status_placeholder with live char count.
-    Returns raw text string.
-    """
     def _cb(n_chars: int):
         status_placeholder.markdown(
             f'<div class="stream-progress">'
@@ -722,18 +716,18 @@ def run_generation(
 def parse_segments(raw: str):
     """
     Robust parser — handles all AI response wrapping formats.
-    Tries 5 extraction strategies before giving up.
+    Tries multiple extraction strategies before giving up.
     """
     if not raw or not raw.strip():
         return None
 
-    # ── STEP 1: strip markdown fences (opening AND closing) ─────────
+    # STEP 1: strip markdown fences (opening AND closing)
     cleaned = raw.strip()
-    cleaned = re.sub(r"^```[a-zA-Z]*\s*\n?", "", cleaned)   # ```json or ```
-    cleaned = re.sub(r"\n?```\s*$",          "", cleaned)   # closing ```
+    cleaned = re.sub(r"^```[a-zA-Z]*\s*\n?", "", cleaned)
+    cleaned = re.sub(r"\n?```\s*$",          "", cleaned)
     cleaned = cleaned.strip()
 
-    # ── STEP 2: direct parse ─────────────────────────────────────────
+    # STEP 2: direct parse
     try:
         result = json.loads(cleaned)
         if isinstance(result, list) and result:
@@ -741,7 +735,7 @@ def parse_segments(raw: str):
     except json.JSONDecodeError:
         pass
 
-    # ── STEP 3: extract [ ... ] by finding outermost brackets ────────
+    # STEP 3: extract [ ... ] by finding outermost brackets
     start = cleaned.find("[")
     end   = cleaned.rfind("]")
     if start != -1 and end > start:
@@ -752,7 +746,7 @@ def parse_segments(raw: str):
         except json.JSONDecodeError:
             pass
 
-    # ── STEP 4: fallback — try on original raw string ────────────────
+    # STEP 4: fallback — try on original raw string
     for attempt in (raw, re.sub(r"```(?:json)?", "", raw).strip()):
         try:
             result = json.loads(attempt)
@@ -770,6 +764,7 @@ def parse_segments(raw: str):
                 pass
 
     return None
+
 
 # ============================================================
 # GOOGLE SHEETS
@@ -811,7 +806,7 @@ def push_to_gsheet(chunks: list, creds_json_str: str):
 
 
 # ============================================================
-# ✅ ERROR HANDLER — defined BEFORE gen_btn block
+# ERROR HANDLER
 # ============================================================
 
 def _handle_api_error(exc: Exception, model_choice: str):
@@ -853,6 +848,38 @@ def _handle_api_error(exc: Exception, model_choice: str):
         )
     else:
         st.error(f"❌ Generation error: {exc}")
+
+
+# ============================================================
+# MANUAL RECOVERY WIDGET — reusable helper
+# ============================================================
+
+def _show_manual_recovery(display_topic: str, display_source: str):
+    """Renders the manual JSON recovery UI after a parse failure."""
+    st.markdown("#### 🛠️ Manual Recovery")
+    st.caption(
+        "The script was generated but JSON parsing failed. "
+        "Paste the raw response here to retry parsing:"
+    )
+    manual_raw = st.text_area(
+        "Paste Raw JSON here",
+        height=200,
+        placeholder='[{"seg": 1, "telugu_text": "...", "slide_prompt": "..."}]',
+        key="manual_json_input",
+    )
+    if st.button("🔄 Retry Parse", key="retry_parse_btn"):
+        parsed = parse_segments(manual_raw or st.session_state.raw_response)
+        if parsed:
+            st.session_state.chunks      = parsed
+            st.session_state.last_topic  = display_topic
+            st.session_state.last_source = display_source
+            st.success(f"✅ Recovered! {len(parsed)} segments parsed.")
+            st.rerun()
+        else:
+            st.error(
+                "❌ Still could not parse. "
+                "Check for unescaped quotes in the JSON."
+            )
 
 
 # ============================================================
@@ -1030,7 +1057,7 @@ with left:
             horizontal=False,
         )
         merge_mode_val = {
-            "🤖 Auto-detect  (AI decides)":                               "auto",
+            "🤖 Auto-detect  (AI decides)":                                "auto",
             "🔄 Synthesize same topic  (different data on same subject)":  "synthesize",
             "🧩 Merge different topics  (weave different aspects together)": "merge_aspects",
         }[merge_label]
@@ -1211,7 +1238,7 @@ if clear_btn:
 
 
 # ============================================================
-# ✅ GENERATE — uses run_generation() with streaming
+# GENERATE
 # ============================================================
 if gen_btn:
     if   input_mode.startswith("📌"): mode_name = "topic"
@@ -1232,7 +1259,6 @@ if gen_btn:
                 "(.docx / .txt / .pdf) and make sure it extracts successfully."
             )
         else:
-            # Full text — no truncation
             safe_transcripts = [
                 {"filename": e["filename"], "text": e["text"]}
                 for e in ok_exts
@@ -1270,31 +1296,12 @@ if gen_btn:
                     )
                     st.rerun()
                 else:
-    st.error(
-        "❌ Could not parse JSON from AI response. "
-        "Expand Raw AI Response below to inspect."
-    )
-    # ── Manual copy-paste recovery ──────────────────────────────
-    st.markdown("#### 🛠️ Manual Recovery")
-    st.caption(
-        "The script was generated but JSON parsing failed. "
-        "Paste the raw response here to retry parsing:"
-    )
-    manual_raw = st.text_area(
-        "Paste Raw JSON here", height=200,
-        placeholder='[{"seg": 1, "telugu_text": "...", "slide_prompt": "..."}]',
-        key="manual_json_input",
-    )
-    if st.button("🔄 Retry Parse", key="retry_parse_btn"):
-        parsed = parse_segments(manual_raw or st.session_state.raw_response)
-        if parsed:
-            st.session_state.chunks      = parsed
-            st.session_state.last_topic  = display_topic
-            st.session_state.last_source = display_source
-            st.success(f"✅ Recovered! {len(parsed)} segments parsed.")
-            st.rerun()
-        else:
-            st.error("❌ Still could not parse. Check for unescaped quotes in the JSON.")
+                    st.error(
+                        "❌ Could not parse JSON from AI response. "
+                        "Expand Raw AI Response below to inspect."
+                    )
+                    _show_manual_recovery(display_topic, display_source)
+
             except Exception as exc:
                 _status.empty()
                 _handle_api_error(exc, model_choice)
@@ -1303,7 +1310,6 @@ if gen_btn:
         st.error("❌ Please upload a PDF. Make sure text was extracted successfully.")
 
     else:
-        # Topic or PDF — full text, no truncation
         _mode_label = (
             f"✍️ Generating {num_segs} segments via "
             f"{'PageGrid → ' + model_choice if 'PageGrid' in provider else model_choice}"
@@ -1346,6 +1352,8 @@ if gen_btn:
                     "❌ Could not parse JSON from AI response. "
                     "Expand Raw AI Response below to inspect."
                 )
+                _show_manual_recovery(display_topic, display_source)
+
         except Exception as exc:
             _status.empty()
             _handle_api_error(exc, model_choice)
