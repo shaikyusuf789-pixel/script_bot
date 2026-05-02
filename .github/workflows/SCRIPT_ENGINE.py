@@ -25,7 +25,6 @@ st.set_page_config(
 # ──────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-    /* ══ SKY Academy Header ══ */
     .sky-header {
         background: linear-gradient(135deg, #020024 0%, #090979 40%, #00d4ff 100%);
         padding: 30px 20px 22px;
@@ -59,8 +58,6 @@ st.markdown("""
         border-radius: 20px; padding: 3px 14px;
         font-size: 0.74rem; font-weight: 600;
     }
-
-    /* ══ Mode info panels ══ */
     .mode-topic {
         background: linear-gradient(to right, #eff6ff, #dbeafe);
         border-left: 5px solid #3b82f6;
@@ -79,8 +76,6 @@ st.markdown("""
         padding: 12px 16px; border-radius: 0 10px 10px 0;
         font-size: 0.84rem; color: #065f46; margin-bottom: 14px;
     }
-
-    /* ══ File cards ══ */
     .fcard-ok {
         background: #f0fdf4; border: 1px solid #86efac;
         border-radius: 10px; padding: 8px 14px; margin: 4px 0;
@@ -97,8 +92,6 @@ st.markdown("""
         padding: 10px 14px; font-size: 0.83rem;
         color: #713f12; margin: 8px 0;
     }
-
-    /* ══ Stats & badges ══ */
     .stat-pill {
         display: inline-block;
         background: linear-gradient(135deg, #e8e0ff, #dbeafe);
@@ -120,28 +113,26 @@ st.markdown("""
         color:#fff; border-radius:8px; padding:4px 12px;
         font-size:.8rem; font-weight:700;
     }
-
-    /* ══ Word info ══ */
     .word-info {
         background: linear-gradient(to right, #f0edff, #e8e0ff);
         border-left: 5px solid #302b63;
         padding: 10px 14px; border-radius: 0 10px 10px 0;
         font-size: 0.85rem; color: #302b63; margin: 4px 0 10px 0;
     }
-
-    /* ══ Empty preview ══ */
+    .stream-progress {
+        background: linear-gradient(to right, #eff6ff, #dbeafe);
+        border-left: 4px solid #3b82f6;
+        padding: 10px 16px; border-radius: 0 10px 10px 0;
+        font-size: 0.84rem; color: #1e40af; margin: 8px 0;
+    }
     .empty-preview {
         background: linear-gradient(135deg, #f8faff, #f0f2f6);
         border: 2px dashed #c7d2fe;
         border-radius: 16px; padding: 60px 20px;
         text-align: center; color: #6366f1;
     }
-
-    /* ══ API key ══ */
     .key-ok   { color: #0da271; font-size: 11px; margin-top: -6px; }
     .key-warn { color: #f59e0b; font-size: 11px; margin-top: -6px; }
-
-    /* ══ Primary button ══ */
     .stButton > button[kind="primary"] {
         background: linear-gradient(135deg, #302b63, #0f0c29) !important;
         color: white !important; border: none !important;
@@ -201,11 +192,8 @@ MODEL_OPTIONS = {
 }
 
 # ============================================================
-# ════════════════════════════════════════════════════════════
-#   SKY ACADEMY STYLE DNA — shared across ALL three modes
-# ════════════════════════════════════════════════════════════
+# SKY ACADEMY STYLE DNA
 # ============================================================
-
 _SKY_DNA = """
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 CORE PHILOSOPHY — READ THIS FIRST BEFORE ANYTHING ELSE
@@ -260,29 +248,10 @@ MEANING FLOW RULES — NON-NEGOTIABLE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 1. CONTEXT BEFORE CONTENT — Always set up WHY before saying WHAT.
-   BAD:  "42nd Amendment 1976 లో వచ్చింది"
-   GOOD: "Emergency period లో — 1975-77 — Indira Gandhi government చాలా changes చేసింది
-          Constitution లో. అందులో most controversial — 42nd Amendment.
-          దీన్నే Mini Constitution అని కూడా అంటారు — ఎందుకంటే ఇందులో ఎన్నో fundamental
-          changes చేశారు. అది అర్థం అవ్వాలంటే..."
-
 2. NEVER LEAVE A GAP — Each sentence must logically connect to the next.
-   Student must never think "wait, ఇది ఎక్కడ నుండి వచ్చింది?"
-
 3. EXPLAIN, DON'T JUST STATE
-   BAD:  "Preamble is the soul of the Constitution"
-   GOOD: "Preamble ని soul of the Constitution అంటారు — why? Because ఇది చదివితే
-          మొత్తం Constitution ఎందుకు రాశారు అనేది 3 minutes లో అర్థమవుతుంది.
-          Any judge, any lawyer — confusion వచ్చినప్పుడు Preamble చూస్తారు."
-
 4. RHETORICAL QUESTIONS MUST HAVE IMMEDIATE ANSWERS
-   BAD:  "ఎందుకు ఇది important అని అడిగారా? సో ఇప్పుడు మనం చూద్దాం..."
-   GOOD: "ఎందుకు important? — Because ఈ ఒక్క word — Secular —
-          India లో religion-based discrimination illegal చేసింది. Simple గా!"
-
 5. DELIVERY CUES ARE SEASONING — NOT THE MEAL
-   Sprinkle naturally where they genuinely fit.
-   NEVER add a cue if it interrupts the meaning flow.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 DELIVERY CUES — use only where they genuinely fit
@@ -315,72 +284,37 @@ If you need to explain the hint, it is a BAD hint. Start over.
   → "Fancy words = France" (Liberty, Equality, Fraternity → French Revolution)
   → "42°C fever → Emergency → 42nd Amendment 1976"
   → "Article 21 — 21st birthday = LIFE's most important day → Right to LIFE & Liberty"
-  → "DPSP = Doctor's Prescription → Doctor tells you what to do, but courts can't force
-      the govt just like you can't force a doctor's advice → Non-justiciable"
+  → "DPSP = Doctor's Prescription → Non-justiciable"
   → "BRO wrote the Constitution → B.R. Ambedkar → Father of Constitution"
-  → "CAG = 'Check And Guard' government money → C-A-G = Check And Guard"
-  → "Preamble = Entrance door of a house → tells you what's inside = Constitution"
+  → "CAG = 'Check And Guard' government money"
+  → "Preamble = Entrance door of a house → tells you what's inside"
   → "73rd Amendment = Panchayati Raj → 7+3=10 → 10 fingers = hands-on local governance"
-  → "44th Amendment removed Right to Property from Fundamental Rights →
-      44 = double 4 = handcuffs removed from both hands → property freed from FR list"
-  → "Rajya Sabha = permanent body, never fully dissolves → RA = 'Raavalsi Undadu' (won't go away)"
-  → "Speaker of Lok Sabha removes himself — Address by members → SAM rule:
-      Speaker = Addressed by Members"
-  → "Emergency Article 352 → 3-5-2 = three types of emergency in order: National, State, Financial"
+  → "Emergency Article 352 → 3-5-2 = three types: National, State, Financial"
 
 ── HISTORY / FREEDOM STRUGGLE:
-  → "రాముడి మిత్రుడు విభీషణుడు → లంక → Sri Lanka → always India's trusted friend"
-  → "1857 = 18-57 → think: 57 year old person's first revolt = First War of Independence"
-  → "Quit India 1942 → 9+4+2=15 → August 15 → connects straight to Independence 1947!"
-  → "Dandi March = Salt Satyagraha 1930 → DANDI sounds like DANDY = elegant protest"
+  → "1857 = 18-57 → 57 year old person's first revolt = First War of Independence"
+  → "Quit India 1942 → 9+4+2=15 → August 15 → Independence 1947!"
   → "Simon Commission = 1927 → No Indian members → 'Simon says' — but India says NO!"
-  → "Cabinet Mission 1946 → 1+9+4+6=20 → 20 proposals → one step before independence"
-  → "Partition 1947 → Pakistan = P-A-K = 'Pak' means pure in Urdu → irony!"
 
 ── GEOGRAPHY:
-  → "పాన్ తినకూడదు → Japan" (strict discipline → ban on pan → Japan)
-  → "Narmada flows WEST → Flip the letter 'N' sideways → it looks like 'W' for West!"
-  → "Tropic of Cancer = 23.5°N → 23.5 is exactly HALF of 47 → split like India's partition"
-  → "Deccan Plateau is in South → 'Deccan' → 'Deck' → bottom deck of a ship = South"
-  → "Thar Desert is in Rajasthan → 'Thar' sounds like 'Tar road' → hot, dry, burned = desert"
-  → "Brahmaputra = Brahma's son → born in Tibet, flows to Assam → longest river in India's NE"
-  → "Krishna River = AP/Telangana → Krishna = Lord's river = heart of Telugu states"
+  → "Narmada flows WEST → Flip 'N' sideways → looks like 'W' for West!"
+  → "Thar Desert → 'Thar' sounds like 'Tar road' → hot, dry, burned = desert"
 
 ── SCIENCE / BIOLOGY:
   → "Mitochondria = Powerhouse → 'MITO' = 'My Toe' → your toe pushes you forward = POWER"
-  → "DNA = 'Don't kNow All' → irony! Because DNA KNOWS EVERYTHING about you"
-  → "Photosynthesis: everything is SIX → 6CO2 + 6H2O → C6H12O6 + 6O2 → plant's 'sixth sense'!"
-  → "Valency of Carbon = 4 → C is 4th most abundant element in universe → C = 4"
-  → "Noble Gases = 0 valency → Nobel Prize winners share NOTHING with others → zero sharing"
-  → "Osmosis: water goes from LOW concentration to HIGH → water goes to the needy!
-      Like how money goes from poor people to rich in reverse — osmosis is the opposite!"
-  → "Chlorophyll = Green pigment → 'CHLORO' = Greek for green → chlorine gas is also greenish!"
+  → "Photosynthesis: everything is SIX → 6CO2 + 6H2O → C6H12O6 + 6O2"
+  → "Noble Gases = 0 valency → Nobel Prize winners share NOTHING → zero sharing"
 
 ── ECONOMY / CURRENT AFFAIRS:
-  → "NABARD = Agriculture Bank → NA-BARD → 'Naa Bard' (our bard/farmer's poet)"
-  → "GDP vs GNP: GDP = everything produced IN India. GNP = everything produced BY Indians.
-      Simple trick: D = Domestic (inside), N = National (our people, anywhere)"
-  → "Repo Rate → 'REPO' = RBI REPOssesses money from banks → high repo = less money flowing"
-  → "SEBI = Stock Exchange Board of India → 'SEBI watches the stock market' like a
-      sebilu (servant) watching over valuables → SEBI is the watchman of markets"
-  → "Current Account Deficit → CAD → 'CAD' drawing tool = India's economic blueprint has a gap"
-  → "Inflation and Interest Rate: they're married → one goes up, other follows →
-      like husband-wife argument — RBI raises interest rate to 'cool down' inflation"
-
-── NUMBERS / EXAM FACTS:
-  → "UPSC Prelims = 2 papers × 100 marks = 200 → think: 2 subjects, 100 percent effort"
-  → "Lok Sabha = 543 seats → 5+4+3=12 → 12 months in a year → Parliament works all year"
-  → "Rajya Sabha = 250 max → quarter of 1000 → 'quarter' house = upper house"
-  → "IPC = Indian Penal Code 1860 → 1+8+6+0=15 → Aug 15 Independence! IPC was our first law"
-  → "FIR = First Information Report → First = F, so you FILE first, then police acts"
+  → "GDP vs GNP: D = Domestic (inside India), N = National (Indians anywhere)"
+  → "Repo Rate → 'REPO' = RBI REPOssesses money from banks"
+  → "Inflation and Interest Rate: they're married → one goes up, other follows"
 
 WHEN TO USE MEMORY HINTS:
 ✅ Number / date / name is genuinely hard to remember
 ✅ Hint is INSTANTLY obvious — no explanation needed
-✅ Student will laugh or say "oh wow, never forgetting this!"
 ❌ Skip when the fact is already simple/memorable
 ❌ NEVER generate a forced or confusing hint
-❌ SILENCE is always better than a weak hint
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 STRICT RULES FOR ALL MODES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -396,30 +330,14 @@ _OUTPUT_FORMAT = """
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 HOOK + WELCOME — MANDATORY FOR SEGMENT 1 ONLY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Segment 1 MUST ALWAYS open with this exact two-beat structure:
+Segment 1 MUST ALWAYS open with:
 
 ① ONE POWERFUL HOOK LINE — stops the student from scrolling.
-   Choose the hook type that best fits the topic:
-   • Stakes Hook:     "[Exam] లో ఈ topic నుండి [N] questions వచ్చాయి — ready గా ఉన్నారా?"
-   • Curiosity Hook:  "మీకు తెలుసా — [shocking/surprising fact about topic]?"
-   • Challenge Hook:  "ఈ ఒక్క video చూస్తే [topic] life లో forget అవ్వదు — guarantee!"
-   • Pain Point Hook: "[Topic] చదివినా exam లో రాయలేకపోతున్నారా? — Today that ends!"
-   • Cliffhanger:     "ఒక్క trick — ఇది తెలిస్తే [topic] లో full marks guaranteed.
-                       ఆ trick ఇప్పుడే చెప్తాను — watch till the end!"
-
-② WELCOME LINE — immediately follows the hook, no gap:
+② WELCOME LINE — immediately follows:
    "[WARM, FRIENDLY — WELCOME] SKY Academy కి welcome friends! ఇక్కడ మీరు subject
     నేర్చుకోవడమే కాదు — exam కి forever memorise అవుతారు. [Energetic] Let's start
     with a smile and a like! 😊👍"
-
 ③ Then flow DIRECTLY into content — no transition filler.
-
-EXAMPLE SEGMENT 1 OPENING (Preamble topic):
-"[High Pitch] 2024 UPSC Prelims లో Constitution Preamble నుండి 3 direct questions
-వచ్చాయి — మీరు prepare చేసుకున్నారా? [WARM, FRIENDLY — WELCOME] SKY Academy కి
-welcome friends! ఇక్కడ మీరు subject నేర్చుకోవడమే కాదు — exam కి forever memorise
-అవుతారు. [Energetic] Let's start with a smile and a like! 😊👍
-సో friends — 1947 లో Independence వచ్చింది — great! కానీ ఒక question..."
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 CLOSING CTA — MANDATORY FOR LAST SEGMENT
@@ -449,14 +367,11 @@ Return ONLY a valid JSON array. No preamble, no markdown fences, no explanations
 • Generate exactly {NUM_SEGS} segments
 • ONE continuous natural conversation — no labels, no part numbers
 • Every sentence meaningful and logically connected to the next
-• Memory hints sprinkled wherever genuinely useful (use examples from the library above)
+• Memory hints sprinkled wherever genuinely useful
 """
 
-
 # ============================================================
-# ════════════════════════════════════════════════════════════
-#   THREE SYSTEM PROMPTS — ONE PER INPUT MODE
-# ════════════════════════════════════════════════════════════
+# THREE SYSTEM PROMPTS
 # ============================================================
 
 _SYSTEM_TOPIC = (
@@ -479,32 +394,12 @@ _SYSTEM_TRANSCRIPT = (
     "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
     "MULTI-TRANSCRIPT ANALYSIS (do this BEFORE writing anything)\n"
     "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
-    "Step 0 — IDENTIFY the relationship between all uploaded transcripts:\n\n"
-    "CASE A — Same topic, different data/opinions (e.g. cutoff 45 vs 50 vs 55):\n"
-    "  → SYNTHESIZE: give the full range, explain WHY sources differ, give the most\n"
-    "    reliable estimate. Never ignore conflicting data.\n"
-    "  → Example output: 'Different sources suggest cutoffs between 45-55. Based on\n"
-    "    historical patterns and category-wise trends, the most likely range is 48-52.'\n\n"
-    "CASE B — Different topics/aspects of the same subject (e.g. exam date + cutoff + strategy):\n"
-    "  → MERGE and INTERLINK: find the connecting thread between all topics.\n"
-    "  → Build a logical narrative: context → data → strategy → how they connect.\n"
-    "  → The student must feel all topics are parts of ONE unified story.\n\n"
-    "CASE C — Redundant content (same thing from multiple sources):\n"
-    "  → Take the BEST explanation from each, combine, then enrich further.\n\n"
-    "Step 1 — STRIP ALL COMPETITOR TRACES (zero tolerance):\n"
-    "  • Delete every competitor channel name, instructor name, brand, app, course, PDF\n"
-    "  • Delete all CTAs: 'subscribe', 'our app', 'join our batch', 'download material'\n"
-    "  • If transcript is Hindi/English → translate to natural Telugu-English mix\n"
-    "  • Replace all 'our channel/course/content' → SKY Academy framing\n\n"
-    "Step 2 — ENRICH CONTENT (+25% minimum above all combined originals):\n"
-    "  • Add facts, context, real-world examples that NO competitor covered\n"
-    "  • Add exam angles: 'UPSC లో ఇది ఇలా అడుగుతారు'\n"
-    "  • Deepen explanations — go beyond surface level\n"
-    "  • Add 'why this matters' and 'what changes because of this'\n"
-    "  • Use memory hints generously where genuinely useful\n\n"
-    "Step 3 — FULL SKY ACADEMY VOICE:\n"
-    "  • Apply all SKY style rules below — natural AP tutor, meaning first, style second\n"
-    "  • Weave SKY Academy identity naturally throughout\n"
+    "CASE A — Same topic, different data: SYNTHESIZE all data, give full range.\n"
+    "CASE B — Different aspects of same subject: MERGE and INTERLINK into one narrative.\n"
+    "CASE C — Redundant content: Take BEST explanation from each, combine, enrich.\n\n"
+    "Step 1 — STRIP ALL COMPETITOR TRACES (zero tolerance)\n"
+    "Step 2 — ENRICH CONTENT (+25% minimum above all combined originals)\n"
+    "Step 3 — FULL SKY ACADEMY VOICE\n"
 ) + _SKY_DNA + _OUTPUT_FORMAT
 
 
@@ -515,25 +410,9 @@ _SYSTEM_PDF = (
     "The student must feel like they're listening to a passionate knowledgeable tutor — "
     "NOT a textbook being read aloud.\n"
     "If the student can tell you're reading from a book, you have FAILED.\n\n"
-    "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
-    "CONVERSION STEPS\n"
-    "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
-    "Step 1 — DESTROY THE BOOKISH TONE COMPLETELY:\n"
-    "  • Kill: passive voice, 'it is stated that', 'as per the above', 'according to...'\n"
-    "  • Kill: long academic sentences → break into short punchy conversational phrases\n"
-    "  • Kill: dry definitions → replace with 'WHY this matters'\n"
-    "  • Kill: numbered/bulleted lists → convert into flowing spoken narrative\n"
-    "  • Kill: book section headings inside voiceover\n\n"
-    "Step 2 — INJECT LIFE AND DEPTH:\n"
-    "  • Add real-world examples and relatable analogies for every major concept\n"
-    "  • Add exam angles: 'ఇది UPSC prelims లో exact గా ఇలా అడిగారు'\n"
-    "  • Add 'before vs after' storytelling for historical/policy topics\n"
-    "  • Add context: why was this created? Who opposed it? What changed?\n"
-    "  • Use memory hints generously — the richer the hint, the better\n\n"
-    "Step 3 — FULL SKY ACADEMY VOICE:\n"
-    "  • Natural AP tutor — meaning first, style second\n"
-    "  • Make someone who 'hates' the subject genuinely interested\n"
-    "  • Weave SKY Academy identity naturally\n"
+    "Step 1 — DESTROY THE BOOKISH TONE COMPLETELY\n"
+    "Step 2 — INJECT LIFE AND DEPTH\n"
+    "Step 3 — FULL SKY ACADEMY VOICE\n"
 ) + _SKY_DNA + _OUTPUT_FORMAT
 
 
@@ -559,9 +438,8 @@ def build_prompts_topic(topic: str, num_segs: int, special_instructions: str):
         f"**Words per segment:** ~{WORDS_PER_SEGMENT}\n"
         f"{si}\n\n"
         f"REMINDERS:\n"
-        f"- Segment 1: HOOK → Welcome → Content (as instructed)\n"
+        f"- Segment 1: HOOK → Welcome → Content\n"
         f"- Natural AP tutor voice — meaning first, style second\n"
-        f"- Context before content — WHY before WHAT\n"
         f"- Memory hints generously wherever genuinely useful\n"
         f"- No bookish headings, no Part/Segment labels in voiceover\n"
         f"- Last segment must have SKY Academy CTA\n"
@@ -587,13 +465,11 @@ def build_prompts_multi_transcript(
         ),
         "synthesize": (
             "These transcripts COVER THE SAME TOPIC with different data or opinions. "
-            "Apply CASE A — SYNTHESIZE all data points, present ranges, reconcile "
-            "differences, give the most reliable unified picture."
+            "SYNTHESIZE all data points, present ranges, reconcile differences."
         ),
         "merge_aspects": (
             "These transcripts cover DIFFERENT ASPECTS of the same broad subject. "
-            "Apply CASE B — MERGE and INTERLINK all aspects into one cohesive "
-            "flowing narrative where each topic naturally connects to the next."
+            "MERGE and INTERLINK all aspects into one cohesive flowing narrative."
         ),
     }[merge_mode]
 
@@ -616,11 +492,9 @@ def build_prompts_multi_transcript(
         f"{hint}{si}\n\n"
         f"{transcript_blocks}\n\n"
         f"REMINDERS:\n"
-        f"- Segment 1: HOOK → Welcome → Content (as instructed)\n"
+        f"- Segment 1: HOOK → Welcome → Content\n"
         f"- Strip EVERY competitor brand/name/CTA trace from ALL transcripts\n"
         f"- Add 25%+ more value through enrichment\n"
-        f"- Memory hints generously wherever genuinely useful\n"
-        f"- Natural AP tutor voice — meaning first, no hollow filler sentences\n"
         f"- Last segment must have SKY Academy CTA\n"
         f"- Return ONLY valid JSON array, nothing else"
     )
@@ -642,11 +516,8 @@ def build_prompts_pdf(
         f"{pdf_text.strip()}\n"
         f"━━━ BOOK / STUDY MATERIAL (end) ━━━\n\n"
         f"REMINDERS:\n"
-        f"- Segment 1: HOOK → Welcome → Content (as instructed)\n"
+        f"- Segment 1: HOOK → Welcome → Content\n"
         f"- Bookish tone must be completely destroyed\n"
-        f"- Every dry fact needs context, example, 'why it matters'\n"
-        f"- Memory hints generously wherever genuinely useful\n"
-        f"- Natural AP tutor voice — meaning first, no hollow filler sentences\n"
         f"- Last segment must have SKY Academy CTA\n"
         f"- Return ONLY valid JSON array, nothing else"
     )
@@ -658,8 +529,6 @@ def build_prompts_pdf(
 # ============================================================
 
 def extract_pdf_text(file_bytes: bytes):
-    """Returns (text, info) or (None, error)."""
-    # 1. pypdf
     try:
         import pypdf
         reader = pypdf.PdfReader(io.BytesIO(file_bytes))
@@ -668,7 +537,6 @@ def extract_pdf_text(file_bytes: bytes):
             return "\n".join(pages).strip(), f"pypdf · {len(reader.pages)} pages"
     except (ImportError, Exception):
         pass
-    # 2. PyPDF2
     try:
         import PyPDF2
         reader = PyPDF2.PdfReader(io.BytesIO(file_bytes))
@@ -677,7 +545,6 @@ def extract_pdf_text(file_bytes: bytes):
             return "\n".join(pages).strip(), f"PyPDF2 · {len(reader.pages)} pages"
     except (ImportError, Exception):
         pass
-    # 3. pdfplumber
     try:
         import pdfplumber
         pages = []
@@ -694,7 +561,6 @@ def extract_pdf_text(file_bytes: bytes):
 
 
 def extract_docx_text(file_bytes: bytes):
-    """Returns (text, info) or (None, error)."""
     try:
         from docx import Document
         doc   = Document(io.BytesIO(file_bytes))
@@ -715,7 +581,6 @@ def extract_docx_text(file_bytes: bytes):
 
 
 def extract_any_file(file_bytes: bytes, filename: str):
-    """Route to the right extractor by extension."""
     ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
     if ext == "txt":
         for enc in ("utf-8", "utf-16", "latin-1"):
@@ -734,51 +599,125 @@ def extract_any_file(file_bytes: bytes, filename: str):
 
 
 # ============================================================
-# AI CALL FUNCTIONS
+# ✅ AI CALL FUNCTIONS — ALL USE STREAMING (fixes 524 timeout)
 # ============================================================
 
-def call_claude_pagegrid(api_key: str, model: str, system: str, user: str) -> str:
+def call_claude_pagegrid(
+    api_key: str, model: str, system: str, user: str, progress_cb=None
+) -> str:
+    """Stream via Anthropic SDK — keeps connection alive, prevents 524."""
     import anthropic
     if not api_key.startswith("sk-pgrid-"):
         raise ValueError(
             "PageGrid key must start with 'sk-pgrid-'. "
             "Get yours at pagegrid.in → Dashboard → API Keys."
         )
-    client = anthropic.Anthropic(api_key=api_key, base_url=PAGEGRID_BASE_URL)
-    resp   = client.messages.create(
-        model=model, max_tokens=8192, system=system,
-        messages=[{"role": "user", "content": user}],
+    client = anthropic.Anthropic(
+        api_key=api_key,
+        base_url=PAGEGRID_BASE_URL,
+        timeout=300.0,          # 5-minute hard timeout on the SDK side
     )
-    return resp.content[0].text
+    full = ""
+    with client.messages.stream(
+        model=model,
+        max_tokens=8192,
+        system=system,
+        messages=[{"role": "user", "content": user}],
+    ) as stream:
+        for chunk in stream.text_stream:
+            full += chunk
+            if progress_cb:
+                progress_cb(len(full))
+    return full
 
 
-def call_openai(api_key: str, model: str, system: str, user: str) -> str:
+def call_openai(
+    api_key: str, model: str, system: str, user: str, progress_cb=None
+) -> str:
+    """Stream via OpenAI SDK (reasoning models fall back to non-stream)."""
     import openai
-    client       = openai.OpenAI(api_key=api_key)
+    client       = openai.OpenAI(api_key=api_key, timeout=300.0)
     is_reasoning = model.startswith("o1") or model.startswith("o3")
+
     if is_reasoning:
+        # o-series models don't support streaming — use regular call
         resp = client.chat.completions.create(
-            model=model, max_completion_tokens=16000,
+            model=model,
+            max_completion_tokens=16000,
             messages=[{"role": "user", "content": f"{system}\n\n---\n\n{user}"}],
         )
+        return resp.choices[0].message.content
     else:
-        resp = client.chat.completions.create(
-            model=model, max_tokens=8192,
+        full = ""
+        for chunk in client.chat.completions.create(
+            model=model,
+            max_tokens=8192,
+            stream=True,
             messages=[
                 {"role": "system", "content": system},
                 {"role": "user",   "content": user},
             ],
-        )
-    return resp.choices[0].message.content
+        ):
+            delta = chunk.choices[0].delta.content or ""
+            full += delta
+            if progress_cb and delta:
+                progress_cb(len(full))
+        return full
 
 
-def call_gemini(api_key: str, model: str, system: str, user: str) -> str:
+def call_gemini(
+    api_key: str, model: str, system: str, user: str, progress_cb=None
+) -> str:
+    """Stream via Google Generative AI SDK."""
     import google.generativeai as genai
     genai.configure(api_key=api_key)
     m    = genai.GenerativeModel(model_name=model, system_instruction=system)
-    resp = m.generate_content(user)
-    return resp.text
+    full = ""
+    for chunk in m.generate_content(user, stream=True):
+        t = getattr(chunk, "text", "") or ""
+        full += t
+        if progress_cb and t:
+            progress_cb(len(full))
+    return full
 
+
+# ============================================================
+# STREAMING DISPATCHER — single entry point for all providers
+# ============================================================
+
+def run_generation(
+    api_key: str,
+    provider: str,
+    model: str,
+    system_p: str,
+    user_p: str,
+    status_placeholder,
+) -> str:
+    """
+    Call the correct provider with streaming.
+    Updates status_placeholder with live char count.
+    Returns raw text string.
+    """
+    def _cb(n_chars: int):
+        status_placeholder.markdown(
+            f'<div class="stream-progress">'
+            f'⚡ <b>Generating…</b> &nbsp; {n_chars:,} characters received'
+            f' &nbsp;·&nbsp; please keep this tab open'
+            f'</div>',
+            unsafe_allow_html=True,
+        )
+
+    if "PageGrid" in provider:
+        return call_claude_pagegrid(api_key, model, system_p, user_p, _cb)
+    elif "OpenAI" in provider:
+        return call_openai(api_key, model, system_p, user_p, _cb)
+    else:
+        return call_gemini(api_key, model, system_p, user_p, _cb)
+
+
+# ============================================================
+# JSON PARSER
+# ============================================================
 
 def parse_segments(raw: str):
     raw   = re.sub(r"```(?:json)?", "", raw).strip().rstrip("`").strip()
@@ -797,6 +736,7 @@ def parse_segments(raw: str):
 # ============================================================
 # GOOGLE SHEETS
 # ============================================================
+
 def push_to_gsheet(chunks: list, creds_json_str: str):
     try:
         import gspread
@@ -819,7 +759,8 @@ def push_to_gsheet(chunks: list, creds_json_str: str):
         col_a    = ws.col_values(1)
         next_row = len(col_a) + 1
         rows_to_add = [
-            [i + 1, c.get("telugu_text", ""), c.get("slide_prompt", ""), "", "", "pending", "no"]
+            [i + 1, c.get("telugu_text", ""), c.get("slide_prompt", ""),
+             "", "", "pending", "no"]
             for i, c in enumerate(chunks)
         ]
         ws.append_rows(rows_to_add, value_input_option="RAW")
@@ -832,10 +773,10 @@ def push_to_gsheet(chunks: list, creds_json_str: str):
 
 
 # ============================================================
-# ERROR HANDLER  ← ✅ DEFINED HERE — before gen_btn block
+# ✅ ERROR HANDLER — defined BEFORE gen_btn block
 # ============================================================
+
 def _handle_api_error(exc: Exception, model_choice: str):
-    """Friendly error messages for common API failures."""
     err = str(exc)
     if "401" in err or "authentication_error" in err:
         st.error(
@@ -863,6 +804,14 @@ def _handle_api_error(exc: Exception, model_choice: str):
         st.error(
             "❌ **429 — Rate limited.**\n\n"
             "Default limit: 10 RPM. Wait ~60 sec and retry."
+        )
+    elif "524" in err or "timeout" in err.lower():
+        st.error(
+            "❌ **524 / Timeout — Request took too long.**\n\n"
+            "• Try a **faster model** (e.g. `claude-haiku-4-5` or `gemini-2.0-flash`)\n"
+            "• Reduce **total word count** (try 480 words → 4 segments)\n"
+            "• If using PDF/Transcript mode, upload a shorter document\n"
+            "• Retry — the next attempt usually succeeds"
         )
     else:
         st.error(f"❌ Generation error: {exc}")
@@ -930,7 +879,7 @@ with st.sidebar:
             "**PageGrid valid models:**\n"
             "- `claude-opus-4-6` — Most intelligent\n"
             "- `claude-sonnet-4-6` — Fast & smart\n"
-            "- `claude-haiku-4-5` — Fastest\n\n"
+            "- `claude-haiku-4-5` — Fastest ⚡\n\n"
             "**base_url:** `https://api.pagegrid.in`\n"
             "(SDK auto-appends `/v1`)",
             icon="📋",
@@ -1043,8 +992,8 @@ with left:
             horizontal=False,
         )
         merge_mode_val = {
-            "🤖 Auto-detect  (AI decides)":                              "auto",
-            "🔄 Synthesize same topic  (different data on same subject)": "synthesize",
+            "🤖 Auto-detect  (AI decides)":                               "auto",
+            "🔄 Synthesize same topic  (different data on same subject)":  "synthesize",
             "🧩 Merge different topics  (weave different aspects together)": "merge_aspects",
         }[merge_label]
 
@@ -1092,11 +1041,13 @@ with left:
             err_count = len(exts) - ok_count
 
             if ok_count:
+                total_words = sum(e["words"] for e in exts if e["ok"])
                 st.markdown(
                     f'<div class="merge-box">'
                     f'📁 <b>{ok_count} file(s) ready</b>'
                     + (f' · ⚠️ {err_count} failed' if err_count else '')
-                    + f' &nbsp;|&nbsp; Merge mode: <b>{merge_label}</b>'
+                    + f' &nbsp;|&nbsp; ~{total_words:,} total words'
+                    + f' &nbsp;|&nbsp; Merge: <b>{merge_label}</b>'
                     f'</div>',
                     unsafe_allow_html=True,
                 )
@@ -1114,14 +1065,13 @@ with left:
                         unsafe_allow_html=True,
                     )
 
-            # Preview expander
             ok_exts = [e for e in exts if e["ok"]]
             if ok_exts:
                 with st.expander(
                     f"👁️ Preview extracted content ({len(ok_exts)} files)", expanded=False
                 ):
                     for e in ok_exts:
-                        st.markdown(f"**📄 {e['filename']}**")
+                        st.markdown(f"**📄 {e['filename']}** — {e['words']:,} words")
                         st.text(e["text"][:500] + ("\n\n[... more ...]" if len(e["text"]) > 500 else ""))
                         st.markdown("---")
 
@@ -1146,7 +1096,7 @@ with left:
             placeholder="e.g.  Chapter 3: Directive Principles, Unit 5: Cell Respiration...",
         )
 
-        pdf_file    = st.file_uploader(
+        pdf_file = st.file_uploader(
             "📤 Upload PDF *", type=["pdf"],
             help="Upload the book section, study notes, or chapter to be scripted",
         )
@@ -1173,10 +1123,7 @@ with left:
                     f"✅ Extracted: ~{wc:,} words · {st.session_state.last_pdf_lib}"
                 )
                 with st.expander("👁️ Preview extracted text", expanded=False):
-                    st.text(
-                        st.session_state.pdf_text[:800]
-                        + "\n\n[... more ...]"
-                    )
+                    st.text(st.session_state.pdf_text[:800] + "\n\n[... more ...]")
                 topic_input = st.session_state.pdf_text
 
     # ── Word count / segments ─────────────────────────────
@@ -1225,7 +1172,9 @@ if clear_btn:
     st.rerun()
 
 
-# ── Generate ───────────────────────────────────────────────
+# ============================================================
+# ✅ GENERATE — uses run_generation() with streaming
+# ============================================================
 if gen_btn:
     if   input_mode.startswith("📌"): mode_name = "topic"
     elif input_mode.startswith("📝"): mode_name = "transcript"
@@ -1245,97 +1194,102 @@ if gen_btn:
                 "(.docx / .txt / .pdf) and make sure it extracts successfully."
             )
         else:
-            # ── send full text — no truncation ────────────
+            # Full text — no truncation
             safe_transcripts = [
                 {"filename": e["filename"], "text": e["text"]}
                 for e in ok_exts
             ]
-            with st.spinner(
-                f"🔄 Merging {len(safe_transcripts)} transcript(s) → SKY Academy voice… (20–90 sec)"
-            ):
-                try:
-                    system_p, user_p = build_prompts_multi_transcript(
-                        safe_transcripts,
-                        topic_hint_input,
-                        num_segs,
-                        special_instructions,
-                        merge_mode_val,
-                    )
-                    display_topic  = (
-                        topic_hint_input.strip()[:60]
-                        or f"{len(safe_transcripts)} Transcript(s)"
-                    )
-                    display_source = "📝 Transcript → SKY"
-
-                    if   "PageGrid" in provider:
-                        raw = call_claude_pagegrid(api_key, model_choice, system_p, user_p)
-                    elif "OpenAI"   in provider:
-                        raw = call_openai(api_key, model_choice, system_p, user_p)
-                    else:
-                        raw = call_gemini(api_key, model_choice, system_p, user_p)
-
-                    st.session_state.raw_response = raw
-                    parsed = parse_segments(raw)
-                    if parsed:
-                        st.session_state.chunks      = parsed
-                        st.session_state.last_topic  = display_topic
-                        st.session_state.last_source = display_source
-                        st.success(
-                            f"✅ {len(parsed)} segments generated from "
-                            f"{len(safe_transcripts)} file(s)! [{display_source}]"
-                        )
-                    else:
-                        st.error(
-                            "❌ Could not parse JSON from AI response. "
-                            "Expand Raw AI Response below to inspect."
-                        )
-                except Exception as exc:
-                    _handle_api_error(exc, model_choice)
-
-    elif mode_name == "pdf" and not topic_input.strip():
-        st.error("❌ Please upload a PDF. Make sure text was extracted successfully.")
-
-    else:
-        # ── topic or pdf — send full text, no truncation ──
-        with st.spinner(
-            ("✍️ Generating script…" if mode_name == "topic"
-             else "📚 Converting PDF → SKY Academy voice…") + " (20–90 sec)"
-        ):
+            st.info(
+                f"🔄 Merging {len(safe_transcripts)} transcript(s) → SKY Academy voice…  "
+                f"Progress shown below. Do not close this tab.",
+                icon="⏳",
+            )
+            _status = st.empty()
             try:
-                if mode_name == "topic":
-                    system_p, user_p = build_prompts_topic(
-                        topic_input, num_segs, special_instructions
-                    )
-                    display_topic  = topic_input.strip()[:60]
-                    display_source = "📌 Topic"
-                else:
-                    system_p, user_p = build_prompts_pdf(
-                        topic_input, topic_hint_input, num_segs, special_instructions
-                    )
-                    display_topic  = topic_hint_input.strip()[:60] or "PDF Content"
-                    display_source = "📚 PDF → SKY"
+                system_p, user_p = build_prompts_multi_transcript(
+                    safe_transcripts, topic_hint_input,
+                    num_segs, special_instructions, merge_mode_val,
+                )
+                display_topic  = (
+                    topic_hint_input.strip()[:60]
+                    or f"{len(safe_transcripts)} Transcript(s)"
+                )
+                display_source = "📝 Transcript → SKY"
 
-                if   "PageGrid" in provider:
-                    raw = call_claude_pagegrid(api_key, model_choice, system_p, user_p)
-                elif "OpenAI"   in provider:
-                    raw = call_openai(api_key, model_choice, system_p, user_p)
-                else:
-                    raw = call_gemini(api_key, model_choice, system_p, user_p)
-
+                raw = run_generation(
+                    api_key, provider, model_choice, system_p, user_p, _status
+                )
+                _status.empty()
                 st.session_state.raw_response = raw
                 parsed = parse_segments(raw)
                 if parsed:
                     st.session_state.chunks      = parsed
                     st.session_state.last_topic  = display_topic
                     st.session_state.last_source = display_source
-                    st.success(f"✅ {len(parsed)} segments generated! [{display_source}]")
+                    st.success(
+                        f"✅ {len(parsed)} segments generated from "
+                        f"{len(safe_transcripts)} file(s)! [{display_source}]"
+                    )
+                    st.rerun()
                 else:
                     st.error(
                         "❌ Could not parse JSON from AI response. "
                         "Expand Raw AI Response below to inspect."
                     )
             except Exception as exc:
+                _status.empty()
                 _handle_api_error(exc, model_choice)
+
+    elif mode_name == "pdf" and not topic_input.strip():
+        st.error("❌ Please upload a PDF. Make sure text was extracted successfully.")
+
+    else:
+        # Topic or PDF — full text, no truncation
+        _mode_label = (
+            f"✍️ Generating {num_segs} segments via "
+            f"{'PageGrid → ' + model_choice if 'PageGrid' in provider else model_choice}"
+            if mode_name == "topic"
+            else "📚 Converting PDF content → SKY Academy voice"
+        )
+        st.info(
+            f"{_mode_label}…  Progress shown below. Do not close this tab.",
+            icon="⏳",
+        )
+        _status = st.empty()
+        try:
+            if mode_name == "topic":
+                system_p, user_p = build_prompts_topic(
+                    topic_input, num_segs, special_instructions
+                )
+                display_topic  = topic_input.strip()[:60]
+                display_source = "📌 Topic"
+            else:
+                system_p, user_p = build_prompts_pdf(
+                    topic_input, topic_hint_input, num_segs, special_instructions
+                )
+                display_topic  = topic_hint_input.strip()[:60] or "PDF Content"
+                display_source = "📚 PDF → SKY"
+
+            raw = run_generation(
+                api_key, provider, model_choice, system_p, user_p, _status
+            )
+            _status.empty()
+            st.session_state.raw_response = raw
+            parsed = parse_segments(raw)
+            if parsed:
+                st.session_state.chunks      = parsed
+                st.session_state.last_topic  = display_topic
+                st.session_state.last_source = display_source
+                st.success(f"✅ {len(parsed)} segments generated! [{display_source}]")
+                st.rerun()
+            else:
+                st.error(
+                    "❌ Could not parse JSON from AI response. "
+                    "Expand Raw AI Response below to inspect."
+                )
+        except Exception as exc:
+            _status.empty()
+            _handle_api_error(exc, model_choice)
 
 
 # ============================================================
@@ -1455,7 +1409,7 @@ with right:
             </p>
             <p style="margin-top:18px; font-size:0.82rem; line-height:2.2; color:#6366f1;">
                 📌 <b>Topic</b> — Original script from any subject<br>
-                📝 <b>Multi-Transcript</b> — Upload multiple competitor files → merged SKY voice<br>
+                📝 <b>Multi-Transcript</b> — Upload competitor files → merged SKY voice<br>
                 📚 <b>PDF</b> — Book content → SKY voiceover with hook &amp; memory hints
             </p>
         </div>
@@ -1469,7 +1423,7 @@ if st.session_state.raw_response:
     with st.expander(
         "🔍 Raw AI Response  (debug / manual copy-paste fallback)", expanded=False
     ):
-        st.code(st.session_state.raw_response[:6000], language="json")
+        st.code(st.session_state.raw_response[:8000], language="json")
 
 
 # ============================================================
