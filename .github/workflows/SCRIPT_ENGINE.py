@@ -720,18 +720,56 @@ def run_generation(
 # ============================================================
 
 def parse_segments(raw: str):
-    raw   = re.sub(r"```(?:json)?", "", raw).strip().rstrip("`").strip()
-    match = re.search(r"\[[\s\S]*\]", raw)
-    if match:
-        try:
-            return json.loads(match.group())
-        except Exception:
-            pass
-    try:
-        return json.loads(raw)
-    except Exception:
+    """
+    Robust parser — handles all AI response wrapping formats.
+    Tries 5 extraction strategies before giving up.
+    """
+    if not raw or not raw.strip():
         return None
 
+    # ── STEP 1: strip markdown fences (opening AND closing) ─────────
+    cleaned = raw.strip()
+    cleaned = re.sub(r"^```[a-zA-Z]*\s*\n?", "", cleaned)   # ```json or ```
+    cleaned = re.sub(r"\n?```\s*$",          "", cleaned)   # closing ```
+    cleaned = cleaned.strip()
+
+    # ── STEP 2: direct parse ─────────────────────────────────────────
+    try:
+        result = json.loads(cleaned)
+        if isinstance(result, list) and result:
+            return result
+    except json.JSONDecodeError:
+        pass
+
+    # ── STEP 3: extract [ ... ] by finding outermost brackets ────────
+    start = cleaned.find("[")
+    end   = cleaned.rfind("]")
+    if start != -1 and end > start:
+        try:
+            result = json.loads(cleaned[start : end + 1])
+            if isinstance(result, list) and result:
+                return result
+        except json.JSONDecodeError:
+            pass
+
+    # ── STEP 4: fallback — try on original raw string ────────────────
+    for attempt in (raw, re.sub(r"```(?:json)?", "", raw).strip()):
+        try:
+            result = json.loads(attempt)
+            if isinstance(result, list):
+                return result
+        except Exception:
+            pass
+        m = re.search(r"\[[\s\S]*\]", attempt)
+        if m:
+            try:
+                result = json.loads(m.group())
+                if isinstance(result, list):
+                    return result
+            except Exception:
+                pass
+
+    return None
 
 # ============================================================
 # GOOGLE SHEETS
@@ -1232,10 +1270,31 @@ if gen_btn:
                     )
                     st.rerun()
                 else:
-                    st.error(
-                        "❌ Could not parse JSON from AI response. "
-                        "Expand Raw AI Response below to inspect."
-                    )
+    st.error(
+        "❌ Could not parse JSON from AI response. "
+        "Expand Raw AI Response below to inspect."
+    )
+    # ── Manual copy-paste recovery ──────────────────────────────
+    st.markdown("#### 🛠️ Manual Recovery")
+    st.caption(
+        "The script was generated but JSON parsing failed. "
+        "Paste the raw response here to retry parsing:"
+    )
+    manual_raw = st.text_area(
+        "Paste Raw JSON here", height=200,
+        placeholder='[{"seg": 1, "telugu_text": "...", "slide_prompt": "..."}]',
+        key="manual_json_input",
+    )
+    if st.button("🔄 Retry Parse", key="retry_parse_btn"):
+        parsed = parse_segments(manual_raw or st.session_state.raw_response)
+        if parsed:
+            st.session_state.chunks      = parsed
+            st.session_state.last_topic  = display_topic
+            st.session_state.last_source = display_source
+            st.success(f"✅ Recovered! {len(parsed)} segments parsed.")
+            st.rerun()
+        else:
+            st.error("❌ Still could not parse. Check for unescaped quotes in the JSON.")
             except Exception as exc:
                 _status.empty()
                 _handle_api_error(exc, model_choice)
