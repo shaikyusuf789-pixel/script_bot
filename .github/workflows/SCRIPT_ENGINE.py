@@ -357,54 +357,235 @@ LANGUAGE STYLE:
 - Build suspense only when there's genuinely something to reveal
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-MEMORY HINTS — MEMORY TRICK RULES — STRICT:RICH EXAMPLES LIBRARY (SKY ACADEMY STYLE)
+MEMORY HINTS — MEMORY TRICK RULES — RICH EXAMPLES LIBRARY (SKY ACADEMY STYLE)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 HOW SKY ACADEMY MEMORY HINTS WORK:
 The hint must be: OBVIOUS — CLEVER — IMPOSSIBLE TO FORGET.
 Student should laugh or say "oh wow, I will never forget this!"
 If you need to explain the hint, it is a BAD hint. Start over.
+
+CORE RULES:
 - NEVER use abbreviation mnemonics (no BKKKOMMS, VIBGYOR-type tricks, zero letter shortcuts)
 - ONLY use WORD-ASSOCIATION and INTERLINKING:
   * Find meaning INSIDE the word itself (Katha=story → Kathak from story-land UP)
   * Link to geography/history naturally (Kuchipudi = village in AP = dance named after it)
   * Number links: 42 degree heat → 42nd Amendment style
-  * If no trick possible, — don't force abbreviations
+  * Telugu number sound links: 6=aaru → sounds like "aaravadhu" (don't shout) → link to topic
+  * Calendar date links: Feb 14 = Valentine's → find a love/union/bonding angle with topic
+  * If no trick is natural — skip entirely, never force one
 - Student must feel the CONNECTION, not memorize a random letter string
 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TELUGU NUMBER → SOUND → TOPIC LINKING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+When a number must be remembered, take its Telugu word,
+find a sound-alike Telugu word, and link that sound to the topic meaning.
+The connection must be INSTANT — no explanation needed.
+example: 
+  1  = okati    → "oka chance" (only one shot)
+                  → use for unique / once-in-history facts
+  2  = rendu    → "rendu" (double trouble / second time)
+                  → use for pairs, two conflicting events
+  3  = mudu     → "mudu" (fuss / complication/in english three sounds like tree, connect it with some greenery,oxygen,co2,freshness,shadow,leaves,pollution, etc)
+                  → use for three-way splits, tricky articles
+  4  = nalugu   → sounds like English "nail", or sounds like door, four-door, so link with home door scene, or shutting door
+                  → "nail it down" → 4 pillars, 4 Vedas, 4 fundamental duties
+  5  = aidu     → "five fingers/hand/punch/boxing/fighting like with this scenerios to the sentence" (tension / anxiety)
+                  → 5 year plans, 5 schedules → always creates tension!
+  6  = aaru     → "aaravadhu" (don't shout / keep quiet)
+                  → 6th Schedule = tribal areas, their own laws, outsiders keep quiet!
+  7  = edu      → "edupu" (crying / weeping)
+                  → 7 Wonders → so beautiful you cry; 7 sins → cry for humanity
+  8  = enimidi  → sounds like English "enemy"
+                  → 8th Schedule = 22 languages, enemy of those who want to forget them
+  9  = tommidi  → sounds like "tommy" (stomach ache) or nine sounds like wine, link with some alcohol,drunken person,irresponsible so on
+                  → 9 Fundamental Duties → stomach it, you have to do them!
+  10 = padi     → "padipoyadu" (he fell / collapsed)
+                  → 10th Schedule = Anti-Defection Law → politician who switches party FALLS
+  11 = padakondu → "padakondu" 11 looks like two hands or two legs, link with two parallel things like railway tracks.
+                  → 11th Schedule = Panchayati Raj - panchayat should run as central government runs parallelly in india
+  12 = pannendu → "pannaga" (snake wrapping around)
+                  → 12 months wrap around the year like a snake
+  14 = padinalugu → link to Feb 14 Valentine's Day (see Calendar Links below)
+  21 = iravai-okati → "like with mariage day, because two becomes one by marriage, 2 to 1"
+                  → Article 21 = Right to Life & Liberty = life get disturbed after 21(marriage day) funnyway.
+  42 = natai-rendu → "42 degree fever" → emergency in your body
+                  → 42nd Amendment 1976 = Emergency era, most controversial amendment
+  like this use numbers logics naturally, dont force, search web for good logics and use it in script.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CALENDAR DATE MEMORY LINKS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Use dates the student already knows emotionally — bind the topic to that emotion.
+Student already has the date locked — you just attach new meaning to it.
+
+  Jan 26  = Republic Day → Constitution came into FORCE → India became a Republic
+            "Jan 26, 1950 — Constitution was enforced — India stopped being under British rule
+             even on paper — Happy Republic Day means Happy Constitution Day!"
+
+  Feb 14  = Valentine's Day (love / union / bonding)
+            → Link to any topic about agreements, unions, treaties, joint efforts
+            "Panchsheel Agreement 1954 — India-China's 5 love promises to each other —
+             Feb 14 energy — 5 principles of peaceful love between neighbors —
+             but this love story didn't last!"
+
+  Mar 8   = International Women's Day
+            → Link to women's rights laws, gender schemes, women leaders in history
+            "Savitribai Phule started India's first girls' school — Mar 8 energy —
+             every Women's Day, remember her name before any other!"
+
+  Apr 1   = Fool's Day → Link to exam traps, commonly confused facts
+            "Don't be a fool — Article 32 is the RIGHT to Constitutional Remedies,
+             NOT Article 226 — that's High Court's writ power — Fool's Day trap in every exam!"
+
+  Apr 14  = Ambedkar Jayanti → All Constitution drafting facts anchor here
+            "B.R. Ambedkar born April 14, 1891 — Constitution drafting completed
+             November 26, 1949 — his whole life was the Constitution"
+
+  Aug 15  = Independence Day → 1947
+            "Quit India 1942 → 9+4+2=15 → August 15 → Independence 1947 — math never lies!"
+
+  Oct 2   = Gandhi Jayanti → Non-violence, Satyagraha, Civil Disobedience
+            "Dandi March started March 12 → 3+1+2=6 → aaru = aaravadhu →
+             British told Gandhi to keep quiet — he didn't!"
+
+  Nov 14  = Children's Day (Nehru's birthday) → First Prime Minister facts
+            "Nov 14 = Children's Day because Nehru loved children —
+             but he also LOVED power — India's first and longest-serving PM!"
+
+  Nov 26  = Constitution Day (Samvidhan Divas) → Constitution ADOPTED 1949
+            "Nov 26 adopted, Jan 26 enforced — adopted = baby born, enforced = baby walks —
+             two months gap between birth and first steps!"
+
+  Dec 10  = Human Rights Day → UDHR adopted 1948 → Fundamental Rights comparison
+            "UN gave world its Rights on Dec 10, 1948 —
+             India gave its own Rights in Constitution, Jan 26, 1950 —
+             India was just 16 months behind the whole world!"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXAMPLES LIBRARY — ALL SUBJECTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 POLITY / CONSTITUTION:
-  "Fancy words = France" (Liberty, Equality, Fraternity -> French Revolution)
-  "42 degrees C fever -> Emergency -> 42nd Amendment 1976"
-  "Article 21 — 21st birthday = LIFE's most important day -> Right to LIFE & Liberty"
-  "DPSP = Doctor's Prescription -> Non-justiciable"
-  "BRO wrote the Constitution -> B.R. Ambedkar -> Father of Constitution"BRO is general word we use in daily life, interlinking easy.
-  "CAG = Check And Guard government money"
-  "Preamble = Entrance door of a house -> tells you what's inside"
-  "73rd Amendment = Panchayati Raj -> 7+3=10 -> 10 fingers = hands-on local governance"
+  "Fancy words = France" (Liberty, Equality, Fraternity → French Revolution)
+  "42 degrees C fever → Emergency → 42nd Amendment 1976"
+  "Article 21 — 21st birthday = LIFE's most important day → Right to LIFE & Liberty"
+  "DPSP = Doctor's Prescription → Non-justiciable (doctor advises, court can't force)"
+  "BRO wrote the Constitution → B.R. Ambedkar → Father of Constitution"(bro word we use naturally in everyday life, so easy to connect)
+  "CAG = Checks And Guards government money — CAG = watchdog with a calculator"
+  "Preamble = Entrance door of a house → tells you what's inside before you enter"
+  "73rd Amendment = Panchayati Raj → 7+3=10 → 10 fingers = hands-on local governance"
+  "10th Schedule = Anti-Defection Law → padi = fell → politician who betrays party FALLS"
+  "Article 356 → 3+5+6=14 → Feb 14 Valentine's → President 'loves' the state so much
+   he takes over it directly — but this love is not welcome!"
+  "Rajya Sabha never fully dissolves → like a marriage — no complete divorce ever"
+  "Lok Sabha = 5 years → aidu = tension → every 5 years, election tension guaranteed!"
+  "Writ of Habeas Corpus → Habeas = 'you have the body' → produce the person in court
+   → think: 'Hey, where is the body?' — court asking the jailer!"
+  "Writ of Mandamus = 'we command' → Manda sounds like 'manda' (dull/slow) →
+   court telling the slow government officer — stop being manda, DO YOUR JOB NOW!"
 
 HISTORY / FREEDOM STRUGGLE:
-  "1857 = 18-57 -> 57 year old person's first revolt = First War of Independence"
-  "Quit India 1942 -> 9+4+2=15 -> August 15 -> Independence 1947!"
-  "Simon Commission = 1927 -> No Indian members -> Simon says — but India says NO!"
+  "1857 = 18-57 → 57 year old person's first revolt = First War of Independence"
+  "Quit India 1942 → 9+4+2=15 → August 15 → Independence 1947!"
+  "Simon Commission = 1927 → No Indian members → Simon says — but India says NO!"
+  "Jallianwala Bagh = 1919 → 1+9+1+9=20 → 20 seconds of firing changed India forever"
+  "Dandi March = 241 miles → 2+4+1=7 → edu = crying → British cried after this!"
+  "Partition 1947 → rendu countries born → India and Pakistan → painful second birth of the subcontinent"
+  "Battle of Plassey 1757 → paddnalugu (1+7+5+7=20, near 14) → Valentine's betrayal →
+   Mir Jafar's treachery was the ultimate backstab — worse than a breakup!"
+  "Rowlatt Act 1919 → 'No lawyer, no appeal, no daleel' → row + latt = no room to fight back"
 
 GEOGRAPHY:
-  "Narmada flows WEST -> Flip N sideways -> looks like W for West!"
-  "Thar Desert -> Thar sounds like Tar road -> hot, dry, burned = desert"
+  "Narmada flows WEST → Flip N sideways → looks like W for West!"
+  "Thar Desert → Thar sounds like Tar road → hot, dry, burned = desert"
+  "Brahmaputra = Brahma's son → putra = son → mighty river born from Brahma himself"
+  "Western Ghats = windward side = W for Wet; Eastern side = shadow = dry"
+  "Chilika Lake, Odisha → CHILI = hot and famous → largest coastal lagoon in India, spicy important!"
+  "Loktak Lake = Manipur → LOK = people, TAK = floating → floating phumdis, people's floating lake"
+  "Deccan Plateau = DEC = DECEMBER = dry cold month → Deccan is the dry heart of India"
+  "Konkan coast = narrow strip between Mumbai and Goa → Konkan sounds like 'concern' → always narrow and worrying to navigate!"
+  "Indus River = flows through Pakistan mostly → IN-dus = INternational river, left India!"
 
 SCIENCE / BIOLOGY:
-  "Mitochondria = Powerhouse -> MITO = My Toe -> your toe pushes you forward = POWER"
-  "Photosynthesis: everything is SIX -> 6CO2 + 6H2O -> C6H12O6 + 6O2"
-  "Noble Gases = 0 valency -> Nobel Prize winners share NOTHING -> zero sharing"
+  "Mitochondria = Powerhouse → MITO = My Toe → toe pushes you forward = POWER source"
+  "Photosynthesis: everything is SIX → 6CO2 + 6H2O → C6H12O6 + 6O2 → aaru = aaravadhu
+   → plant says aaravadhu (don't shout) while quietly making food with six of everything!"
+  "Noble Gases = 0 valency → Nobel Prize winners share NOTHING → zero sharing, zero bonding"
+  "Nucleus = control center → NUCLE sounds like UNCLE → the bossy uncle of the cell who controls everything"
+  "Osmosis = water moves toward higher concentration → water always moves toward the crowd, just like people!"
+  "Newton's 3rd law = every action has equal opposite reaction → push a wall, wall pushes back
+   → aaru! aaravadhu! wall shouts back at you with equal force!"
+  "DNA = Deoxyribonucleic Acid → DE-OXY = oxygen removed → DNA is the blueprint with oxygen stripped out"
+  "Enzyme = biological catalyst → EN-ZYME sounds like 'engine' → enzyme is the engine that speeds up reactions"
 
 ECONOMY / CURRENT AFFAIRS:
-  "GDP vs GNP: D = Domestic (inside India), N = National (Indians anywhere)"
-  "Repo Rate -> REPO = RBI REPOssesses money from banks"
-  "Inflation and Interest Rate: they are married -> one goes up, other follows"
+  "GDP vs GNP: D = Domestic (inside India borders), N = National (Indians anywhere in world)"
+  "Repo Rate → REPO = RBI REPOssesses money from banks when it's too much in market"
+  "Reverse Repo = banks give money TO RBI → reverse direction → RBI becomes the borrower"
+  "Inflation and Interest Rate are married → one goes up, other must follow!"
+  "Bull Market = prices rising → bull CHARGES UP with its horns pointed up"
+  "Bear Market = prices falling → bear SWIPES DOWN with its paws pointed down"
+  "SEBI = Stock market watchdog → SEBI sounds like 'sabi' (everyone) → watches everyone in market"
+  "CRR = Cash Reserve Ratio → Cash Reserved with RBI → bank deposits cash with RBI as security deposit"
+  "SLR = Statutory Liquidity Ratio → STATUTORY = by law → bank must keep liquid assets by law, no choice"
+  "Fiscal Deficit = govt spends more than it earns → like a student spending more than pocket money
+   → every single month — and borrowing from parents (public) to cover it!"
+
+ARTS & CULTURE:
+  "Bharatanatyam = Tamil Nadu → Bharat + Natyam = India's own dance → oldest classical form"
+  "Kuchipudi = village in AP → dance named after its own village — proud hometown dance!"
+  "Kathak = UP / North India → Katha = story → Kathak tells stories through every single step"
+  "Odissi = Odisha → OD = ODisha → too easy, direct name connection!"
+  "Manipuri = Manipur → direct name → Manipur's gift to classical dance world"
+  "Mohiniyattam = Kerala → Mohini = enchantress from mythology → enchanting, graceful, feminine"
+  "Sattriya = Assam → Satra = Vaishnavite monastery → born inside Assam's monasteries"
+  "Kuchipudi vs Bharatanatyam confusion: K = Krishna (Kuchipudi has more Krishna themes),
+   B = Bharat = whole India (Bharatanatyam is pan-India in feel)"
+  "Indian painting styles order:
+   Ajanta (2nd BCE) → Mughal (16th early) → Rajput (16th late) → Pahari (17th century)
+   → A Morning Raag Playing → A=Ajanta M=Mughal R=Rajput P=Pahari → oldest to newest!"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CRITICAL RULE — NEVER SAY "MEMORY HINT" IN THE SCRIPT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+The phrase "Memory Hint" or "Memory Trick" must NEVER appear in telugu_text.
+It sounds robotic, breaks the natural tutor voice, and kills the flow.
+A real tutor never announces "I am now giving you a memory hint."
+They just GIVE IT naturally, like it is part of the explanation.
+
+Instead, introduce every memory connection using one of these NATURAL FILLER WORDS:
+
+  "dinni simple ga"
+  "ela gurtu pettukovalantey —"
+  "easy ga gurtupettukovataniki —"
+  "best trick entantey —"
+  "oka simple connection chudandi —"
+  "oka fun way lo చెప్పాలంటే —"
+  "simple గా link పెట్టుకోవాలంటే —"
+  "ఇది mind లో fix అవ్వాలంటే —"
+  "ఇక్కడ ఒక connection ఉంది —"
+  "దీన్ని lock చేయాలంటే —"
+
+BAD — awkward, robotic, DO NOT USE:
+  "Memory hint — AMRP — A Morning Raag Playing..."
+  "Memory trick గా గుర్తుంచుకోండి..."
+  "ఇప్పుడు memory hint చెప్తాను..."
+  "Memory hint: Article 21 = 21st birthday..."
+
+GOOD — natural, warm, DO USE:
+  "ela gurtu పెట్టుకోవాలంటే — 42 degrees fever అనుకో — 42nd Amendment, Emergency, 1976!"
+  "best trick entantey — BRO wrote the Constitution — B.R. Ambedkar — never forget!"
+  "dinni simple ga — Article 21, 21st birthday = life's biggest day = Right to Life!"
+  "oka fun way lo చెప్పాలంటే — 6th Schedule, aaru, aaravadhu — tribal areas tell outsiders
+   to keep quiet about their governance — their land, their rules!"
 
 WHEN TO USE MEMORY HINTS:
 - Number / date / name is genuinely hard to remember
-- Skip when the fact is already simple/memorable
-- NEVER generate a forced or confusing hint
+- Skip entirely when the fact is already simple or self-explanatory
+- NEVER generate a forced or confusing hint — if the connection is not instant, skip it
+- ALWAYS introduce with a natural filler word — NEVER use the phrase "Memory Hint"
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 STRICT RULES FOR ALL MODES
@@ -604,47 +785,41 @@ _SYSTEM_PDF = (
 # ============================================================
 
 def strip_emojis(text: str) -> str:
-    """
-    Remove all emoji / pictograph Unicode characters from text.
-    This is a hard safety net — the system prompt also instructs the AI
-    to produce zero emojis, but this ensures it at parse time.
-    Only applies to telugu_text; slide_prompt is left untouched.
-    """
     emoji_pattern = re.compile(
         "["
-        "\U0001F1E0-\U0001F1FF"   # flags
-        "\U0001F300-\U0001F5FF"   # symbols & pictographs
-        "\U0001F600-\U0001F64F"   # emoticons
-        "\U0001F680-\U0001F6FF"   # transport & map
-        "\U0001F700-\U0001F77F"   # alchemical symbols
-        "\U0001F780-\U0001F7FF"   # geometric shapes extended
-        "\U0001F800-\U0001F8FF"   # supplemental arrows-c
-        "\U0001F900-\U0001F9FF"   # supplemental symbols
-        "\U0001FA00-\U0001FA6F"   # chess symbols
-        "\U0001FA70-\U0001FAFF"   # symbols extended-a
-        "\u2600-\u26FF"           # misc symbols
-        "\u2700-\u27BF"           # dingbats
-        "\uFE0F"                  # variation selector-16
-        "\u200D"                  # zero-width joiner
-        "\u23CF"                  # eject symbol
-        "\u23E9-\u23F3"           # clock/timer symbols
-        "\u231A-\u231B"           # watch symbols
-        "\u25AA-\u25FE"           # geometric shapes
-        "\u2614-\u2615"           # umbrella/coffee
-        "\u2648-\u2653"           # zodiac
-        "\u267F"                  # wheelchair
-        "\u2693"                  # anchor
-        "\u26A1"                  # lightning
-        "\u26AA-\u26AB"           # circles
-        "\u26BD-\u26BE"           # soccer/baseball
-        "\u26C4-\u26C5"           # snowman/sun
-        "\u26CE"                  # ophiuchus
-        "\u26D4"                  # no entry
-        "\u26EA"                  # church
-        "\u26F2-\u26F3"           # fountain/golf
-        "\u26F5"                  # sailboat
-        "\u26FA"                  # tent
-        "\u26FD"                  # fuel pump
+        "\U0001F1E0-\U0001F1FF"
+        "\U0001F300-\U0001F5FF"
+        "\U0001F600-\U0001F64F"
+        "\U0001F680-\U0001F6FF"
+        "\U0001F700-\U0001F77F"
+        "\U0001F780-\U0001F7FF"
+        "\U0001F800-\U0001F8FF"
+        "\U0001F900-\U0001F9FF"
+        "\U0001FA00-\U0001FA6F"
+        "\U0001FA70-\U0001FAFF"
+        "\u2600-\u26FF"
+        "\u2700-\u27BF"
+        "\uFE0F"
+        "\u200D"
+        "\u23CF"
+        "\u23E9-\u23F3"
+        "\u231A-\u231B"
+        "\u25AA-\u25FE"
+        "\u2614-\u2615"
+        "\u2648-\u2653"
+        "\u267F"
+        "\u2693"
+        "\u26A1"
+        "\u26AA-\u26AB"
+        "\u26BD-\u26BE"
+        "\u26C4-\u26C5"
+        "\u26CE"
+        "\u26D4"
+        "\u26EA"
+        "\u26F2-\u26F3"
+        "\u26F5"
+        "\u26FA"
+        "\u26FD"
         "]+",
         flags=re.UNICODE,
     )
@@ -652,17 +827,10 @@ def strip_emojis(text: str) -> str:
 
 
 # ============================================================
-# UTILITY — STORE NEW CHUNKS (sets widget session state too)
+# UTILITY — STORE NEW CHUNKS
 # ============================================================
 
 def store_new_chunks(parsed: list):
-    """
-    Stores newly generated/recovered chunks into session state.
-    - Strips emojis from telugu_text (ElevenLabs safety)
-    - Explicitly sets tv_i / sv_i session state keys so text areas
-      always show the latest generation, overriding any stale edits
-    - Clears SEO pack (stale for new generation)
-    """
     for i, c in enumerate(parsed):
         cleaned = strip_emojis(c.get("telugu_text", ""))
         c["telugu_text"] = cleaned
@@ -673,16 +841,10 @@ def store_new_chunks(parsed: list):
 
 
 # ============================================================
-# UTILITY — SYNC EDITS TO CHUNKS (reads widget state → export)
+# UTILITY — SYNC EDITS TO CHUNKS
 # ============================================================
 
 def sync_edits_to_chunks() -> list:
-    """
-    Builds an export-ready copy of chunks by reading the CURRENT
-    text area widget values (tv_i / sv_i) from session state.
-    This ensures whatever the user typed / edited in the UI is what
-    gets pushed to Google Sheets and downloaded — not the original AI output.
-    """
     chunks = st.session_state.chunks
     if not chunks:
         return []
@@ -699,7 +861,7 @@ def sync_edits_to_chunks() -> list:
 
 
 # ============================================================
-# PROMPT BUILDERS — all accept video_type now
+# PROMPT BUILDERS
 # ============================================================
 
 def _inject_counts(system: str, num_segs: int) -> str:
@@ -834,7 +996,6 @@ def build_regen_segment_prompt(
     instruction: str,
     num_segs: int,
 ) -> tuple:
-    """Build system + user prompts to regenerate a single segment."""
     vdna      = _DNA_GENERAL_VIDEO if video_type == "general" else _DNA_SUBJECTIVE_VIDEO
     is_first  = seg_idx == 0
     is_last   = seg_idx == len(chunks) - 1
@@ -873,7 +1034,6 @@ def build_regen_segment_prompt(
 # ============================================================
 
 def build_seo_prompt(topic: str, chunks: list, video_type: str) -> tuple:
-    """Build prompts to generate YouTube title + tags for the script."""
     preview = " ".join(
         c.get("telugu_text", "")[:180] for c in chunks[:3]
     )
@@ -909,195 +1069,370 @@ def build_seo_prompt(topic: str, chunks: list, video_type: str) -> tuple:
 
 
 # ============================================================
-# STUDY NOTES HTML GENERATOR — Beautiful PDF-ready export
+# STUDY NOTES HTML GENERATOR — REVISED
+# Clean English-only classroom notes. No Telugu. No metadata.
+# Header: just SKY Academy Classroom Notes + Topic.
 # ============================================================
 
 def generate_study_notes_html(topic: str, chunks: list, video_type: str) -> str:
     """
-    Generates a beautiful, SKY Academy branded HTML file.
-    User downloads -> opens in Chrome/Edge -> Ctrl+P -> Save as PDF.
-    Telugu fonts render perfectly via browser engine.
+    Generates clean SKY Academy classroom notes — English only, print-ready.
+    Header shows only: SKY Academy + Topic + 'Classroom Notes'.
+    No segment count, no word count, no STRATEGY/SUBJECT NOTES label.
+    Download -> open in Chrome/Edge -> Ctrl+P -> Save as PDF (~3 pages).
     """
-    # Color palettes per section (dark_color, light_bg, accent)
-    palettes = [
-        ("#1e3a8a", "#eff6ff", "#3b82f6"),   # blue
-        ("#7f1d1d", "#fef2f2", "#ef4444"),   # red
-        ("#14532d", "#f0fdf4", "#22c55e"),   # green
-        ("#7c2d12", "#fff7ed", "#f97316"),   # orange
-        ("#312e81", "#eef2ff", "#6366f1"),   # indigo
-        ("#701a75", "#fdf4ff", "#a855f7"),   # purple
-        ("#713f12", "#fefce8", "#eab308"),   # yellow-amber
-        ("#134e4a", "#f0fdfa", "#14b8a6"),   # teal
+
+    accent_colors = [
+        "#3b82f6",  # blue
+        "#ef4444",  # red
+        "#16a34a",  # green
+        "#f97316",  # orange
+        "#7c3aed",  # violet
+        "#0891b2",  # cyan
+        "#be185d",  # pink
+        "#b45309",  # amber
     ]
 
     sections_html = ""
     for i, chunk in enumerate(chunks):
-        slide = chunk.get("slide_prompt", "")
-        heading = f"Section {i + 1}"
+        slide   = chunk.get("slide_prompt", "")
+        heading = f"Topic {i + 1}"
         bullets = []
 
         for line in slide.strip().split("\n"):
             ln = line.strip()
             if not ln:
                 continue
-            if ln.lower().startswith("heading:"):
+            lo = ln.lower()
+            if lo.startswith("heading:"):
                 heading = ln[8:].strip()
-            elif ln.startswith(("•", "-", "*")) and not ln.lower().startswith("image prompt"):
-                b = ln.lstrip("•-* ").strip()
-                if b:
+            elif lo.startswith("image prompt") or lo.startswith("image:"):
+                continue
+            elif ln.startswith(("•", "-", "*", "–", "▪")):
+                b = ln.lstrip("•-*–▪ ").strip()
+                if b and not b.lower().startswith("image"):
                     bullets.append(b)
-            elif ":" not in ln and not ln.lower().startswith("image"):
-                # bare text line — might be a continuation bullet
-                if len(ln) > 4:
-                    bullets.append(ln)
 
-        dark, light, accent = palettes[i % len(palettes)]
-
-        bullet_items_html = "".join(
-            f'<li style="margin:7px 0;color:#1f2937;font-size:13.5px;'
-            f'line-height:1.65;font-family:Segoe UI,Arial Unicode MS,Arial,sans-serif">'
-            f'{b}</li>'
-            for b in bullets
-        )
+        color     = accent_colors[i % len(accent_colors)]
+        bullet_li = "".join(f"<li>{b}</li>" for b in bullets)
 
         sections_html += f"""
-        <div style="background:{light};border-left:5px solid {accent};
-                    border-radius:12px;padding:16px 20px;margin:14px 0;
-                    page-break-inside:avoid;box-shadow:0 2px 8px rgba(0,0,0,0.07)">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-                <span style="background:{dark};color:#fff;border-radius:50%;
-                             width:30px;height:30px;min-width:30px;
-                             display:inline-flex;align-items:center;justify-content:center;
-                             font-weight:800;font-size:13px">{i + 1}</span>
-                <h3 style="color:{dark};font-size:15px;font-weight:800;margin:0;
-                           font-family:Segoe UI,Arial Unicode MS,Arial,sans-serif;
-                           line-height:1.3">{heading}</h3>
-            </div>
-            {'<ul style="margin:0;padding-left:20px">' + bullet_items_html + '</ul>'
-              if bullet_items_html
-              else '<p style="color:#6b7280;font-size:12.5px;font-style:italic;margin:0">'
-                   'Refer to video for detailed explanation.</p>'}
-        </div>
-        """
+        <div class="ns" style="border-left-color:{color}">
+          <div class="ns-head">
+            <span class="ns-num" style="background:{color}">{i + 1}</span>
+            <span class="ns-title">{heading}</span>
+          </div>
+          {"<ul class='nb'>" + bullet_li + "</ul>"
+           if bullet_li
+           else "<p class='nb-empty'>Refer to video for detailed explanation.</p>"}
+          <div class="ann">
+            <div class="ann-label">My Notes</div>
+            <div class="ann-line"></div>
+            <div class="ann-line"></div>
+          </div>
+        </div>"""
 
-    vtype_label = "STRATEGY NOTES" if video_type == "general" else "SUBJECT NOTES"
-    vtype_color = "#f97316" if video_type == "general" else "#22c55e"
-    seg_count   = len(chunks)
-    total_words = sum(len(c.get("telugu_text", "").split()) for c in chunks)
-
-    html = f"""<!DOCTYPE html>
-<html lang="te">
+    return f"""<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SKY Academy — {topic} — Classroom Notes</title>
 <style>
-*{{margin:0;padding:0;box-sizing:border-box}}
-body{{font-family:'Segoe UI','Arial Unicode MS',Arial,sans-serif;
-      background:#e8eeff;padding:20px;color:#1f2937}}
-.wrap{{max-width:800px;margin:0 auto;background:#fff;border-radius:20px;
-        overflow:hidden;box-shadow:0 10px 50px rgba(0,0,0,0.18)}}
-@media print{{
-  body{{background:#fff;padding:0}}
-  .wrap{{box-shadow:none;border-radius:0;max-width:100%}}
-  .no-print{{display:none!important}}
-  @page{{margin:1.5cm}}
+*, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
+
+body {{
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #dde3f0;
+    padding: 20px;
+    color: #111;
+    font-size: 14px;
+}}
+
+.page {{
+    max-width: 800px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 6px 32px rgba(0,0,0,.15);
+}}
+
+/* ── HEADER ── */
+.hdr {{
+    background: linear-gradient(135deg, #020024 0%, #090979 50%, #00d4ff 100%);
+    padding: 30px 26px 26px;
+    text-align: center;
+}}
+.logo {{
+    font-size: 46px;
+    font-weight: 900;
+    letter-spacing: 10px;
+    line-height: 1;
+    margin-bottom: 3px;
+}}
+.ls {{ color: #FF6B6B; text-shadow: 0 0 18px rgba(255,107,107,.5); }}
+.lk {{ color: #FFE66D; text-shadow: 0 0 18px rgba(255,230,109,.5); }}
+.ly {{ color: #4ECDC4; text-shadow: 0 0 18px rgba(78,205,196,.5); }}
+.acad {{
+    color: rgba(255,255,255,.7);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+}}
+.tbox {{
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.28);
+    border-radius: 10px;
+    padding: 13px 22px;
+    display: inline-block;
+    max-width: 92%;
+}}
+.tlabel {{
+    color: rgba(255,255,255,.55);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}}
+.tname {{
+    color: #FFE66D;
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1.35;
+}}
+.nbadge {{
+    margin-top: 13px;
+    background: rgba(255,255,255,.16);
+    color: #fff;
+    border-radius: 20px;
+    padding: 4px 18px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    display: inline-block;
+    text-transform: uppercase;
+}}
+
+/* ── INTRO STRIP ── */
+.intro {{
+    background: #eff6ff;
+    padding: 9px 20px;
+    text-align: center;
+    font-size: 12px;
+    color: #1e40af;
+    border-bottom: 1px solid #bfdbfe;
+}}
+
+/* ── PRINT BUTTON ── */
+.pbtn-wrap {{
+    text-align: center;
+    padding: 14px 20px 6px;
+}}
+.pbtn {{
+    background: linear-gradient(135deg, #020024, #090979);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 30px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 14px rgba(9,9,121,.3);
+}}
+.phint {{
+    font-size: 11px;
+    color: #9ca3af;
+    margin-top: 5px;
+}}
+
+/* ── CONTENT ── */
+.body {{ padding: 14px 20px 20px; }}
+
+/* ── NOTE SECTION ── */
+.ns {{
+    background: #fafafa;
+    border: 1px solid #e5e7eb;
+    border-left: 4px solid;
+    border-radius: 8px;
+    margin-bottom: 14px;
+    overflow: hidden;
+    page-break-inside: avoid;
+}}
+.ns-head {{
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 12px;
+    background: rgba(0,0,0,.03);
+    border-bottom: 1px solid #e5e7eb;
+}}
+.ns-num {{
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}}
+.ns-title {{
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1.3;
+}}
+.nb {{
+    padding: 9px 12px 9px 32px;
+    list-style: disc;
+}}
+.nb li {{
+    font-size: 13px;
+    color: #374151;
+    line-height: 1.8;
+    margin-bottom: 2px;
+}}
+.nb li:last-child {{ margin-bottom: 0; }}
+.nb-empty {{
+    padding: 8px 12px;
+    font-size: 12px;
+    color: #9ca3af;
+    font-style: italic;
+}}
+
+/* ── ANNOTATION LINES ── */
+.ann {{
+    padding: 7px 12px 9px;
+    border-top: 1px dashed #e5e7eb;
+}}
+.ann-label {{
+    font-size: 9px;
+    color: #bbb;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}}
+.ann-line {{
+    height: 1px;
+    background: #ebebeb;
+    margin-bottom: 8px;
+}}
+
+/* ── TELEGRAM BOX ── */
+.tg {{
+    margin: 4px 20px 20px;
+    background: linear-gradient(to right, #eff6ff, #dbeafe);
+    border: 2px solid #3b82f6;
+    border-radius: 12px;
+    padding: 16px 20px;
+    text-align: center;
+}}
+.tg h4 {{
+    color: #1e40af;
+    font-size: 14px;
+    font-weight: 800;
+    margin-bottom: 7px;
+}}
+.tg p {{
+    color: #1e40af;
+    font-size: 12.5px;
+    line-height: 1.85;
+}}
+
+/* ── FOOTER ── */
+.ftr {{
+    background: linear-gradient(135deg, #020024, #090979);
+    padding: 13px 20px;
+    text-align: center;
+}}
+.flogo {{
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: 5px;
+    margin-bottom: 3px;
+}}
+.fsub {{
+    color: rgba(255,255,255,.45);
+    font-size: 9px;
+}}
+
+/* ── PRINT ── */
+@media print {{
+    body {{ background: #fff; padding: 0; }}
+    .page {{ box-shadow: none; border-radius: 0; max-width: 100%; }}
+    .pbtn-wrap, .tg {{ display: none !important; }}
+    .ns {{ break-inside: avoid; }}
+    @page {{ margin: 1.2cm 1.5cm; }}
 }}
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="page">
 
-  <!-- HEADER -->
-  <div style="background:linear-gradient(135deg,#020024 0%,#090979 45%,#00d4ff 100%);
-              padding:30px 28px 24px;text-align:center">
-    <div style="font-size:44px;font-weight:900;letter-spacing:10px;margin-bottom:3px;
-                line-height:1">
-      <span style="color:#FF6B6B;text-shadow:0 0 24px rgba(255,107,107,.55)">S</span>
-      <span style="color:#FFE66D;text-shadow:0 0 24px rgba(255,230,109,.55)">K</span>
-      <span style="color:#4ECDC4;text-shadow:0 0 24px rgba(78,205,196,.55)">Y</span>
+  <!-- HEADER — only SKY logo + topic + Classroom Notes label -->
+  <div class="hdr">
+    <div class="logo">
+      <span class="ls">S</span><span class="lk">K</span><span class="ly">Y</span>
     </div>
-    <div style="color:rgba(255,255,255,.85);font-size:10px;font-weight:800;
-                letter-spacing:5px;margin-bottom:18px">ACADEMY</div>
-    <div style="background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.32);
-                border-radius:12px;padding:12px 22px;display:inline-block;
-                max-width:90%">
-      <div style="color:#FFE66D;font-size:20px;font-weight:800;line-height:1.3">
-        {topic}
-      </div>
+    <div class="acad">Academy</div>
+    <div class="tbox">
+      <div class="tlabel">Classroom Notes</div>
+      <div class="tname">{topic}</div>
     </div>
-    <div style="margin-top:12px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
-      <span style="background:{vtype_color};color:#fff;border-radius:20px;
-                   padding:3px 16px;font-size:11px;font-weight:700;letter-spacing:1px">
-        {vtype_label}
-      </span>
-      <span style="background:rgba(255,255,255,.18);color:#fff;border-radius:20px;
-                   padding:3px 14px;font-size:11px;font-weight:600">
-        {seg_count} sections  |  ~{total_words} words
-      </span>
-    </div>
+    <div><span class="nbadge">Study Notes</span></div>
   </div>
 
   <!-- INTRO STRIP -->
-  <div style="background:linear-gradient(135deg,#eff6ff,#dbeafe);
-              padding:12px 22px;text-align:center;
-              font-size:13px;color:#1e40af;border-bottom:1px solid #bfdbfe">
-    <strong>Classroom Notes</strong> — Video చూసిన తర్వాత print చేసుకుని revision కి use చేయండి!
-    &nbsp;|&nbsp; <strong>SKY Academy Telugu Competitive Exam Preparation</strong>
+  <div class="intro">
+    Read these notes while watching the video for maximum retention
+    &nbsp;&middot;&nbsp;
+    <strong>SKY Academy Competitive Exam Preparation</strong>
   </div>
 
   <!-- PRINT BUTTON -->
-  <div class="no-print" style="text-align:center;padding:16px 22px 4px">
-    <button onclick="window.print()" style="
-      background:linear-gradient(135deg,#020024,#090979);color:#fff;
-      border:none;border-radius:10px;padding:11px 32px;font-size:14px;
-      font-weight:700;cursor:pointer;letter-spacing:1px;
-      box-shadow:0 4px 16px rgba(9,9,121,.35)">
-      Print / Save as PDF
-    </button>
-    <p style="font-size:11px;color:#6b7280;margin-top:7px">
-      Chrome or Edge recommended for best Telugu font rendering
-    </p>
+  <div class="pbtn-wrap">
+    <button class="pbtn" onclick="window.print()">Print / Save as PDF</button>
+    <p class="phint">Use Chrome or Edge for best results</p>
   </div>
 
-  <!-- CONTENT -->
-  <div style="padding:12px 22px 22px">
+  <!-- NOTES CONTENT -->
+  <div class="body">
     {sections_html}
   </div>
 
   <!-- TELEGRAM BOX -->
-  <div style="margin:0 22px 22px;background:linear-gradient(135deg,#eff6ff,#dbeafe);
-              border:2px solid #3b82f6;border-radius:14px;padding:18px 22px;
-              text-align:center">
-    <div style="font-size:26px;margin-bottom:8px">📱</div>
-    <h4 style="color:#1e40af;font-size:16px;font-weight:800;margin-bottom:8px">
-      SKY Academy Telegram Channel
-    </h4>
-    <p style="color:#1e40af;font-size:13.5px;line-height:1.75">
-      ఈ notes, daily PDFs, previous year questions, exam alerts —<br>
-      అన్నీ <strong>FREE</strong> గా Telegram channel లో available!<br>
-      Join చేసి మీ preparation ని next level కి తీసుకెళ్ళండి!
+  <div class="tg">
+    <h4>SKY Academy Telegram Channel</h4>
+    <p>
+      Free notes, daily PDFs, previous year questions and exam alerts —<br>
+      all available on the Telegram channel.<br>
+      Join and take your preparation to the next level!
     </p>
   </div>
 
   <!-- FOOTER -->
-  <div style="background:linear-gradient(135deg,#020024,#090979);
-              padding:16px 22px;text-align:center">
-    <div style="font-size:18px;font-weight:900;letter-spacing:5px;margin-bottom:4px">
+  <div class="ftr">
+    <div class="flogo">
       <span style="color:#FF6B6B">S</span>
       <span style="color:#FFE66D">K</span>
       <span style="color:#4ECDC4">Y</span>
     </div>
-    <div style="color:rgba(255,255,255,.6);font-size:10px">
-      SKY ACADEMY &nbsp;|&nbsp; Script Engine v3.1 &nbsp;|&nbsp; {vtype_label}
-      &nbsp;|&nbsp; Internal Tool
+    <div class="fsub">
+      SKY ACADEMY &nbsp;|&nbsp; Script Engine v3.1 &nbsp;|&nbsp; Internal Tool
     </div>
   </div>
 
 </div>
 </body>
 </html>"""
-    return html
 
 
 # ============================================================
@@ -1332,12 +1667,10 @@ def parse_segments(raw: str):
 
 
 def parse_single_segment(raw: str):
-    """Parse a single segment JSON object (for per-segment regen)."""
     cleaned = raw.strip()
     cleaned = re.sub(r"^```[a-zA-Z]*\s*\n?", "", cleaned)
     cleaned = re.sub(r"\n?```\s*$",          "", cleaned).strip()
 
-    # Try as object directly
     try:
         result = json.loads(cleaned)
         if isinstance(result, dict):
@@ -1347,7 +1680,6 @@ def parse_single_segment(raw: str):
     except Exception:
         pass
 
-    # Find JSON object
     m = re.search(r'\{[\s\S]*\}', cleaned)
     if m:
         try:
@@ -1360,7 +1692,6 @@ def parse_single_segment(raw: str):
 
 
 def parse_seo_json(raw: str):
-    """Parse SEO pack JSON response."""
     cleaned = raw.strip()
     cleaned = re.sub(r"^```[a-zA-Z]*\s*\n?", "", cleaned)
     cleaned = re.sub(r"\n?```\s*$",          "", cleaned).strip()
@@ -1384,13 +1715,6 @@ def parse_seo_json(raw: str):
 # ============================================================
 
 def push_to_gsheet(chunks: list, seo_title: str = "", seo_tags: str = ""):
-    """
-    Pushes synced chunks to Sheet1.
-    - A2:C = seg number, telugu_text, slide_prompt
-    - D2   = YouTube title (if SEO pack generated)
-    - E2   = YouTube tags  (if SEO pack generated)
-    - Preserves row-1 headers
-    """
     try:
         import gspread
         from google.oauth2.service_account import Credentials
@@ -1404,10 +1728,8 @@ def push_to_gsheet(chunks: list, seo_title: str = "", seo_tags: str = ""):
         sheet = gc.open_by_key(SHEET_ID)
         ws    = sheet.get_worksheet(0)
 
-        # Clear A2:E (segments + SEO columns)
         ws.batch_clear(["A2:E10000"])
 
-        # Write segments A2:C
         rows = [
             [
                 i + 1,
@@ -1418,7 +1740,6 @@ def push_to_gsheet(chunks: list, seo_title: str = "", seo_tags: str = ""):
         ]
         ws.update("A2", rows, value_input_option="RAW")
 
-        # Write SEO pack if available
         seo_msg = ""
         if seo_title.strip():
             ws.update("D2", [[seo_title.strip()]], value_input_option="RAW")
@@ -1607,12 +1928,11 @@ topic_input      = ""
 topic_hint_input = ""
 input_mode       = ""
 merge_mode_val   = "auto"
-video_type       = "subjective"   # default — overwritten below
+video_type       = "subjective"
 
 with left:
     st.markdown("## Script Input")
 
-    # ── VIDEO TYPE SELECTOR ────────────────────────────────
     st.markdown("### Video Type")
     vtype_label = st.radio(
         "Select video type",
@@ -1644,7 +1964,6 @@ with left:
 
     st.markdown("---")
 
-    # ── INPUT MODE ────────────────────────────────────────
     input_mode = st.radio(
         "What are you providing?",
         options=[
@@ -1882,7 +2201,6 @@ with left:
 if clear_btn:
     for _k, _v in _defaults.items():
         st.session_state[_k] = _v
-    # Also clear any widget states for old segments
     for _i in range(50):
         for _pfx in ["tv_", "sv_", "regen_instr_"]:
             if f"{_pfx}{_i}" in st.session_state:
@@ -2051,7 +2369,6 @@ with right:
         )
         st.markdown("")
 
-        # ── SEGMENT TABS ──────────────────────────────────
         tabs = st.tabs([f"▶ {i + 1}" for i in range(len(chunks))])
         for tab, chunk, idx in zip(tabs, chunks, range(len(chunks))):
             with tab:
@@ -2077,7 +2394,6 @@ with right:
                     label_visibility="collapsed",
                 )
 
-                # ── PER-SEGMENT REGENERATE ─────────────────
                 with st.expander(f"🔄 Redo Segment {idx + 1}", expanded=False):
                     st.markdown(
                         '<div class="regen-hint">Describe what to change — '
@@ -2131,9 +2447,7 @@ with right:
                                             new_chunk.get("telugu_text", "")
                                         )
                                         new_chunk["telugu_text"] = cleaned_tv
-                                        # Update chunks list
                                         st.session_state.chunks[idx] = new_chunk
-                                        # Update widget states so UI refreshes correctly
                                         st.session_state[f"tv_{idx}"] = cleaned_tv
                                         st.session_state[f"sv_{idx}"] = new_chunk.get("slide_prompt", "")
                                         st.success(f"Segment {idx + 1} regenerated!")
@@ -2147,7 +2461,6 @@ with right:
                                     _regen_status.empty()
                                     st.error(f"Regen error: {_exc}")
 
-        # ── FULL SCRIPT ───────────────────────────────────
         with st.expander("Full Script — Continuous Flow", expanded=False):
             full = "\n\n".join(
                 st.session_state.get(f"tv_{i}", c.get("telugu_text", ""))
@@ -2160,7 +2473,6 @@ with right:
 
         st.divider()
 
-        # ── SEO PACK ──────────────────────────────────────
         st.markdown("#### YouTube SEO Pack")
         st.markdown(
             '<div class="seo-box">'
@@ -2194,7 +2506,6 @@ with right:
                         seo_data = parse_seo_json(raw_seo)
                         if seo_data and isinstance(seo_data, dict):
                             st.session_state.seo_pack = seo_data
-                            # Pre-populate edit keys
                             st.session_state["seo_title_edit"] = seo_data.get("title", "")
                             st.session_state["seo_tags_edit"]  = seo_data.get("tags", "")
                             st.success("SEO Pack generated! Edit below before pushing to Sheets.")
@@ -2223,7 +2534,6 @@ with right:
 
         st.divider()
 
-        # ── DOWNLOADS + PUSH ──────────────────────────────
         _fname      = st.session_state.last_topic[:20].replace(" ", "_")
         synced_data = sync_edits_to_chunks()
 
@@ -2261,7 +2571,7 @@ with right:
                 file_name=f"sky_notes_{_fname}.html",
                 mime="text/html",
                 use_container_width=True,
-                help="Open in Chrome/Edge -> Ctrl+P -> Save as PDF. Telugu fonts render perfectly.",
+                help="Open in Chrome/Edge -> Ctrl+P -> Save as PDF.",
             )
 
         st.caption(
@@ -2302,7 +2612,7 @@ with right:
                 📌 <b>Topic</b> — Original script from any subject<br>
                 📝 <b>Multi-Transcript</b> — Upload competitor files -> merged SKY voice<br>
                 📚 <b>PDF</b> — Book content -> SKY voiceover with hook & memory hints<br>
-                📄 <b>Study Notes</b> — Beautiful branded HTML -> print as PDF -> Telegram
+                📄 <b>Study Notes</b> — Clean English HTML -> print as PDF -> Telegram
             </p>
         </div>
         """, unsafe_allow_html=True)
