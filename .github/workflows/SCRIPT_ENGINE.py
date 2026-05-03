@@ -429,8 +429,7 @@ Segment 1 MUST ALWAYS open with:
 
 ONE POWERFUL HOOK LINE — stops the student from scrolling.
 WELCOME LINE — immediately follows:
-   "[WARM, FRIENDLY — WELCOME] SKY Academy కి welcome friends! ఇక్కడ మీరు subject
-    నేర్చుకోవడమే కాదు — exam కి forever memorise అవుతారు. [Energetic] Let's start!"
+   "[WARM, FRIENDLY — WELCOME] Hello Everyone, Welcome to sky academy, where you not only learn the subect but memorise it for ever. [Energetic] Let's start!"
 Then flow DIRECTLY into content — no transition filler.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
