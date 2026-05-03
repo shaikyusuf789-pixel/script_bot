@@ -357,13 +357,21 @@ LANGUAGE STYLE:
 - Build suspense only when there's genuinely something to reveal
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-MEMORY HINTS — RICH EXAMPLES LIBRARY (SKY ACADEMY STYLE)
+MEMORY HINTS — MEMORY TRICK RULES — STRICT:RICH EXAMPLES LIBRARY (SKY ACADEMY STYLE)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 HOW SKY ACADEMY MEMORY HINTS WORK:
 The hint must be: OBVIOUS — CLEVER — IMPOSSIBLE TO FORGET.
 Student should laugh or say "oh wow, I will never forget this!"
 If you need to explain the hint, it is a BAD hint. Start over.
+- NEVER use abbreviation mnemonics (no BKKKOMMS, VIBGYOR-type tricks, zero letter shortcuts)
+- ONLY use WORD-ASSOCIATION and INTERLINKING:
+  * Find meaning INSIDE the word itself (Katha=story → Kathak from story-land UP)
+  * Link to geography/history naturally (Kuchipudi = village in AP = dance named after it)
+  * Chain connections like: Sattra→monastery→Assam→Sattriya
+  * Number links: 42 degree heat → 42nd Amendment style
+  * If no trick possible, — don't force abbreviations
+- Student must feel the CONNECTION, not memorize a random letter string
 
 POLITY / CONSTITUTION:
   "Fancy words = France" (Liberty, Equality, Fraternity -> French Revolution)
