@@ -166,10 +166,57 @@ st.markdown("""
 PAGEGRID_BASE_URL = "https://api.pagegrid.in"
 WORDS_PER_SEGMENT = 120
 
-SHEET_ID      = "1dNHDgkX6vhdhZSi5SavBgNihWe04zayRQwyMcCwNlOI"
-SCRIPTS_TAB   = "Scripts_bot"
-SHEET_HEADERS = ["Seg No.", "Telugu Text", "Slide Prompt",
-                 "Audio Url", "Slide Url", "Status", "Audio Done"]
+SHEET_ID = "1dNHDgkX6vhdhZSi5SavBgNihWe04zayRQwyMcCwNlOI"
+
+# ──────────────────────────────────────────────────────────
+# HARDCODED GOOGLE SERVICE ACCOUNT CREDENTIALS
+# ⚠️  Keep this file PRIVATE — never commit to Git or share
+# ──────────────────────────────────────────────────────────
+_HARDCODED_CREDS = {
+    "type": "service_account",
+    "project_id": "gen-lang-client-0268678328",
+    "private_key_id": "06350e4cf0251abf195e1ad49cc5eaf5827ba5ca",
+    "private_key": (
+        "-----BEGIN PRIVATE KEY-----\n"
+        "MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCkxNptNHDP8qKi\n"
+        "JSqkGbx3SvgY1gnlUoKGzJoldMYvVb6Yw4j7fg/+G5h9P0ze2GtFFD97A7yaUsk0\n"
+        "VaH4ODeB5cf414QYP4WU3FoyvgcefkAlGANcZEOt+Enb3K+hhd1bJjfqFXiBO9QT\n"
+        "AmsORofIwKJUhdt4+it/4XlC+ADJFd/JKvWLvGUK0p6Aqaz9cgftXoBybF7nTelE\n"
+        "j1BofII0hKZ3jrV767SJ7k6qXNVZRydMQY4cqua/8yuVpkM6ALiJZF8/n9Q317y3\n"
+        "/DOKgHV4SMno2jf/8MvnIwQExJH5uv0TWo+iFxQ794J0ytpz+Pya83gYFX2eIo6Z\n"
+        "gnBnpUnXAgMBAAECggEACN/5i+xJL0o4bFdoJpKkTiChoGTW/50kHrKikuXpTt9l\n"
+        "dsEBfdpabit6WTSxpUcu7/eZO70FyaIv6Du8j6wngT2pOcQR/2Rcg5oi2ZzWsVPH\n"
+        "jLfwZmeYJaS8BbWrWB3nwGMcm+UwKnXYhHWa4pf19GA73iWfnrKK6UZxy6OkFzCa\n"
+        "QyCHEjjNTG/8oCSz5caUCef7IfmaFqu/sg7A2cTekYyltDdYEmWUOx+9nCzvD/KQ\n"
+        "wPqkn6jxWuZ2+Ec9+gUuISHpc9G248Rgi97LCufh0JI4NV+zNMG0bEtwz0IpL9sA\n"
+        "Q76OoxcdIFoNJSSrUx/F+Ut7hnYJ/1zbH4oPa1CjIQKBgQDbPLgiYeR96nZ24DjI\n"
+        "mDVNyhZTauIBbSZR7/u5jI3P5VLLMbfW93hkBQ/3P0IIIJDJIzoHOOnTnNn3KhJE\n"
+        "seLjwg9djJKtAtjIWKOXiiOUz/gHnuLnfnmwyKtQnbASfVEjo5AUifVMF90/VkSE\n"
+        "elHw6iPA/tE06f9Bm0V9QzaIGQKBgQDAZfR6fPZAYfiUG+u9fUeeZkpGtIXdPWTF\n"
+        "wg0RrBa0Kh7o/T35OVgAQnDtG7odE3akrxenytacyzc87IFpC+BSgf+t4mVJnqPY\n"
+        "XH5BFORLhVuUoUnNNYq/BF6sY9GZ4e35b+Baxn25GGntT/9pkihYDPPql8Z/t9jb\n"
+        "1NCttldfbwKBgEMWvqZO3JQnpp7UGKxR36XxXImkYIrdMufKD3cFavQekgp6KW7Q\n"
+        "BfhdkDgyFGvWQ1g5vm0tXmiSTCUVq8d3xB28aeVPuibVgy8z6MPb0u2cAqOaXIdI\n"
+        "rcaKcdpWluXhkW3dhJ60ZOsnNl5GcOs1X1Pg4pYRpEWUAbe64zXk1pApAoGBALx2\n"
+        "4r3djMbScVJ76zeJ8c7a+mU6TmrCyeThyjWGchL3s6Gc98ka//X5H29UGsKCn1SA\n"
+        "Y1as3f9nHOvj7Hw+8vU/fHoTbA5qhKrbJ52O3naP4n68Y3PNv+SPXkHV4aqwYpFV\n"
+        "otqo1tyqapDZLSN31WczAPfKxtmy+I2WcPfIxtunAoGBAIVXg/TVXY7KZL/ZLVHx\n"
+        "AP2rq/12zXeuUiC13MpZ6RtbiWfNwiPd2HjCNpwjyAxuLjPTTqYUVFZKaKhgvB8/\n"
+        "IUQmz1dnM8mdB27jLzjchPSeJFH6yZQKklJqbtopwN557j3vyFIrcxNQJcgpj9UD\n"
+        "VyLML2CO4hHr3eoKQ+BNmZj6\n"
+        "-----END PRIVATE KEY-----\n"
+    ),
+    "client_email": "forscripting@gen-lang-client-0268678328.iam.gserviceaccount.com",
+    "client_id": "110013612770034478540",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": (
+        "https://www.googleapis.com/robot/v1/metadata/x509/"
+        "forscripting%40gen-lang-client-0268678328.iam.gserviceaccount.com"
+    ),
+    "universe_domain": "googleapis.com",
+}
 
 MODEL_OPTIONS = {
     "☁️  Claude  (via PageGrid)": [
@@ -605,7 +652,6 @@ def extract_any_file(file_bytes: bytes, filename: str):
 def call_claude_pagegrid(
     api_key: str, model: str, system: str, user: str, progress_cb=None
 ) -> str:
-    """Stream via Anthropic SDK — keeps connection alive, prevents 524."""
     import anthropic
     if not api_key.startswith("sk-pgrid-"):
         raise ValueError(
@@ -634,7 +680,6 @@ def call_claude_pagegrid(
 def call_openai(
     api_key: str, model: str, system: str, user: str, progress_cb=None
 ) -> str:
-    """Stream via OpenAI SDK (reasoning models fall back to non-stream)."""
     import openai
     client       = openai.OpenAI(api_key=api_key, timeout=300.0)
     is_reasoning = model.startswith("o1") or model.startswith("o3")
@@ -667,7 +712,6 @@ def call_openai(
 def call_gemini(
     api_key: str, model: str, system: str, user: str, progress_cb=None
 ) -> str:
-    """Stream via Google Generative AI SDK."""
     import google.generativeai as genai
     genai.configure(api_key=api_key)
     m    = genai.GenerativeModel(model_name=model, system_instruction=system)
@@ -714,20 +758,14 @@ def run_generation(
 # ============================================================
 
 def parse_segments(raw: str):
-    """
-    Robust parser — handles all AI response wrapping formats.
-    Tries multiple extraction strategies before giving up.
-    """
     if not raw or not raw.strip():
         return None
 
-    # STEP 1: strip markdown fences (opening AND closing)
     cleaned = raw.strip()
     cleaned = re.sub(r"^```[a-zA-Z]*\s*\n?", "", cleaned)
     cleaned = re.sub(r"\n?```\s*$",          "", cleaned)
     cleaned = cleaned.strip()
 
-    # STEP 2: direct parse
     try:
         result = json.loads(cleaned)
         if isinstance(result, list) and result:
@@ -735,7 +773,6 @@ def parse_segments(raw: str):
     except json.JSONDecodeError:
         pass
 
-    # STEP 3: extract [ ... ] by finding outermost brackets
     start = cleaned.find("[")
     end   = cleaned.rfind("]")
     if start != -1 and end > start:
@@ -746,7 +783,6 @@ def parse_segments(raw: str):
         except json.JSONDecodeError:
             pass
 
-    # STEP 4: fallback — try on original raw string
     for attempt in (raw, re.sub(r"```(?:json)?", "", raw).strip()):
         try:
             result = json.loads(attempt)
@@ -767,40 +803,51 @@ def parse_segments(raw: str):
 
 
 # ============================================================
-# GOOGLE SHEETS
+# GOOGLE SHEETS  — updated: Sheet1, A:C only, overwrite
 # ============================================================
 
-def push_to_gsheet(chunks: list, creds_json_str: str):
+def push_to_gsheet(chunks: list):
+    """
+    Pushes chunks to the FIRST worksheet (Sheet1) of the target Google Sheet.
+    • Clears A2:C downward (preserves row-1 headers)
+    • Writes: A = seg number, B = telugu_text, C = slide_prompt
+    • Uses hardcoded service-account credentials — no sidebar input needed
+    """
     try:
         import gspread
         from google.oauth2.service_account import Credentials
-        creds_data = json.loads(creds_json_str)
-        scopes     = [
+
+        scopes = [
             "https://spreadsheets.google.com/feeds",
             "https://www.googleapis.com/auth/drive",
         ]
-        creds = Credentials.from_service_account_info(creds_data, scopes=scopes)
+        creds = Credentials.from_service_account_info(_HARDCODED_CREDS, scopes=scopes)
         gc    = gspread.authorize(creds)
         sheet = gc.open_by_key(SHEET_ID)
-        try:
-            ws = sheet.worksheet(SCRIPTS_TAB)
-        except gspread.WorksheetNotFound:
-            ws = sheet.add_worksheet(SCRIPTS_TAB, rows=500, cols=10)
-        existing = ws.get_all_values()
-        if not existing or existing[0] != SHEET_HEADERS:
-            ws.insert_row(SHEET_HEADERS, 1)
-        col_a    = ws.col_values(1)
-        next_row = len(col_a) + 1
-        rows_to_add = [
-            [i + 1, c.get("telugu_text", ""), c.get("slide_prompt", ""),
-             "", "", "pending", "no"]
+
+        # ── Always target the FIRST tab (Sheet1), whatever it's named
+        ws = sheet.get_worksheet(0)
+
+        # ── Step 1: clear A2:C (all rows from 2 onwards, columns A B C only)
+        ws.batch_clear(["A2:C10000"])
+
+        # ── Step 2: write fresh data
+        rows = [
+            [
+                i + 1,                          # A — chunk / segment number
+                c.get("telugu_text", ""),        # B — voiceover script
+                c.get("slide_prompt", ""),       # C — slide prompt
+            ]
             for i, c in enumerate(chunks)
         ]
-        ws.append_rows(rows_to_add, value_input_option="RAW")
+        ws.update("A2", rows, value_input_option="RAW")
+
+        last_row = 1 + len(rows)
         return True, (
-            f"✅ {len(rows_to_add)} segments pushed to **{SCRIPTS_TAB}** "
-            f"(rows {next_row}–{next_row + len(rows_to_add) - 1})"
+            f"✅ {len(rows)} segments written to **Sheet1** "
+            f"(A2 : C{last_row}) — previous data cleared."
         )
+
     except Exception as exc:
         return False, f"❌ Sheets error: {exc}"
 
@@ -851,11 +898,10 @@ def _handle_api_error(exc: Exception, model_choice: str):
 
 
 # ============================================================
-# MANUAL RECOVERY WIDGET — reusable helper
+# MANUAL RECOVERY WIDGET
 # ============================================================
 
 def _show_manual_recovery(display_topic: str, display_source: str):
-    """Renders the manual JSON recovery UI after a parse failure."""
     st.markdown("#### 🛠️ Manual Recovery")
     st.caption(
         "The script was generated but JSON parsing failed. "
@@ -902,7 +948,7 @@ for _k, _v in _defaults.items():
 
 
 # ============================================================
-# SIDEBAR
+# SIDEBAR  — credentials section removed (now hardcoded)
 # ============================================================
 with st.sidebar:
     st.markdown("## ⚙️ Configuration")
@@ -951,37 +997,23 @@ with st.sidebar:
         )
 
     st.divider()
-    st.markdown("### 📊 Google Sheets Credentials")
-    st.caption("Needed only for Push to Sheets. Service Account JSON.")
-    creds_option = st.radio(
-        "Credentials input", ["Upload JSON file", "Paste JSON text"], horizontal=True
-    )
-    gsheet_creds_str = ""
-    if creds_option == "Upload JSON file":
-        _up = st.file_uploader("Service Account JSON", type=["json"])
-        if _up:
-            gsheet_creds_str = _up.read().decode("utf-8")
-            st.success("✅ Credentials loaded")
-    else:
-        _paste = st.text_area(
-            "Paste JSON here", height=100,
-            placeholder='{"type": "service_account", ...}',
-        )
-        if _paste.strip():
-            try:
-                json.loads(_paste)
-                gsheet_creds_str = _paste
-                st.success("✅ Valid JSON")
-            except Exception:
-                st.error("❌ Invalid JSON")
 
-    st.divider()
-    st.caption("SCRIPT ENGINE v3.0 · SKY Academy Internal Tool")
-    st.caption(f"Each segment ≈ {WORDS_PER_SEGMENT} words ≈ ~55 sec speech")
+    # ── Sheets status indicator (no input needed — creds are hardcoded)
+    st.markdown("### 📊 Google Sheets")
+    st.success(
+        "✅ Service account loaded\n\n"
+        "**forscripting@gen-lang-client…**\n\n"
+        "Push to Sheets is always ready — no paste needed.",
+        icon="🔑",
+    )
     st.caption(
         f"[🔗 Open Target Sheet]"
         f"(https://docs.google.com/spreadsheets/d/{SHEET_ID}/edit)"
     )
+
+    st.divider()
+    st.caption("SCRIPT ENGINE v3.0 · SKY Academy Internal Tool")
+    st.caption(f"Each segment ≈ {WORDS_PER_SEGMENT} words ≈ ~55 sec speech")
 
 
 # ============================================================
@@ -1445,19 +1477,16 @@ with right:
                 use_container_width=True,
             )
         with bc:
-            push_disabled = not bool(gsheet_creds_str.strip())
+            # Push to Sheets — always enabled, credentials are hardcoded
             push_btn = st.button(
                 "📤 Push to Sheets",
-                disabled=push_disabled,
                 use_container_width=True,
                 type="primary",
             )
-            if push_disabled:
-                st.caption("⚠️ Add Google creds in sidebar")
 
-        if push_btn and gsheet_creds_str:
-            with st.spinner("📤 Writing to Scripts_bot tab…"):
-                ok, msg = push_to_gsheet(chunks, gsheet_creds_str)
+        if push_btn:
+            with st.spinner("📤 Clearing old data and writing to Sheet1…"):
+                ok, msg = push_to_gsheet(chunks)
             if ok:
                 st.success(msg)
                 st.markdown(
