@@ -2250,10 +2250,10 @@ if gen_btn:
                     num_segs, special_instructions, merge_mode_val,
                     video_type,
                 )
-                display_topic  = (
-                    topic_hint_input.strip()[:60]
-                    or f"{len(safe_transcripts)} Transcript(s)"
-                )
+             display_topic  = (
+    topic_hint_input.strip()[:60]
+    or "Always_With_You"
+)
                 display_source = "📝 Transcript → SKY"
 
                 raw = run_generation(
