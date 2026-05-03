@@ -1,4 +1,4 @@
-# ============================================================
+# ===========================================================
 # SCRIPT_ENGINE.py — SKY Academy Video Script Generator v3.1
 # Three Input Modes: Topic | Multi-Transcript Merge | Book PDF
 # Video Types: General (Strategy/Motivation) | Subjective (Deep Teaching)
