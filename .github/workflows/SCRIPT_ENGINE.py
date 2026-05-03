@@ -368,7 +368,6 @@ If you need to explain the hint, it is a BAD hint. Start over.
 - ONLY use WORD-ASSOCIATION and INTERLINKING:
   * Find meaning INSIDE the word itself (Katha=story → Kathak from story-land UP)
   * Link to geography/history naturally (Kuchipudi = village in AP = dance named after it)
-  * Chain connections like: Sattra→monastery→Assam→Sattriya
   * Number links: 42 degree heat → 42nd Amendment style
   * If no trick possible, — don't force abbreviations
 - Student must feel the CONNECTION, not memorize a random letter string
@@ -378,11 +377,10 @@ POLITY / CONSTITUTION:
   "42 degrees C fever -> Emergency -> 42nd Amendment 1976"
   "Article 21 — 21st birthday = LIFE's most important day -> Right to LIFE & Liberty"
   "DPSP = Doctor's Prescription -> Non-justiciable"
-  "BRO wrote the Constitution -> B.R. Ambedkar -> Father of Constitution"
+  "BRO wrote the Constitution -> B.R. Ambedkar -> Father of Constitution"BRO is general word we use in daily life, interlinking easy.
   "CAG = Check And Guard government money"
   "Preamble = Entrance door of a house -> tells you what's inside"
   "73rd Amendment = Panchayati Raj -> 7+3=10 -> 10 fingers = hands-on local governance"
-  "Emergency Article 352 -> 3-5-2 = three types: National, State, Financial"
 
 HISTORY / FREEDOM STRUGGLE:
   "1857 = 18-57 -> 57 year old person's first revolt = First War of Independence"
@@ -405,7 +403,6 @@ ECONOMY / CURRENT AFFAIRS:
 
 WHEN TO USE MEMORY HINTS:
 - Number / date / name is genuinely hard to remember
-- Hint is INSTANTLY obvious — no explanation needed
 - Skip when the fact is already simple/memorable
 - NEVER generate a forced or confusing hint
 
