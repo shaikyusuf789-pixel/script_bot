@@ -734,6 +734,76 @@ STRICT RULES FOR ALL MODES
 7. ZERO emojis in telugu_text -- this is a hard technical requirement for TTS
 8. ALL numbers written as words -- this is a hard technical requirement for TTS
 """
+TELUGU_TTS_MASTER_PROMPT = """
+================================================================
+తెలుగు వాయిస్ అవుట్‌పుట్ – అత్యంత ముఖ్యమైన నియమాలు
+================================================================
+
+అన్ని వాయిస్ టెక్స్ట్ పూర్తిగా తెలుగు లిపిలోనే ఉండాలి. ఇంగ్లీష్ లిపి వాడకూడదు (technical words తప్ప).
+
+ఒత్తులు (consonant stress) స్పష్టంగా వినిపించేలా ఉచ్చారణ చేయాలి:
+
+చ = చ (cha)  
+ఛ = ఛ (chha – గట్టిగా)  
+ట = ట (ta)  
+ఠ = ఠ (tha – గట్టిగా)  
+ద = ద (da)  
+ధ = ధ (dha – గట్టిగా)  
+
+ద్ద, క్క, ప్ప, త్త, మ్మ వంటి ద్విత్వాక్షరాలు (ottulu) స్పష్టంగా స్ట్రెస్ తో పలకాలి.
+
+క్ష = క్ష (kshha స్పష్టంగా)  
+జ్ఞ = జ్ఞ (gya లాగా స్పష్టంగా)
+
+ఉచ్చారణ క్లారిటీ కోసం అవసరమైతే అంతర్గతంగా phonetic అర్థం చేసుకుని మాట్లాడాలి కానీ output మాత్రం సహజ తెలుగు లాగ ఉండాలి.
+
+================================================================
+వాయిస్ స్టైల్
+================================================================
+
+- ఒక టీచర్ క్లాస్‌లో చెప్పినట్టు నెమ్మదిగా, క్లియర్‌గా మాట్లాడాలి  
+- ప్రతి 1 లేదా 2 లైన్స్‌కి ఒక emotion tag ఉండాలి  
+
+ఉదాహరణలు:
+[Energetic]  
+[Serious]  
+[Calm, Instructional]  
+[WARM, FRIENDLY -- WELCOME]  
+
+- మాటల్లో natural pause, emphasis ఉండాలి  
+- robotic style పూర్తిగా avoid చేయాలి  
+
+================================================================
+పంక్చుయేషన్ & ఫ్లో
+================================================================
+
+- -- (double dash) ఉపయోగించి natural pauses ఇవ్వాలి  
+- ప్రశ్నలు → వెంటనే సమాధానం ఇవ్వాలి  
+- ప్రతి లైన్ meaningful గా ఉండాలి  
+
+================================================================
+ఇమేజ్ ప్రాంప్ట్ (VERY IMPORTANT)
+================================================================
+
+ప్రతి slide_prompt లో:
+
+- సాధారణ bullet points కాకుండా  
+- concept ని visualize చేసేలా cinematic / illusion style image prompt ఇవ్వాలి  
+
+Example:
+"ఒక విద్యార్థి గందరగోళంగా books మధ్యలో నిలబడి ఉన్నాడు, వెనుక భాగంలో Art & Culture icons glowing గా కనిపిస్తున్నాయి"
+
+Student వినేటప్పుడు image imagine చేసుకునేలా ఉండాలి.
+
+================================================================
+FINAL GOAL
+================================================================
+
+Output వినిపించేప్పుడు:
+- Telugu natural speaker లా ఉండాలి  
+- ఒత్తులు స్పష్టంగా వినిపించాలి  
+- Emotional + engaging teaching feel రావాలి  
+"""
 
 _OUTPUT_FORMAT = """
 ================================================================
@@ -885,7 +955,7 @@ def _inject_counts(system: str, num_segs: int) -> str:
 
 def build_prompts_topic(topic, num_segs, special_instructions, video_type="subjective"):
     vdna   = _DNA_GENERAL_VIDEO if video_type == "general" else _DNA_SUBJECTIVE_VIDEO
-    system = _inject_counts(_SYSTEM_TOPIC + "\n\n" + vdna, num_segs)
+    system = _inject_counts(_SYSTEM_TOPIC + "\n\n" + TELUGU_TTS_MASTER_PROMPT + "\n\n" + vdna, num_segs)
     si     = f"\nSpecial Instructions:\n{special_instructions.strip()}" if special_instructions.strip() else ""
     user   = (
         f"Generate a complete SKY Academy Telugu video script on:\n\n"
@@ -905,7 +975,7 @@ def build_prompts_topic(topic, num_segs, special_instructions, video_type="subje
 def build_prompts_multi_transcript(transcripts, topic_hint, num_segs,
                                    special_instructions, merge_mode="auto", video_type="subjective"):
     vdna   = _DNA_GENERAL_VIDEO if video_type == "general" else _DNA_SUBJECTIVE_VIDEO
-    system = _inject_counts(_SYSTEM_TRANSCRIPT + "\n\n" + vdna, num_segs)
+    system = _inject_counts(_SYSTEM_TRANSCRIPT + "\n\n" + TELUGU_TTS_MASTER_PROMPT + "\n\n" + vdna, num_segs)
     n      = len(transcripts)
     merge_guide = {
         "auto":          "AUTO-DETECT the relationship and apply CASE A/B/C.",
@@ -932,7 +1002,7 @@ def build_prompts_multi_transcript(transcripts, topic_hint, num_segs,
 
 def build_prompts_pdf(pdf_text, topic_hint, num_segs, special_instructions, video_type="subjective"):
     vdna   = _DNA_GENERAL_VIDEO if video_type == "general" else _DNA_SUBJECTIVE_VIDEO
-    system = _inject_counts(_SYSTEM_PDF + "\n\n" + vdna, num_segs)
+    system = _inject_counts(_SYSTEM_PDF + "\n\n" + TELUGU_TTS_MASTER_PROMPT + "\n\n" + vdna, num_segs)
     hint   = f"\n**Topic/Chapter context:** {topic_hint.strip()}" if topic_hint.strip() else ""
     si     = f"\nSpecial Instructions:\n{special_instructions.strip()}" if special_instructions.strip() else ""
     user   = (
