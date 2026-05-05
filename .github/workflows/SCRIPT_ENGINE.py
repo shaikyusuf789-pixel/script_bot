@@ -4,7 +4,7 @@
 # Three Input Modes: Topic | Multi-Transcript Merge | Book PDF
 # Video Types: General (Strategy/Motivation) | Subjective (Deep Teaching)
 # v3.2: AI Handout Generator · Fixed Headers · Rich Print-Ready PDFs
-# Bug Fixes: Indent error · Zero emojis in TTS · Edited text syncs
+# Bug Fixes: Live Stream Preview · Robust JSON Parsing · max_tokens 16000
 # SKY Academy Internal Tool
 # ============================================================
 
@@ -72,6 +72,19 @@ st.markdown("""
     .stream-progress { background:linear-gradient(to right,#eff6ff,#dbeafe);
         border-left:4px solid #3b82f6; padding:10px 16px;
         border-radius:0 10px 10px 0; font-size:0.84rem; color:#1e40af; margin:8px 0; }
+    .live-stream-box {
+        background: linear-gradient(135deg, #0f0c29 0%, #302b63 60%, #24243e 100%);
+        border: 2px solid rgba(167,139,250,0.5);
+        border-radius: 14px; padding: 18px 20px; margin: 10px 0 16px 0;
+        box-shadow: 0 6px 32px rgba(120,0,255,0.25);
+    }
+    .live-stream-title {
+        color: #e9d5ff; font-size: 0.85rem; font-weight: 800;
+        letter-spacing: 3px; text-transform: uppercase; margin-bottom: 10px;
+    }
+    .live-stream-hint {
+        color: #a78bfa; font-size: 0.75rem; margin-bottom: 10px; font-style: italic;
+    }
     .empty-preview { background:linear-gradient(135deg,#f8faff,#f0f2f6);
         border:2px dashed #c7d2fe; border-radius:16px; padding:60px 20px;
         text-align:center; color:#6366f1; }
@@ -104,6 +117,9 @@ st.markdown("""
         border-radius: 8px; padding: 10px 14px; font-size: 0.8rem;
         color: #c4b5fd; margin-bottom: 14px;
     }
+    .parse-warn { background:linear-gradient(to right,#fff7ed,#ffedd5);
+        border-left:5px solid #f97316; padding:10px 14px;
+        border-radius:0 10px 10px 0; font-size:0.82rem; color:#7c2d12; margin:8px 0; }
     .stButton > button[kind="primary"] {
         background: linear-gradient(135deg,#302b63,#0f0c29) !important;
         color:white !important; border:none !important;
@@ -734,75 +750,34 @@ STRICT RULES FOR ALL MODES
 7. ZERO emojis in telugu_text -- this is a hard technical requirement for TTS
 8. ALL numbers written as words -- this is a hard technical requirement for TTS
 """
+
 TELUGU_TTS_MASTER_PROMPT = """
 ================================================================
-తెలుగు వాయిస్ అవుట్‌పుట్ – అత్యంత ముఖ్యమైన నియమాలు
+Telugu Voice Output -- Critical Rules
 ================================================================
 
-అన్ని వాయిస్ టెక్స్ట్ పూర్తిగా తెలుగు లిపిలోనే ఉండాలి. ఇంగ్లీష్ లిపి వాడకూడదు (technical words తప్ప).
+All voice text must be in Telugu script only. Do not use English script except for technical terms.
 
-ఒత్తులు (consonant stress) స్పష్టంగా వినిపించేలా ఉచ్చారణ చేయాలి:
+Consonant stress must be clear:
+cha (చ), chha (ఛ -- hard), ta (ట), tha (ఠ -- hard), da (ద), dha (ధ -- hard)
+Double consonants (ottulu) like dd, kk, pp, tt, mm must be stressed clearly.
+ksha (క్ష) and gya (జ్ఞ) must be pronounced clearly.
 
-చ = చ (cha)  
-ఛ = ఛ (chha – గట్టిగా)  
-ట = ట (ta)  
-ఠ = ఠ (tha – గట్టిగా)  
-ద = ద (da)  
-ధ = ధ (dha – గట్టిగా)  
+Voice Style:
+- Speak like a teacher in a classroom -- slow, clear
+- Use one emotion tag per one or two lines: [Energetic] [Serious] [Calm, Instructional] [WARM, FRIENDLY -- WELCOME]
+- Natural pauses, emphasis, no robotic style
 
-ద్ద, క్క, ప్ప, త్త, మ్మ వంటి ద్విత్వాక్షరాలు (ottulu) స్పష్టంగా స్ట్రెస్ తో పలకాలి.
+Punctuation and Flow:
+- Use -- (double dash) for natural pauses
+- Questions must be answered immediately
+- Every line must be meaningful
 
-క్ష = క్ష (kshha స్పష్టంగా)  
-జ్ఞ = జ్ఞ (gya లాగా స్పష్టంగా)
-
-ఉచ్చారణ క్లారిటీ కోసం అవసరమైతే అంతర్గతంగా phonetic అర్థం చేసుకుని మాట్లాడాలి కానీ output మాత్రం సహజ తెలుగు లాగ ఉండాలి.
-
-================================================================
-వాయిస్ స్టైల్
-================================================================
-
-- ఒక టీచర్ క్లాస్‌లో చెప్పినట్టు నెమ్మదిగా, క్లియర్‌గా మాట్లాడాలి  
-- ప్రతి 1 లేదా 2 లైన్స్‌కి ఒక emotion tag ఉండాలి  
-
-ఉదాహరణలు:
-[Energetic]  
-[Serious]  
-[Calm, Instructional]  
-[WARM, FRIENDLY -- WELCOME]  
-
-- మాటల్లో natural pause, emphasis ఉండాలి  
-- robotic style పూర్తిగా avoid చేయాలి  
-
-================================================================
-పంక్చుయేషన్ & ఫ్లో
-================================================================
-
-- -- (double dash) ఉపయోగించి natural pauses ఇవ్వాలి  
-- ప్రశ్నలు → వెంటనే సమాధానం ఇవ్వాలి  
-- ప్రతి లైన్ meaningful గా ఉండాలి  
-
-================================================================
-ఇమేజ్ ప్రాంప్ట్ (VERY IMPORTANT)
-================================================================
-
-ప్రతి slide_prompt లో:
-
-- సాధారణ bullet points కాకుండా  
-- concept ని visualize చేసేలా cinematic / illusion style image prompt ఇవ్వాలి  
-
-Example:
-"ఒక విద్యార్థి గందరగోళంగా books మధ్యలో నిలబడి ఉన్నాడు, వెనుక భాగంలో Art & Culture icons glowing గా కనిపిస్తున్నాయి"
-
-Student వినేటప్పుడు image imagine చేసుకునేలా ఉండాలి.
-
-================================================================
-FINAL GOAL
-================================================================
-
-Output వినిపించేప్పుడు:
-- Telugu natural speaker లా ఉండాలి  
-- ఒత్తులు స్పష్టంగా వినిపించాలి  
-- Emotional + engaging teaching feel రావాలి  
+Image Prompt (VERY IMPORTANT):
+Each slide_prompt must have a cinematic or illusion-style image prompt that helps
+visualize the concept -- not just plain bullet points.
+Example: "A student standing confused among books, with glowing Art and Culture icons in the background"
+The student should be able to imagine the scene while listening.
 """
 
 _OUTPUT_FORMAT = """
@@ -833,12 +808,12 @@ Any doubts unnaayaa? Comment below -- I will answer each one personally!
 OUTPUT FORMAT -- RETURN VALID JSON ARRAY ONLY
 ================================================================
 
-Return ONLY a valid JSON array. No preamble, no markdown fences.
+Return ONLY a valid JSON array. No preamble, no markdown fences, no explanation text.
 [
   {
     "seg": 1,
     "telugu_text": "full voiceover -- NO EMOJIS -- ALL NUMBERS AS WORDS",
-    "slide_prompt": "Heading: Title\\n- bullet 1\\n- bullet 2\\nImage Prompt: visual"
+    "slide_prompt": "Heading: Title\\n- bullet 1\\n- bullet 2\\nImage Prompt: visual description"
   },
   ...
 ]
@@ -846,6 +821,7 @@ Return ONLY a valid JSON array. No preamble, no markdown fences.
 - Each segment ~{WORDS_PER_SEGMENT} words
 - ZERO emojis in telugu_text
 - ALL numbers written as words (nineteen forty-seven, not 1947)
+- Ensure the JSON array is complete and properly closed with ]
 """
 
 _DNA_GENERAL_VIDEO = """
@@ -871,13 +847,15 @@ _SYSTEM_TOPIC = (
     "Write a COMPLETE, ORIGINAL SKY Academy voiceover script on the given topic.\n"
     "CRITICAL: telugu_text must contain ZERO emoji characters.\n"
     "CRITICAL: ALL numbers in telugu_text must be written as English words (nineteen forty-seven, not 1947).\n"
+    "CRITICAL: Output must be a complete, valid JSON array -- do not truncate or stop mid-output.\n"
 ) + _SKY_DNA + _OUTPUT_FORMAT
 
 _SYSTEM_TRANSCRIPT = (
     "You are an expert Telugu video script writer for SKY Academy.\n"
     "TRANSFORM competitor transcripts into a single 100% original SKY Academy script.\n"
     "CRITICAL: telugu_text must contain ZERO emoji characters.\n"
-    "CRITICAL: ALL numbers in telugu_text must be written as English words (nineteen forty-seven, not 1947).\n\n"
+    "CRITICAL: ALL numbers in telugu_text must be written as English words (nineteen forty-seven, not 1947).\n"
+    "CRITICAL: Output must be a complete, valid JSON array -- do not truncate or stop mid-output.\n\n"
     "CASE A -- Same topic: SYNTHESIZE all data.\n"
     "CASE B -- Different aspects: MERGE and INTERLINK.\n"
     "CASE C -- Redundant: Take BEST from each, enrich.\n"
@@ -891,6 +869,7 @@ _SYSTEM_PDF = (
     "CONVERT dry book/study material into an engaging SKY Academy voiceover.\n"
     "CRITICAL: telugu_text must contain ZERO emoji characters.\n"
     "CRITICAL: ALL numbers in telugu_text must be written as English words (nineteen forty-seven, not 1947).\n"
+    "CRITICAL: Output must be a complete, valid JSON array -- do not truncate or stop mid-output.\n"
     "Step 1 -- DESTROY THE BOOKISH TONE\n"
     "Step 2 -- INJECT LIFE AND DEPTH\n"
     "Step 3 -- FULL SKY ACADEMY VOICE\n"
@@ -943,6 +922,201 @@ def sync_edits_to_chunks() -> list:
 
 
 # ============================================================
+# ROBUST JSON PARSING UTILITIES
+# ============================================================
+
+def _sanitize_json_str(s: str) -> str:
+    """
+    Fix unescaped control characters (newlines, tabs, carriage returns)
+    that appear inside JSON string values. Walks character by character
+    tracking string boundaries so it never corrupts structural JSON chars.
+    """
+    result = []
+    in_string = False
+    escape_next = False
+    for c in s:
+        if escape_next:
+            result.append(c)
+            escape_next = False
+            continue
+        if c == '\\' and in_string:
+            result.append(c)
+            escape_next = True
+            continue
+        if c == '"':
+            in_string = not in_string
+            result.append(c)
+            continue
+        if in_string:
+            if c == '\n':
+                result.append('\\n')
+            elif c == '\r':
+                result.append('\\r')
+            elif c == '\t':
+                result.append('\\t')
+            elif ord(c) < 32:
+                result.append(f'\\u{ord(c):04x}')
+            else:
+                result.append(c)
+        else:
+            result.append(c)
+    return ''.join(result)
+
+
+def _extract_complete_objects(json_str: str) -> list:
+    """
+    Walk through a JSON string and extract every complete {...} object
+    that contains a 'telugu_text' key. This handles:
+    - Truncated responses (only complete objects are returned)
+    - Extra wrapper text before/after the array
+    - Individual object parse failures (skips broken ones, keeps good ones)
+    """
+    segments = []
+    i = 0
+    n = len(json_str)
+
+    while i < n:
+        # Find the next opening brace
+        start = json_str.find('{', i)
+        if start == -1:
+            break
+
+        # Track brace depth to find the matching closing brace
+        depth = 0
+        in_string = False
+        escape_next = False
+        j = start
+        found_end = -1
+
+        while j < n:
+            c = json_str[j]
+            if escape_next:
+                escape_next = False
+            elif c == '\\' and in_string:
+                escape_next = True
+            elif c == '"':
+                in_string = not in_string
+            elif not in_string:
+                if c == '{':
+                    depth += 1
+                elif c == '}':
+                    depth -= 1
+                    if depth == 0:
+                        found_end = j
+                        break
+            j += 1
+
+        if found_end == -1:
+            # No complete object found from here -- truncated
+            break
+
+        obj_str = json_str[start:found_end + 1]
+
+        # Try raw parse, then sanitized parse
+        parsed_obj = None
+        for attempt_str in [obj_str, _sanitize_json_str(obj_str)]:
+            try:
+                parsed_obj = json.loads(attempt_str)
+                if isinstance(parsed_obj, dict):
+                    break
+            except Exception:
+                parsed_obj = None
+
+        if parsed_obj and isinstance(parsed_obj, dict):
+            # Accept objects that look like script segments
+            if 'telugu_text' in parsed_obj or 'seg' in parsed_obj:
+                if 'seg' not in parsed_obj:
+                    parsed_obj['seg'] = len(segments) + 1
+                if 'telugu_text' not in parsed_obj:
+                    parsed_obj['telugu_text'] = ''
+                if 'slide_prompt' not in parsed_obj:
+                    parsed_obj['slide_prompt'] = ''
+                segments.append(parsed_obj)
+
+        i = found_end + 1
+
+    return segments
+
+
+def parse_segments(raw: str):
+    """
+    Parse a list of segment dicts from raw AI output.
+    Applies 5 progressive strategies to handle:
+      1. Clean response  -- direct parse
+      2. Escaped chars   -- sanitize then parse
+      3. Array boundary  -- slice to first [ and last ]
+      4. Truncated JSON  -- extract complete objects only
+      5. Full text scan  -- object extraction on entire raw string
+    Returns list of dicts or None.
+    """
+    if not raw or not raw.strip():
+        return None
+
+    # Remove markdown code fences
+    cleaned = raw.strip()
+    cleaned = re.sub(r"^```[a-zA-Z]*\s*\n?", "", cleaned)
+    cleaned = re.sub(r"\n?```\s*$", "", cleaned).strip()
+
+    # ---- Strategy 1: Direct parse (clean response) ----
+    for attempt in [cleaned, _sanitize_json_str(cleaned)]:
+        try:
+            result = json.loads(attempt)
+            if isinstance(result, list) and result:
+                return result
+            # Sometimes AI returns a single object instead of array
+            if isinstance(result, dict) and ('telugu_text' in result or 'seg' in result):
+                return [result]
+        except Exception:
+            pass
+
+    # ---- Strategy 2: Find array boundaries ----
+    start_idx = cleaned.find("[")
+    end_idx   = cleaned.rfind("]")
+    if start_idx != -1 and end_idx > start_idx:
+        chunk = cleaned[start_idx:end_idx + 1]
+        for attempt in [chunk, _sanitize_json_str(chunk)]:
+            try:
+                result = json.loads(attempt)
+                if isinstance(result, list) and result:
+                    return result
+            except Exception:
+                pass
+
+    # ---- Strategy 3: Object-by-object extraction (handles truncation) ----
+    search_start = start_idx if start_idx != -1 else 0
+    segments = _extract_complete_objects(cleaned[search_start:])
+    if segments:
+        # Sort by seg number for correct ordering
+        return sorted(segments, key=lambda x: x.get('seg', 999))
+
+    # ---- Strategy 4: Full raw text scan ----
+    if search_start > 0:
+        segments = _extract_complete_objects(cleaned)
+        if segments:
+            return sorted(segments, key=lambda x: x.get('seg', 999))
+
+    # ---- Strategy 5: Last resort -- try raw in various forms ----
+    for attempt in [raw, re.sub(r"```(?:json)?", "", raw).strip()]:
+        try:
+            result = json.loads(attempt)
+            if isinstance(result, list) and result:
+                return result
+        except Exception:
+            pass
+        m = re.search(r"\[[\s\S]*\]", attempt)
+        if m:
+            for s in [m.group(), _sanitize_json_str(m.group())]:
+                try:
+                    result = json.loads(s)
+                    if isinstance(result, list) and result:
+                        return result
+                except Exception:
+                    pass
+
+    return None
+
+
+# ============================================================
 # PROMPT BUILDERS
 # ============================================================
 def _inject_counts(system: str, num_segs: int) -> str:
@@ -967,7 +1141,8 @@ def build_prompts_topic(topic, num_segs, special_instructions, video_type="subje
         f"- ZERO emojis in telugu_text\n"
         f"- ALL numbers as English words (nineteen forty-seven, forty-second Amendment, Article twenty-one)\n"
         f"- Lists/series: humanized flow with connectors, NOT robotic listing\n"
-        f"- Return ONLY valid JSON array"
+        f"- Output must be a COMPLETE valid JSON array ending with ]\n"
+        f"- Return ONLY valid JSON array, no other text"
     )
     return system, user
 
@@ -995,7 +1170,9 @@ def build_prompts_multi_transcript(transcripts, topic_hint, num_segs,
         f"{transcript_blocks}\n\n"
         f"REMINDERS:\n- Strip ALL competitor traces\n- Add 25%+ more value\n"
         f"- Last segment: SKY Academy CTA\n- ZERO emojis in telugu_text\n"
-        f"- ALL numbers as English words\n- Lists: humanized flow, not robotic\n- Return ONLY valid JSON"
+        f"- ALL numbers as English words\n- Lists: humanized flow, not robotic\n"
+        f"- Output must be a COMPLETE valid JSON array ending with ]\n"
+        f"- Return ONLY valid JSON"
     )
     return system, user
 
@@ -1012,7 +1189,9 @@ def build_prompts_pdf(pdf_text, topic_hint, num_segs, special_instructions, vide
         f"BOOK/STUDY MATERIAL:\n{pdf_text.strip()}\n\n"
         f"REMINDERS:\n- Destroy bookish tone\n- Last segment: SKY Academy CTA\n"
         f"- ZERO emojis in telugu_text\n- ALL numbers as English words\n"
-        f"- Lists: humanized flow with connectors\n- Return ONLY valid JSON"
+        f"- Lists: humanized flow with connectors\n"
+        f"- Output must be a COMPLETE valid JSON array ending with ]\n"
+        f"- Return ONLY valid JSON"
     )
     return system, user
 
@@ -1325,20 +1504,22 @@ def parse_handout_content(raw: str):
     cleaned = raw.strip()
     cleaned = re.sub(r"^```[a-zA-Z]*\s*\n?", "", cleaned)
     cleaned = re.sub(r"\n?```\s*$", "", cleaned).strip()
-    try:
-        result = json.loads(cleaned)
-        if isinstance(result, dict):
-            return result
-    except Exception:
-        pass
-    m = re.search(r'\{[\s\S]*\}', cleaned)
-    if m:
+    for attempt in [cleaned, _sanitize_json_str(cleaned)]:
         try:
-            result = json.loads(m.group())
+            result = json.loads(attempt)
             if isinstance(result, dict):
                 return result
         except Exception:
             pass
+    m = re.search(r'\{[\s\S]*\}', cleaned)
+    if m:
+        for attempt in [m.group(), _sanitize_json_str(m.group())]:
+            try:
+                result = json.loads(attempt)
+                if isinstance(result, dict):
+                    return result
+            except Exception:
+                pass
     return None
 
 
@@ -1684,6 +1865,7 @@ def extract_any_file(file_bytes: bytes, filename: str):
 
 # ============================================================
 # AI CALL FUNCTIONS
+# Callback signature: progress_cb(n_chars: int, full_text: str)
 # ============================================================
 def call_claude_pagegrid(api_key, model, system, user, progress_cb=None):
     import anthropic
@@ -1692,13 +1874,13 @@ def call_claude_pagegrid(api_key, model, system, user, progress_cb=None):
     client = anthropic.Anthropic(api_key=api_key, base_url=PAGEGRID_BASE_URL, timeout=300.0)
     full = ""
     with client.messages.stream(
-        model=model, max_tokens=8192, system=system,
+        model=model, max_tokens=16000, system=system,
         messages=[{"role":"user","content":user}],
     ) as stream:
         for chunk in stream.text_stream:
             full += chunk
             if progress_cb:
-                progress_cb(len(full))
+                progress_cb(len(full), full)
     return full
 
 
@@ -1711,17 +1893,20 @@ def call_openai(api_key, model, system, user, progress_cb=None):
             model=model, max_completion_tokens=16000,
             messages=[{"role":"user","content":f"{system}\n\n---\n\n{user}"}],
         )
-        return resp.choices[0].message.content
+        raw = resp.choices[0].message.content
+        if progress_cb:
+            progress_cb(len(raw), raw)
+        return raw
     else:
         full = ""
         for chunk in client.chat.completions.create(
-            model=model, max_tokens=8192, stream=True,
+            model=model, max_tokens=16000, stream=True,
             messages=[{"role":"system","content":system},{"role":"user","content":user}],
         ):
             delta = chunk.choices[0].delta.content or ""
             full += delta
             if progress_cb and delta:
-                progress_cb(len(full))
+                progress_cb(len(full), full)
         return full
 
 
@@ -1734,17 +1919,36 @@ def call_gemini(api_key, model, system, user, progress_cb=None):
         t = getattr(chunk, "text", "") or ""
         full += t
         if progress_cb and t:
-            progress_cb(len(full))
+            progress_cb(len(full), full)
     return full
 
 
-def run_generation(api_key, provider, model, system_p, user_p, status_placeholder):
-    def _cb(n):
-        status_placeholder.markdown(
-            f'<div class="stream-progress"><b>Generating...</b> &nbsp; '
-            f'{n:,} characters received &nbsp;·&nbsp; please keep this tab open</div>',
+def run_generation(api_key, provider, model, system_p, user_p,
+                   status_ph, stream_ph=None):
+    """
+    Run generation with live streaming display.
+    status_ph  : st.empty() for the status bar
+    stream_ph  : st.empty() for the raw text stream (optional)
+    Callback now receives (n_chars, full_text) instead of just (n_chars).
+    """
+    def _cb(n, text):
+        status_ph.markdown(
+            f'<div class="stream-progress">'
+            f'<b>Generating...</b> &nbsp; {n:,} chars &nbsp;·&nbsp; '
+            f'~{n // 5:,} words est. &nbsp;·&nbsp; keep tab open'
+            f'</div>',
             unsafe_allow_html=True,
         )
+        if stream_ph is not None:
+            display = text[-2800:] if len(text) > 2800 else text
+            stream_ph.text_area(
+                label="stream_live",
+                value=display,
+                height=270,
+                disabled=True,
+                label_visibility="collapsed",
+            )
+
     if "PageGrid" in provider:
         return call_claude_pagegrid(api_key, model, system_p, user_p, _cb)
     elif "OpenAI" in provider:
@@ -1754,67 +1958,30 @@ def run_generation(api_key, provider, model, system_p, user_p, status_placeholde
 
 
 # ============================================================
-# JSON PARSERS
+# SINGLE SEGMENT PARSER
 # ============================================================
-def parse_segments(raw: str):
-    if not raw or not raw.strip():
-        return None
-    cleaned = raw.strip()
-    cleaned = re.sub(r"^```[a-zA-Z]*\s*\n?","",cleaned)
-    cleaned = re.sub(r"\n?```\s*$","",cleaned).strip()
-    try:
-        result = json.loads(cleaned)
-        if isinstance(result, list) and result:
-            return result
-    except Exception:
-        pass
-    start = cleaned.find("[")
-    end   = cleaned.rfind("]")
-    if start != -1 and end > start:
-        try:
-            result = json.loads(cleaned[start:end+1])
-            if isinstance(result, list) and result:
-                return result
-        except Exception:
-            pass
-    for attempt in (raw, re.sub(r"```(?:json)?","",raw).strip()):
-        try:
-            result = json.loads(attempt)
-            if isinstance(result, list):
-                return result
-        except Exception:
-            pass
-        m = re.search(r"\[[\s\S]*\]", attempt)
-        if m:
-            try:
-                result = json.loads(m.group())
-                if isinstance(result, list):
-                    return result
-            except Exception:
-                pass
-    return None
-
-
 def parse_single_segment(raw: str):
     cleaned = raw.strip()
     cleaned = re.sub(r"^```[a-zA-Z]*\s*\n?","",cleaned)
     cleaned = re.sub(r"\n?```\s*$","",cleaned).strip()
-    try:
-        result = json.loads(cleaned)
-        if isinstance(result, dict):
-            return result
-        if isinstance(result, list) and result:
-            return result[0]
-    except Exception:
-        pass
-    m = re.search(r'\{[\s\S]*\}', cleaned)
-    if m:
+    for attempt in [cleaned, _sanitize_json_str(cleaned)]:
         try:
-            result = json.loads(m.group())
+            result = json.loads(attempt)
             if isinstance(result, dict):
                 return result
+            if isinstance(result, list) and result:
+                return result[0]
         except Exception:
             pass
+    m = re.search(r'\{[\s\S]*\}', cleaned)
+    if m:
+        for attempt in [m.group(), _sanitize_json_str(m.group())]:
+            try:
+                result = json.loads(attempt)
+                if isinstance(result, dict):
+                    return result
+            except Exception:
+                pass
     return None
 
 
@@ -1822,18 +1989,20 @@ def parse_seo_json(raw: str):
     cleaned = raw.strip()
     cleaned = re.sub(r"^```[a-zA-Z]*\s*\n?","",cleaned)
     cleaned = re.sub(r"\n?```\s*$","",cleaned).strip()
-    try:
-        result = json.loads(cleaned)
-        if isinstance(result, dict):
-            return result
-    except Exception:
-        pass
-    m = re.search(r'\{[\s\S]*\}', cleaned)
-    if m:
+    for attempt in [cleaned, _sanitize_json_str(cleaned)]:
         try:
-            return json.loads(m.group())
+            result = json.loads(attempt)
+            if isinstance(result, dict):
+                return result
         except Exception:
             pass
+    m = re.search(r'\{[\s\S]*\}', cleaned)
+    if m:
+        for attempt in [m.group(), _sanitize_json_str(m.group())]:
+            try:
+                return json.loads(attempt)
+            except Exception:
+                pass
     return None
 
 
@@ -1959,6 +2128,13 @@ with st.sidebar:
 
 
 # ============================================================
+# LIVE STREAM MASTER PLACEHOLDER
+# Placed before columns so it renders ABOVE the two-column layout.
+# Populated during generation, cleared when done.
+# ============================================================
+_stream_master = st.empty()
+
+# ============================================================
 # MAIN LAYOUT
 # ============================================================
 left, right = st.columns([1,1], gap="large")
@@ -2039,8 +2215,8 @@ with left:
                 st.session_state.transcript_extractions = extractions
                 st.session_state.transcript_files_sig   = new_sig
 
-            exts     = st.session_state.transcript_extractions
-            ok_count = sum(1 for e in exts if e["ok"])
+            exts      = st.session_state.transcript_extractions
+            ok_count  = sum(1 for e in exts if e["ok"])
             err_count = len(exts) - ok_count
             if ok_count:
                 total_words = sum(e["words"] for e in exts if e["ok"])
@@ -2140,82 +2316,99 @@ if gen_btn:
     elif input_mode.startswith("📝"): mode_name = "transcript"
     else:                              mode_name = "pdf"
 
+    # --- Validation errors (clear stream box first) ---
     if not api_key.strip():
+        _stream_master.empty()
         st.error("Please enter your API key in the sidebar!")
 
     elif mode_name == "topic" and not topic_input.strip():
+        _stream_master.empty()
         st.error("Please enter a topic!")
 
-    elif mode_name == "transcript":
-        ok_exts = [e for e in st.session_state.transcript_extractions if e["ok"]]
-        if not ok_exts:
-            st.error("Please upload at least one transcript file (.docx/.txt/.pdf).")
-        else:
-            safe_transcripts = [{"filename":e["filename"],"text":e["text"]} for e in ok_exts]
-            vtype_disp = "General/Strategy" if video_type=="general" else "Subjective/Teaching"
-            st.info(f"Merging {len(safe_transcripts)} transcript(s) --> SKY Academy voice [{vtype_disp}]... Do not close this tab.", icon="⏳")
-            _status = st.empty()
-            try:
+    elif mode_name == "transcript" and not [e for e in st.session_state.transcript_extractions if e["ok"]]:
+        _stream_master.empty()
+        st.error("Please upload at least one transcript file (.docx/.txt/.pdf).")
+
+    elif mode_name == "pdf" and not topic_input.strip():
+        _stream_master.empty()
+        st.error("Please upload a PDF. Make sure text was extracted successfully.")
+
+    else:
+        # ---- Setup live stream display ----
+        with _stream_master.container():
+            st.markdown("""
+<div class="live-stream-box">
+  <div class="live-stream-title">Live Generation Stream</div>
+  <div class="live-stream-hint">
+    Watching the AI write your script in real-time below.
+    The raw JSON is shown as it streams in.
+    If something looks wrong you can close the browser tab to stop.
+    The preview panel will update automatically once generation completes.
+  </div>
+</div>
+""", unsafe_allow_html=True)
+            _live_stat = st.empty()
+            _live_txt  = st.empty()
+
+        vtype_disp = "General/Strategy" if video_type=="general" else "Subjective/Teaching"
+
+        try:
+            if mode_name == "transcript":
+                ok_exts          = [e for e in st.session_state.transcript_extractions if e["ok"]]
+                safe_transcripts = [{"filename":e["filename"],"text":e["text"]} for e in ok_exts]
+                st.info(f"Merging {len(safe_transcripts)} transcript(s) --> SKY Academy voice [{vtype_disp}]... keep tab open", icon="⏳")
                 system_p, user_p = build_prompts_multi_transcript(
                     safe_transcripts, topic_hint_input,
                     num_segs, special_instructions, merge_mode_val, video_type,
                 )
                 display_topic  = topic_hint_input.strip()[:60] or "Merged Script"
                 display_source = "📝 Transcript --> SKY"
-                raw = run_generation(api_key, provider, model_choice, system_p, user_p, _status)
-                _status.empty()
-                st.session_state.raw_response = raw
-                parsed = parse_segments(raw)
-                if parsed:
-                    store_new_chunks(parsed)
-                    st.session_state.last_topic  = display_topic
-                    st.session_state.last_source = display_source
-                    st.success(f"{len(parsed)} segments generated from {len(safe_transcripts)} file(s)!")
-                    st.rerun()
-                else:
-                    st.error("Could not parse JSON from AI response.")
-                    _show_manual_recovery(display_topic, display_source)
-            except Exception as exc:
-                _status.empty()
-                _handle_api_error(exc, model_choice)
 
-    elif mode_name == "pdf" and not topic_input.strip():
-        st.error("Please upload a PDF. Make sure text was extracted successfully.")
-
-    else:
-        vtype_disp  = "General/Strategy" if video_type=="general" else "Subjective/Teaching"
-        _mode_label = (
-            f"Generating {num_segs} segments [{vtype_disp}] via {model_choice}"
-            if mode_name=="topic"
-            else f"Converting PDF content --> SKY Academy voice [{vtype_disp}]"
-        )
-        st.info(f"{_mode_label}... Do not close this tab.", icon="⏳")
-        _status = st.empty()
-        try:
-            if mode_name == "topic":
-                system_p, user_p = build_prompts_topic(topic_input, num_segs, special_instructions, video_type)
+            elif mode_name == "topic":
+                st.info(f"Generating {num_segs} segments [{vtype_disp}] via {model_choice}... keep tab open", icon="⏳")
+                system_p, user_p = build_prompts_topic(
+                    topic_input, num_segs, special_instructions, video_type
+                )
                 display_topic  = topic_input.strip()[:60]
                 display_source = "📌 Topic"
-            else:
-                system_p, user_p = build_prompts_pdf(topic_input, topic_hint_input, num_segs, special_instructions, video_type)
+
+            else:  # pdf
+                st.info(f"Converting PDF content --> SKY Academy voice [{vtype_disp}]... keep tab open", icon="⏳")
+                system_p, user_p = build_prompts_pdf(
+                    topic_input, topic_hint_input, num_segs, special_instructions, video_type
+                )
                 display_topic  = topic_hint_input.strip()[:60] or "PDF Content"
                 display_source = "📚 PDF --> SKY"
 
-            raw = run_generation(api_key, provider, model_choice, system_p, user_p, _status)
-            _status.empty()
+            raw = run_generation(
+                api_key, provider, model_choice,
+                system_p, user_p,
+                _live_stat, _live_txt,
+            )
+            _stream_master.empty()  # Clear stream box when done
             st.session_state.raw_response = raw
             parsed = parse_segments(raw)
+
             if parsed:
+                # Warn if we recovered a partial result (truncation)
+                if len(parsed) < num_segs:
+                    st.warning(
+                        f"Partial recovery: got {len(parsed)} of {num_segs} segments. "
+                        f"The AI response may have been truncated. "
+                        f"Try reducing word count or using a faster model for full output.",
+                        icon="⚠️"
+                    )
                 store_new_chunks(parsed)
                 st.session_state.last_topic  = display_topic
                 st.session_state.last_source = display_source
                 st.success(f"{len(parsed)} segments generated! [{display_source}]")
                 st.rerun()
             else:
-                st.error("Could not parse JSON from AI response.")
+                st.error("Could not parse JSON from AI response. Try the manual recovery below.")
                 _show_manual_recovery(display_topic, display_source)
+
         except Exception as exc:
-            _status.empty()
+            _stream_master.empty()
             _handle_api_error(exc, model_choice)
 
 
@@ -2275,7 +2468,8 @@ with right:
                         if not api_key.strip():
                             st.error("Enter API key in sidebar first!")
                         else:
-                            _rs = st.empty()
+                            _rs  = st.empty()
+                            _rst = st.empty()
                             with st.spinner(f"Regenerating segment {idx+1}..."):
                                 try:
                                     _instr = st.session_state.get(f"regen_instr_{idx}","") or "Improve -- better flow, sharper memory hints"
@@ -2284,8 +2478,9 @@ with right:
                                         st.session_state.chunks, idx, _instr,
                                         len(st.session_state.chunks),
                                     )
-                                    raw_r = run_generation(api_key, provider, model_choice, sys_r, usr_r, _rs)
+                                    raw_r = run_generation(api_key, provider, model_choice, sys_r, usr_r, _rs, _rst)
                                     _rs.empty()
+                                    _rst.empty()
                                     new_chunk = parse_single_segment(raw_r)
                                     if new_chunk and isinstance(new_chunk, dict):
                                         cleaned_tv = strip_emojis(new_chunk.get("telugu_text",""))
@@ -2299,6 +2494,7 @@ with right:
                                         st.error("Could not parse regenerated segment. Try again.")
                                 except Exception as _exc:
                                     _rs.empty()
+                                    _rst.empty()
                                     st.error(f"Regen error: {_exc}")
 
         with st.expander("Full Script -- Continuous Flow", expanded=False):
@@ -2316,7 +2512,7 @@ with right:
             if not api_key.strip():
                 st.error("Enter API key in sidebar first!")
             else:
-                _ss = st.empty()
+                _ss  = st.empty()
                 with st.spinner("Generating YouTube SEO Pack..."):
                     try:
                         sys_seo, usr_seo = build_seo_prompt(st.session_state.last_topic, sync_edits_to_chunks(), video_type)
@@ -2518,7 +2714,8 @@ with st.container():
         elif not st.session_state.chunks:
             st.error("Generate a script first -- then come back here to create the handout!")
         else:
-            _hs = st.empty()
+            _hs  = st.empty()
+            _hst = st.empty()
             with st.spinner(f"Generating {handout_pages}-page AI handout..."):
                 try:
                     synced_for_handout = sync_edits_to_chunks()
@@ -2527,8 +2724,9 @@ with st.container():
                         synced_for_handout,
                         handout_pages,
                     )
-                    raw_h = run_generation(api_key, provider, model_choice, sys_h, usr_h, _hs)
+                    raw_h = run_generation(api_key, provider, model_choice, sys_h, usr_h, _hs, _hst)
                     _hs.empty()
+                    _hst.empty()
                     handout_content = parse_handout_content(raw_h)
                     if handout_content and isinstance(handout_content, dict):
                         st.session_state.handout_data = handout_content
@@ -2543,6 +2741,7 @@ with st.container():
                             st.code(raw_h[:3000], language="json")
                 except Exception as _exc:
                     _hs.empty()
+                    _hst.empty()
                     _handle_api_error(_exc, model_choice)
 
     if st.session_state.handout_data:
@@ -2581,7 +2780,7 @@ st.markdown(
     "<span style='color:#FFE66D;font-weight:800;'>K</span>"
     "<span style='color:#4ECDC4;font-weight:800;'>Y</span>"
     " <b>ACADEMY</b> &nbsp;|&nbsp; SCRIPT ENGINE v3.2 &nbsp;|&nbsp; "
-    "General + Subjective + AI Handout &nbsp;|&nbsp; "
+    "Live Stream · Robust JSON Parser · max_tokens 16000 &nbsp;|&nbsp; "
     "Powered by PageGrid + Anthropic SDK"
     "</div>",
     unsafe_allow_html=True,
