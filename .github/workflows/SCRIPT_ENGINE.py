@@ -1729,8 +1729,7 @@ STRICT RULES:
 ✓ Strong hierarchy. Clean alignment. Viral-worthy. Mobile readable.
 
 Size: 1792x1024. Ultra sharp. High CTR. SKY Academy premium coaching style."""
-response = client.images.generate(
-        model="dall-e-3",
+response = client.images.generate(model="dall-e-3",
         prompt=prompt,
         size="1792x1024",
         quality="hd",
