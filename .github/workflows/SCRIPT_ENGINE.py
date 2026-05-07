@@ -1798,7 +1798,7 @@ def generate_thumbnail_dalle(
     response = client.images.generate(
         model="gpt-image-1",
         prompt=prompt,
-        size="1792x1024"
+        size="1536x1024"
     )
 
     image_base64 = response.data[0].b64_json
