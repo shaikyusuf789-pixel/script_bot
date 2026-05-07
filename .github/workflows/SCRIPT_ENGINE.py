@@ -1669,9 +1669,9 @@ def run_generation(api_key, provider, model, system_p, user_p,
     else:
         return call_gemini(api_key, model, system_p, user_p, _cb)
 
-
 # ============================================================
-# THUMBNAIL GENERATION (DALL-E 3)
+# THUMBNAIL GENERATION (GPT-IMAGE-1)
+# SKY ACADEMY STYLE
 # ============================================================
 
 import re
@@ -1679,6 +1679,97 @@ import json
 import base64
 import openai
 
+
+# ============================================================
+# THUMBNAIL PROMPT BUILDER
+# ============================================================
+
+def build_thumbnail_prompt(
+    line1: str,
+    line2: str,
+    line3: str,
+    line4: str,
+    topic: str = "",
+    variation: int = 0
+) -> str:
+
+    variation_text = ""
+
+    if variation > 0:
+        variation_text = f"""
+Use a fresh creative variation #{variation}.
+Change layout slightly while maintaining SKY Academy style.
+"""
+
+    prompt = f"""
+Create a professional Indian educational YouTube thumbnail
+in SKY Academy Telugu coaching style.
+
+{variation_text}
+
+TEXT CONTENT:
+
+Top title bar:
+{line1}
+
+Main biggest headline:
+{line2}
+
+Supporting Telugu line:
+{line3}
+
+Bottom CTA strip:
+{line4}
+
+STYLE:
+- Professional Photoshop-style thumbnail
+- Indian competitive exam coaching design
+- High CTR
+- Mobile readable
+- Strong bold typography
+- Large readable text
+- Clean composition
+- Dark blue cinematic background
+- Yellow + Red + White + Green color palette
+- Subtle glow only behind main text
+- Premium coaching institute look
+- Modern YouTube thumbnail style
+- Balanced spacing
+- Minimal clutter
+- Strong text hierarchy
+
+BACKGROUND:
+Use subtle topic-related visuals automatically.
+
+Examples:
+- SSC / Banking / Railway → books, target, study desk, arrows
+- Law → court, constitution, scales
+- Economy → charts, rupee
+- Geography → map, globe
+- History → monuments
+- Science → formulas, circuits
+- Reasoning → number patterns, arrows
+
+IMPORTANT:
+- Create FINAL thumbnail directly
+- NOT infographic
+- NOT poster template
+- NOT instruction sheet
+- NO fake paragraphs
+- NO random small text blocks
+- NO excessive decorative elements
+- NO fantasy art
+- NO AI poster aesthetics
+- Make it look like a real Indian coaching thumbnail
+- Focus on readability and clickability
+"""
+
+    return prompt.strip()
+
+
+# ============================================================
+# MAIN IMAGE GENERATOR
+# ============================================================
 
 def generate_thumbnail_dalle(
     line1: str,
@@ -1692,131 +1783,27 @@ def generate_thumbnail_dalle(
 
     client = openai.OpenAI(
         api_key=api_key,
-        timeout=120.0
+        timeout=180.0
     )
 
-    var_str = f" Creative design variation #{variation}." if variation else ""
-
-    prompt = f"""
-Professional YouTube thumbnail, SKY Academy Telugu coaching style.{var_str}
-
-STYLE:
-Photoshop-designed look.
-NOT AI flashy.
-Natural lighting.
-3-4 colors only.
-Bold readable fonts.
-Strong hierarchy.
-Premium educational brand.
-80% content, 20% margins.
-
-TEXT LINES (place exactly as described):
-
-LINE1: "{line1}"
-→ Top center.
-Full-width dark red bar.
-White bold uppercase.
-Medium size.
-Drop shadow.
-
-LINE2: "{line2}"
-→ BIGGEST TEXT.
-MOST DOMINANT.
-Center of image.
-Largest font.
-White or yellow.
-Yellow/orange strip behind it.
-Subtle shine.
-Maximum readability.
-Visible from 6 feet.
-
-LINE3: "{line3}"
-→ Below LINE2.
-White medium font.
-No background box.
-Subtle shadow.
-
-LINE4: "{line4}"
-→ Bottom bar.
-Orange or green filled strip.
-White bold font inside.
-High contrast.
-CTR hook.
-
-BADGE (MANDATORY):
-తెలుగులో
-Bottom-right corner.
-Yellow rounded badge.
-Clean shadow.
-
-AUTO THEME (detect topic from lines above, apply matching visuals):
-
-- Polity/Law → Parliament, constitution, court scales
-- Geography → India map, globe, terrain
-- History → forts, monuments, stone textures
-- Economy → rupee, charts, graphs
-- Reasoning → arrows, puzzles, number sequences
-- Science → atoms, formulas, circuits
-- SSC/Exams → exam papers, study desk, target board
-- AP High Court → AP High Court building blurred background
-- Art/Culture → temples, dancers, sculptures
-- Govt Schemes → welfare icons, govt buildings
-- Current Affairs → newspaper textures, modern overlays
-
-COLORS (3-4 only, pick by topic):
-
-Dark Blue + Yellow + White
-Navy + Orange + White
-Teal + Gold + White
-Dark Green + Yellow + White
-
-No neon.
-No rainbow.
-No excessive glow.
-
-BACKGROUND:
-Slightly blurred.
-Cinematic depth.
-Supports text.
-No clutter.
-
-LIGHTING:
-Soft glow only behind LINE2.
-No bloom.
-No AI fantasy glow.
-
-SUPPORT VISUALS:
-Low opacity 15-25%.
-Subtle.
-Non-distracting.
-Auto-match topic.
-
-STRICT RULES:
-
-✗ No faces
-✗ No fantasy style
-✗ No busy background
-✗ No decorative unreadable fonts
-✗ No excessive glow
-✗ No clutter
-✗ No neon colors
-
-✓ Strong hierarchy
-✓ Clean alignment
-✓ Viral-worthy
-✓ Mobile readable
-"""
+    prompt = build_thumbnail_prompt(
+        line1=line1,
+        line2=line2,
+        line3=line3,
+        line4=line4,
+        topic=topic,
+        variation=variation
+    )
 
     response = client.images.generate(
-        model="dall-e-3",
+        model="gpt-image-1",
         prompt=prompt,
-        size="1792x1024",
-        quality="hd",
-        response_format="b64_json",
-        n=1,
+        size="1792x1024"
     )
 
-    return base64.b64decode(response.data[0].b64_json)
+    image_base64 = response.data[0].b64_json
+
+    return base64.b64decode(image_base64)
 
 
 # ============================================================
@@ -1831,7 +1818,7 @@ def _sanitize_json_str(s: str) -> str:
     s = re.sub(r",\s*}", "}", s)
     s = re.sub(r",\s*]", "]", s)
 
-    # smart quotes to normal quotes
+    # smart quotes normalize
     s = s.replace("“", '"').replace("”", '"')
     s = s.replace("‘", "'").replace("’", "'")
 
@@ -1839,7 +1826,7 @@ def _sanitize_json_str(s: str) -> str:
 
 
 # ============================================================
-# PARSERS
+# SINGLE SEGMENT PARSER
 # ============================================================
 
 def parse_single_segment(raw: str):
@@ -1862,6 +1849,7 @@ def parse_single_segment(raw: str):
     for attempt in [cleaned, _sanitize_json_str(cleaned)]:
 
         try:
+
             result = json.loads(attempt)
 
             if isinstance(result, dict):
@@ -1884,6 +1872,7 @@ def parse_single_segment(raw: str):
         ]:
 
             try:
+
                 result = json.loads(attempt)
 
                 if isinstance(result, dict):
@@ -1894,6 +1883,10 @@ def parse_single_segment(raw: str):
 
     return None
 
+
+# ============================================================
+# SEO JSON PARSER
+# ============================================================
 
 def parse_seo_json(raw: str):
 
@@ -1914,6 +1907,7 @@ def parse_seo_json(raw: str):
     for attempt in [cleaned, _sanitize_json_str(cleaned)]:
 
         try:
+
             result = json.loads(attempt)
 
             if isinstance(result, dict):
@@ -1932,13 +1926,13 @@ def parse_seo_json(raw: str):
         ]:
 
             try:
-                result = json.loads(attempt)
-                return result
+                return json.loads(attempt)
 
             except Exception:
                 pass
 
-    return None# ============================================================
+    return None
+    #============================================================
 # GOOGLE SHEETS
 # ============================================================
 def push_to_gsheet(chunks, seo_title="", seo_tags=""):
