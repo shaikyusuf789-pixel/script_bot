@@ -1680,39 +1680,120 @@ def generate_thumbnail_dalle(line1: str, line2: str, line3: str, line4: str,
 
     var_str = f" Creative design variation #{variation}." if variation else ""
 
-    prompt = f"""Professional YouTube thumbnail for Telugu competitive exam preparation channel "SKY Academy".{var_str}
+    prompt = f"""Create a PROFESSIONAL YouTube thumbnail in SKY Academy coaching style.{var_str}
 
-STYLE: Photoshop-designed, hyper-realistic professional look. NOT AI-generated looking.
-Like top Indian educational YouTube channels -- premium, high-contrast, cinematic.
-Dimensions: 1792x1024 (widescreen 16:9).
+IMPORTANT STYLE RULES:
+- Must look like Photoshop designed thumbnail
+- NOT AI flashy, NOT over glowing
+- Use only 3-4 major colors
+- Sharp typography, strong hierarchy
+- High CTR design, natural lighting
+- Premium coaching institute look
+- Bold readable fonts, proper spacing
+- 80:20 layout: 80% content area, 20% clean margins
 
-EXACT TEXT LAYOUT (place text precisely as specified):
-1. TOP STRIP (full width, dark maroon/red banner, top 14% of image):
-   Bold white uppercase text centered: "{line1}"
-   
-2. MAIN HEADLINE (center of image, large font, 30-38% height area):
-   Very large bold white text, slight golden glow: "{line2}"
-   
-3. SUB-LINE (below main headline, golden yellow color):
-   Medium bold text: "{line3}"
-   
-4. BOTTOM LINE (bottom 18%, bright gold or white color, Telugu script):
-   "{line4}"
+AUTO THEME GENERATION:
+Analyze these 4 text lines to detect the topic, then auto-select background, colors, icons:
+  LINE1: {line1}
+  LINE2: {line2}
+  LINE3: {line3}
+  LINE4: {line4}
 
-5. BOTTOM RIGHT CORNER: Small rounded badge -- "తెలుగులో" in orange-yellow
+Topic-to-visual mapping (auto-detect and apply):
+- Polity / Law        → Constitution book, Parliament building, court scales, law books
+- Geography           → India map, globe, terrain textures
+- History             → forts, monuments, ancient stone textures
+- Economy             → rupee symbol, charts, graphs, economic glow
+- Reasoning           → arrows, number sequences, puzzle icons
+- Science / Tech      → atoms, formulas, circuit graphics
+- Current Affairs     → newspaper textures, modern overlays
+- SSC / Govt Exams    → exam papers, study desk, target board visuals
+- AP High Court       → Andhra Pradesh High Court building (blurred background)
+- Art & Culture       → temples, classical dancers, sculptures
+- Government Schemes  → govt buildings, welfare icons, public imagery
 
-BACKGROUND & VISUAL DESIGN:
-- Deep navy blue gradient background (#020024 to #090979)
-- RIGHT SIDE (40% of image): Dramatic relevant imagery -- choose from:
-  law books stacked with golden titles, golden gavel on dark surface,
-  scales of justice with golden chains, AP High Court building silhouette,
-  government seal/emblem with dramatic lighting, open books with glowing pages
-- Left side mostly clear for text
-- Subtle golden/yellow light rays from center-right
-- High contrast everywhere -- white text pops on dark background
+Background rules (ALWAYS):
+- Slightly blurred, cinematic and premium
+- Supports text readability
+- Subtle depth effect
+- Avoid clutter or busy details
 
-QUALITY: Ultra HD, crisp edges, professional typography, no watermarks, no faces."""
+COLOR SYSTEM (pick ONLY 3-4 colors based on topic):
+Recommended combos:
+  Dark Blue + Yellow + Red + White
+  Teal + Gold + White
+  Navy + Orange + White
+  Dark Green + Yellow + White
+Avoid: neon, rainbow, excessive glow, too many gradients
 
+TEXT LAYOUT - EXACT PLACEMENT:
+
+LINE 1 = "{line1}"
+  Position  : Top center of image
+  Style     : Red or dark solid rectangular bar spanning full width
+  Font      : White bold UPPERCASE, medium-large size, slight drop shadow
+  Purpose   : Exam name / target audience / series name
+
+LINE 2 = "{line2}"   <-- MOST IMPORTANT - BIGGEST TEXT IN THE ENTIRE THUMBNAIL
+  Position  : Center dominant area (takes up most visual weight)
+  Style     : Largest font, very bold, white or yellow color
+              Yellow or orange highlighted word-background strip behind it
+              Slight subtle shine, minimal glow, maximum readability
+  Purpose   : Main topic - must be readable from 6 feet away on mobile
+
+LINE 3 = "{line3}"
+  Position  : Directly below LINE 2
+  Style     : White font, medium size, NO background box, slight shadow
+              Compact line spacing
+  Purpose   : Subtitle or strategy hook line
+
+LINE 4 = "{line4}"
+  Position  : Bottom section of thumbnail
+  Style     : Orange or green or red filled horizontal bar
+              White bold font inside it, strong contrast
+              Key words slightly larger or highlighted
+  Purpose   : CTR trigger, emotional hook, free offer, urgency line
+
+TELUGU BADGE (MANDATORY):
+  Text      : తెలుగులో
+  Position  : Bottom-right corner
+  Style     : Yellow or pink rounded pill badge, slight shadow, clean padding
+
+LIGHTING RULES:
+- Soft cinematic light glow only directly behind LINE 2 text
+- Subtle rim highlights on main text
+- NO excessive bloom anywhere
+- NO AI fantasy glow effects
+
+VISUAL SUPPORT ELEMENTS (auto add, keep low opacity 15-25%, subtle, non-distracting):
+- Reasoning   : arrows, sequences, puzzle icons
+- Economy     : rupee, bar charts, line graphs
+- History     : fort silhouettes, ancient textures
+- Geography   : map outlines, globe, terrain
+- Polity/Law  : scales of justice, constitution cover
+- Art/Culture : sculpture silhouettes, dance poses, temple tops
+- Govt Schemes: welfare icons, public service imagery
+
+STRICT DO NOT:
+- No human faces unless specifically asked
+- No AI fantasy or sci-fi style
+- No over-detailed or busy background
+- No unreadable decorative fonts
+- No excessive glow or bloom effects
+- No clutter or random unrelated objects
+- No rainbow or neon colors
+
+MUST HAVE:
+- Strong visual hierarchy (LINE2 dominates everything)
+- Professional alignment and clean spacing
+- Bold readable typography throughout
+- Clean Photoshop-style finish
+- High contrast readability
+- Premium educational coaching brand look
+- Thumbnail must look viral-worthy and high-CTR
+- Must be clearly readable on mobile screen size
+
+Final output specs: 1792x1024, ultra sharp, YouTube CTR optimized, SKY Academy coaching style, natural Photoshop finish, balanced composition."""
     response = client.images.generate(
         model="dall-e-3",
         prompt=prompt,
