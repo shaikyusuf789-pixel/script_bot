@@ -1673,34 +1673,84 @@ def run_generation(api_key, provider, model, system_p, user_p,
 # ============================================================
 # THUMBNAIL GENERATION (DALL-E 3)
 # ============================================================
-def generate_thumbnail_dalle(line1: str, line2: str, line3: str, line4: str,
-                              topic: str, api_key: str, variation: int = 0) -> bytes:
-    import openai
-    client = openai.OpenAI(api_key=api_key, timeout=120.0)
+
+import re
+import json
+import base64
+import openai
+
+
+def generate_thumbnail_dalle(
+    line1: str,
+    line2: str,
+    line3: str,
+    line4: str,
+    topic: str,
+    api_key: str,
+    variation: int = 0
+) -> bytes:
+
+    client = openai.OpenAI(
+        api_key=api_key,
+        timeout=120.0
+    )
 
     var_str = f" Creative design variation #{variation}." if variation else ""
 
-    prompt = f"""Professional YouTube thumbnail, SKY Academy Telugu coaching style.{var_str}
+    prompt = f"""
+Professional YouTube thumbnail, SKY Academy Telugu coaching style.{var_str}
 
-STYLE: Photoshop-designed look. NOT AI flashy. Natural lighting. 3-4 colors only. Bold readable fonts. Strong hierarchy. Premium educational brand. 80% content, 20% margins.
+STYLE:
+Photoshop-designed look.
+NOT AI flashy.
+Natural lighting.
+3-4 colors only.
+Bold readable fonts.
+Strong hierarchy.
+Premium educational brand.
+80% content, 20% margins.
 
 TEXT LINES (place exactly as described):
 
 LINE1: "{line1}"
-→ Top center. Full-width dark red bar. White bold uppercase. Medium size. Drop shadow.
+→ Top center.
+Full-width dark red bar.
+White bold uppercase.
+Medium size.
+Drop shadow.
 
-LINE2: "{line2}"  ← BIGGEST TEXT. MOST DOMINANT.
-→ Center of image. Largest font. White or yellow. Yellow/orange strip behind it. Subtle shine. Maximum readability. Visible from 6 feet.
+LINE2: "{line2}"
+→ BIGGEST TEXT.
+MOST DOMINANT.
+Center of image.
+Largest font.
+White or yellow.
+Yellow/orange strip behind it.
+Subtle shine.
+Maximum readability.
+Visible from 6 feet.
 
 LINE3: "{line3}"
-→ Below LINE2. White medium font. No background box. Subtle shadow.
+→ Below LINE2.
+White medium font.
+No background box.
+Subtle shadow.
 
 LINE4: "{line4}"
-→ Bottom bar. Orange or green filled strip. White bold font inside. High contrast. CTR hook.
+→ Bottom bar.
+Orange or green filled strip.
+White bold font inside.
+High contrast.
+CTR hook.
 
-BADGE (MANDATORY): తెలుగులో → Bottom-right corner. Yellow rounded badge. Clean shadow.
+BADGE (MANDATORY):
+తెలుగులో
+Bottom-right corner.
+Yellow rounded badge.
+Clean shadow.
 
 AUTO THEME (detect topic from lines above, apply matching visuals):
+
 - Polity/Law → Parliament, constitution, court scales
 - Geography → India map, globe, terrain
 - History → forts, monuments, stone textures
@@ -1714,21 +1764,49 @@ AUTO THEME (detect topic from lines above, apply matching visuals):
 - Current Affairs → newspaper textures, modern overlays
 
 COLORS (3-4 only, pick by topic):
-Dark Blue+Yellow+White | Navy+Orange+White | Teal+Gold+White | Dark Green+Yellow+White
-No neon. No rainbow. No excessive glow.
 
-BACKGROUND: Slightly blurred. Cinematic depth. Supports text. No clutter.
+Dark Blue + Yellow + White
+Navy + Orange + White
+Teal + Gold + White
+Dark Green + Yellow + White
 
-LIGHTING: Soft glow only behind LINE2. No bloom. No AI fantasy glow.
+No neon.
+No rainbow.
+No excessive glow.
 
-SUPPORT VISUALS: Low opacity 15-25%. Subtle. Non-distracting. Auto-match topic.
+BACKGROUND:
+Slightly blurred.
+Cinematic depth.
+Supports text.
+No clutter.
+
+LIGHTING:
+Soft glow only behind LINE2.
+No bloom.
+No AI fantasy glow.
+
+SUPPORT VISUALS:
+Low opacity 15-25%.
+Subtle.
+Non-distracting.
+Auto-match topic.
 
 STRICT RULES:
-✗ No faces. No fantasy style. No busy background. No decorative unreadable fonts.
-✗ No excessive glow. No clutter. No neon colors.
-✓ Strong hierarchy. Clean alignment. Viral-worthy. Mobile readable.
 
-def generate_image(prompt):
+✗ No faces
+✗ No fantasy style
+✗ No busy background
+✗ No decorative unreadable fonts
+✗ No excessive glow
+✗ No clutter
+✗ No neon colors
+
+✓ Strong hierarchy
+✓ Clean alignment
+✓ Viral-worthy
+✓ Mobile readable
+"""
+
     response = client.images.generate(
         model="dall-e-3",
         prompt=prompt,
@@ -1739,56 +1817,128 @@ def generate_image(prompt):
     )
 
     return base64.b64decode(response.data[0].b64_json)
+
+
+# ============================================================
+# JSON SANITIZER
+# ============================================================
+
+def _sanitize_json_str(s: str) -> str:
+
+    s = s.strip()
+
+    # remove trailing commas
+    s = re.sub(r",\s*}", "}", s)
+    s = re.sub(r",\s*]", "]", s)
+
+    # smart quotes to normal quotes
+    s = s.replace("“", '"').replace("”", '"')
+    s = s.replace("‘", "'").replace("’", "'")
+
+    return s
+
+
 # ============================================================
 # PARSERS
 # ============================================================
+
 def parse_single_segment(raw: str):
+
     cleaned = raw.strip()
-    cleaned = re.sub(r"^```[a-zA-Z]*\s*\n?","",cleaned)
-    cleaned = re.sub(r"\n?```\s*$","",cleaned).strip()
+
+    cleaned = re.sub(
+        r"^```[a-zA-Z]*\s*\n?",
+        "",
+        cleaned
+    )
+
+    cleaned = re.sub(
+        r"\n?```\s*$",
+        "",
+        cleaned
+    ).strip()
+
+    # direct parse attempts
     for attempt in [cleaned, _sanitize_json_str(cleaned)]:
+
         try:
             result = json.loads(attempt)
+
             if isinstance(result, dict):
                 return result
+
             if isinstance(result, list) and result:
                 return result[0]
+
         except Exception:
             pass
-    m = re.search(r'\{[\s\S]*\}', cleaned)
+
+    # regex extraction
+    m = re.search(r"\{[\s\S]*\}", cleaned)
+
     if m:
-        for attempt in [m.group(), _sanitize_json_str(m.group())]:
+
+        for attempt in [
+            m.group(),
+            _sanitize_json_str(m.group())
+        ]:
+
             try:
                 result = json.loads(attempt)
+
                 if isinstance(result, dict):
                     return result
+
             except Exception:
                 pass
+
     return None
 
 
 def parse_seo_json(raw: str):
+
     cleaned = raw.strip()
-    cleaned = re.sub(r"^```[a-zA-Z]*\s*\n?","",cleaned)
-    cleaned = re.sub(r"\n?```\s*$","",cleaned).strip()
+
+    cleaned = re.sub(
+        r"^```[a-zA-Z]*\s*\n?",
+        "",
+        cleaned
+    )
+
+    cleaned = re.sub(
+        r"\n?```\s*$",
+        "",
+        cleaned
+    ).strip()
+
     for attempt in [cleaned, _sanitize_json_str(cleaned)]:
+
         try:
             result = json.loads(attempt)
+
             if isinstance(result, dict):
                 return result
+
         except Exception:
             pass
-    m = re.search(r'\{[\s\S]*\}', cleaned)
+
+    m = re.search(r"\{[\s\S]*\}", cleaned)
+
     if m:
-        for attempt in [m.group(), _sanitize_json_str(m.group())]:
+
+        for attempt in [
+            m.group(),
+            _sanitize_json_str(m.group())
+        ]:
+
             try:
-                return json.loads(attempt)
+                result = json.loads(attempt)
+                return result
+
             except Exception:
                 pass
-    return None
 
-
-# ============================================================
+    return None# ============================================================
 # GOOGLE SHEETS
 # ============================================================
 def push_to_gsheet(chunks, seo_title="", seo_tags=""):
