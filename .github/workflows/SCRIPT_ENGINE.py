@@ -176,7 +176,6 @@ st.markdown("""
 # ============================================================
 PAGEGRID_BASE_URL     = "https://api.pagegrid.in"
 HARDCODED_CLAUDE_KEY  = "sk-pgrid-bc7765111cae9b0aa9cd62125ff078523667bd377533de3d0396ad2bdda5727b"
-HARDCODED_OPENAI_KEY  = "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"
 WORDS_PER_SEGMENT     = 165
 SHEET_ID              = "1dNHDgkX6vhdhZSi5SavBgNihWe04zayRQwyMcCwNlOI"
 
@@ -1675,9 +1674,9 @@ def run_generation(api_key, provider, model, system_p, user_p,
 # THUMBNAIL GENERATION (DALL-E 3)
 # ============================================================
 def generate_thumbnail_dalle(line1: str, line2: str, line3: str, line4: str,
-                              topic: str, variation: int = 0) -> bytes:
+                              topic: str, api_key: str, variation: int = 0) -> bytes:
     import openai
-    client = openai.OpenAI(api_key=HARDCODED_OPENAI_KEY, timeout=120.0)
+    client = openai.OpenAI(api_key=api_key, timeout=120.0)
 
     var_str = f" Creative design variation #{variation}." if variation else ""
 
@@ -1904,9 +1903,22 @@ with st.sidebar:
     st.markdown("### Google Sheets")
     st.success("Service account loaded\n\n**forscripting@gen-lang-client...**\n\nPush to Sheets always ready.", icon="🔑")
     st.caption(f"[Open Target Sheet](https://docs.google.com/spreadsheets/d/{SHEET_ID}/edit)")
+
+    # ── CHANGE 2: OpenAI key input for DALL-E thumbnail ──
     st.divider()
-    st.markdown("### Thumbnail Generator")
-    st.info("DALL-E 3 key hardcoded.\nThumbnail generation is always ready.", icon="🎨")
+    st.markdown("### Thumbnail (DALL-E 3)")
+    dalle_key_input = st.text_input(
+        "OpenAI API Key for DALL-E",
+        type="password",
+        placeholder="sk-proj-...",
+        help="Needs a valid OpenAI key with DALL-E 3 access. Get one at platform.openai.com",
+        key="dalle_key_sidebar",
+    )
+    if dalle_key_input.strip():
+        st.markdown('<p class="key-ok">DALL-E key entered ✓</p>', unsafe_allow_html=True)
+    else:
+        st.markdown('<p class="key-warn">Paste your OpenAI key here to enable thumbnail generation</p>', unsafe_allow_html=True)
+
     st.divider()
     st.caption("SCRIPT ENGINE v4.0 · SKY Academy Internal Tool")
     st.caption(f"Each segment strictly 150-180 words")
@@ -2413,6 +2425,7 @@ with st.container():
     Create high-CTR SKY Academy style thumbnails with DALL-E 3.
     Fill the 4 lines manually, or click <b>AI Suggest Lines</b> to auto-fill based on your script.
     Then click <b>Generate Thumbnail</b> to create a professional Photoshop-style thumbnail.
+    <br><b>Note:</b> Paste your OpenAI API key in the sidebar (Thumbnail section) before generating.
     </div>
     """, unsafe_allow_html=True)
 
@@ -2473,7 +2486,7 @@ with st.container():
             "🎨 Generate Thumbnail",
             key="thumb_gen_btn",
             use_container_width=True,
-            help="Creates thumbnail with DALL-E 3 (hardcoded OpenAI key)",
+            help="Creates thumbnail with DALL-E 3 (requires OpenAI key in sidebar)",
         )
     with tb3:
         thumb_regen_btn = st.button(
@@ -2514,13 +2527,16 @@ with st.container():
                     _ts.empty()
                     st.error(f"Suggestion error: {_exc}")
 
-    # Handle Generate Thumbnail
+    # ── CHANGE 3a: Handle Generate Thumbnail (uses dalle_key_sidebar) ──
     if thumb_gen_btn:
         l1 = st.session_state.get("thumb_l1", "").strip()
         l2 = st.session_state.get("thumb_l2", "").strip()
         l3 = st.session_state.get("thumb_l3", "").strip()
         l4 = st.session_state.get("thumb_l4", "").strip()
-        if not any([l1, l2, l3, l4]):
+        dalle_api_key = st.session_state.get("dalle_key_sidebar", "").strip()
+        if not dalle_api_key:
+            st.error("Please enter your OpenAI API key in the sidebar (under **Thumbnail** section) before generating!")
+        elif not any([l1, l2, l3, l4]):
             st.error("Please fill at least one line before generating!")
         else:
             with st.spinner("Generating thumbnail with DALL-E 3 HD... (20-30 seconds)"):
@@ -2531,6 +2547,7 @@ with st.container():
                         l3 or "STRATEGY + PDF FREE",
                         l4 or "ఇప్పుడే చూడండి!",
                         st.session_state.last_topic or "competitive exam",
+                        api_key=dalle_api_key,
                         variation=0,
                     )
                     st.session_state.thumb_img_bytes = img_bytes
@@ -2539,31 +2556,36 @@ with st.container():
                     st.rerun()
                 except Exception as _exc:
                     st.error(f"Thumbnail generation error: {_exc}")
-                    st.caption("Check that the OpenAI key has DALL-E 3 access.")
+                    st.caption("Check that your OpenAI key is valid and has DALL-E 3 access.")
 
-    # Handle Regenerate
+    # ── CHANGE 3b: Handle Regenerate (uses dalle_key_sidebar) ──
     if thumb_regen_btn and st.session_state.thumb_img_bytes is not None:
         l1 = st.session_state.get("thumb_l1", "").strip()
         l2 = st.session_state.get("thumb_l2", "").strip()
         l3 = st.session_state.get("thumb_l3", "").strip()
         l4 = st.session_state.get("thumb_l4", "").strip()
+        dalle_api_key = st.session_state.get("dalle_key_sidebar", "").strip()
         new_variation = (st.session_state.thumb_variation + 1) % 50 + 1
-        with st.spinner(f"Regenerating thumbnail (variation #{new_variation})..."):
-            try:
-                img_bytes = generate_thumbnail_dalle(
-                    l1 or "SKY ACADEMY",
-                    l2 or "COMPETITIVE EXAM PREPARATION",
-                    l3 or "STRATEGY + PDF FREE",
-                    l4 or "ఇప్పుడే చూడండి!",
-                    st.session_state.last_topic or "competitive exam",
-                    variation=new_variation,
-                )
-                st.session_state.thumb_img_bytes = img_bytes
-                st.session_state.thumb_variation = new_variation
-                st.success(f"New variation #{new_variation} generated!")
-                st.rerun()
-            except Exception as _exc:
-                st.error(f"Regen error: {_exc}")
+        if not dalle_api_key:
+            st.error("Please enter your OpenAI API key in the sidebar (under **Thumbnail** section)!")
+        else:
+            with st.spinner(f"Regenerating thumbnail (variation #{new_variation})..."):
+                try:
+                    img_bytes = generate_thumbnail_dalle(
+                        l1 or "SKY ACADEMY",
+                        l2 or "COMPETITIVE EXAM PREPARATION",
+                        l3 or "STRATEGY + PDF FREE",
+                        l4 or "ఇప్పుడే చూడండి!",
+                        st.session_state.last_topic or "competitive exam",
+                        api_key=dalle_api_key,
+                        variation=new_variation,
+                    )
+                    st.session_state.thumb_img_bytes = img_bytes
+                    st.session_state.thumb_variation = new_variation
+                    st.success(f"New variation #{new_variation} generated!")
+                    st.rerun()
+                except Exception as _exc:
+                    st.error(f"Regen error: {_exc}")
 
     # Display generated thumbnail
     if st.session_state.thumb_img_bytes:
