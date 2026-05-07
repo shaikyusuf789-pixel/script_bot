@@ -1728,17 +1728,17 @@ STRICT RULES:
 ✗ No excessive glow. No clutter. No neon colors.
 ✓ Strong hierarchy. Clean alignment. Viral-worthy. Mobile readable.
 
-Size: 1792x1024. Ultra sharp. High CTR. SKY Academy premium coaching style."""
-response = client.images.generate(model="dall-e-3",
+def generate_image(prompt):
+    response = client.images.generate(
+        model="dall-e-3",
         prompt=prompt,
         size="1792x1024",
         quality="hd",
         response_format="b64_json",
         n=1,
     )
+
     return base64.b64decode(response.data[0].b64_json)
-
-
 # ============================================================
 # PARSERS
 # ============================================================
