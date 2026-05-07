@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # ============================================================
-# SCRIPT_ENGINE.py — SKY Academy Video Script Generator v3.2
+# SCRIPT_ENGINE.py — SKY Academy Video Script Generator v4.0
 # Three Input Modes: Topic | Multi-Transcript Merge | Book PDF
 # Video Types: General (Strategy/Motivation) | Subjective (Deep Teaching)
-# v3.2: AI Handout Generator · Fixed Headers · Rich Print-Ready PDFs
-# Bug Fixes: Live Stream Preview · Robust JSON Parsing · max_tokens 16000
+# v4.0: Telugu Lipi Output · Script-Only (No Image Prompts) · 150-180w Chunks
+#        AI Thumbnail Generator (DALL-E 3) · Standalone Handout Mode
 # SKY Academy Internal Tool
 # ============================================================
 
@@ -13,6 +13,8 @@ import json
 import re
 import math
 import io
+import base64
+import random
 
 st.set_page_config(
     page_title="🎬 SKY Academy – Script Engine",
@@ -120,6 +122,26 @@ st.markdown("""
     .parse-warn { background:linear-gradient(to right,#fff7ed,#ffedd5);
         border-left:5px solid #f97316; padding:10px 14px;
         border-radius:0 10px 10px 0; font-size:0.82rem; color:#7c2d12; margin:8px 0; }
+    .thumb-block {
+        background: linear-gradient(135deg, #1a0800 0%, #2d1500 60%, #4a2500 100%);
+        border: 2px solid rgba(251,191,36,0.55);
+        border-radius: 18px; padding: 24px 28px; margin-top: 28px;
+        box-shadow: 0 8px 40px rgba(180,100,0,0.22);
+    }
+    .thumb-title {
+        color: #fbbf24; font-size: 1.3rem; font-weight: 800;
+        letter-spacing: 2px; margin-bottom: 16px; text-align: center;
+    }
+    .thumb-hint {
+        background: rgba(251,191,36,0.12); border: 1px solid rgba(251,191,36,0.3);
+        border-radius: 8px; padding: 10px 14px; font-size: 0.8rem;
+        color: #fde68a; margin-bottom: 14px;
+    }
+    .thumb-sugg-box {
+        background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.25);
+        border-radius: 8px; padding: 8px 12px; font-size: 0.78rem;
+        color: #fef3c7; margin: 4px 0;
+    }
     .stButton > button[kind="primary"] {
         background: linear-gradient(135deg,#302b63,#0f0c29) !important;
         color:white !important; border:none !important;
@@ -134,8 +156,8 @@ st.markdown("""
         <span class="sky-s">S</span><span class="sky-k">K</span><span class="sky-y">Y</span>
     </div>
     <div class="sky-acad">ACADEMY</div>
-    <div class="sky-tagline">SCRIPT ENGINE v3.2</div>
-    <div class="sky-sub">Telugu Video Script Generator &nbsp;·&nbsp; Internal Tool &nbsp;·&nbsp; AP Tutor Voice</div>
+    <div class="sky-tagline">SCRIPT ENGINE v4.0</div>
+    <div class="sky-sub">Telugu Lipi Output &nbsp;·&nbsp; Script-Only &nbsp;·&nbsp; 150-180w Chunks &nbsp;·&nbsp; Thumbnail Generator &nbsp;·&nbsp; Standalone Handout</div>
     <div class="sky-pills">
         <span class="sky-pill">📌 Topic → Original</span>
         <span class="sky-pill">📝 Multi-Transcript → Merge</span>
@@ -143,7 +165,8 @@ st.markdown("""
         <span class="sky-pill">🎯 General · 📖 Subjective</span>
         <span class="sky-pill">🔄 Per-Segment Regen</span>
         <span class="sky-pill">🎬 SEO Pack</span>
-        <span class="sky-pill">📄 AI Handout Generator</span>
+        <span class="sky-pill">🖼️ AI Thumbnail</span>
+        <span class="sky-pill">📄 AI Handout</span>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -151,9 +174,11 @@ st.markdown("""
 # ============================================================
 # CONSTANTS
 # ============================================================
-PAGEGRID_BASE_URL = "https://api.pagegrid.in"
-WORDS_PER_SEGMENT = 120
-SHEET_ID = "1dNHDgkX6vhdhZSi5SavBgNihWe04zayRQwyMcCwNlOI"
+PAGEGRID_BASE_URL     = "https://api.pagegrid.in"
+HARDCODED_CLAUDE_KEY  = "sk-pgrid-bc7765111cae9b0aa9cd62125ff078523667bd377533de3d0396ad2bdda5727b"
+HARDCODED_OPENAI_KEY  = "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"
+WORDS_PER_SEGMENT     = 165
+SHEET_ID              = "1dNHDgkX6vhdhZSi5SavBgNihWe04zayRQwyMcCwNlOI"
 
 _HARDCODED_CREDS = {
     "type": "service_account",
@@ -212,543 +237,176 @@ MODEL_OPTIONS = {
 # ============================================================
 _SKY_DNA = """
 ================================================================
-CORE PHILOSOPHY -- READ THIS FIRST BEFORE ANYTHING ELSE
+MANDATORY RULE 0 -- TELUGU LIPI (UNICODE SCRIPT) -- HIGHEST PRIORITY
+================================================================
+
+THE telugu_text FIELD MUST USE TELUGU UNICODE CHARACTERS FOR ALL TELUGU WORDS.
+NEVER USE ROMAN TRANSLITERATION (English letters to spell Telugu words).
+
+WRONG OUTPUT (transliteration -- will be REJECTED):
+  "so friends, eeroju manam Preamble gurinchi chuddam ookenaa"
+  "idi chala important -- note chesukokandi"
+  "meeru idi miss avvadam cheyyaddu"
+
+CORRECT OUTPUT (Telugu Unicode lipi -- REQUIRED):
+  "so friends, ఈరోజు మనం Preamble గురించి చూద్దాం ఓకేనా"
+  "ఇది చాలా important -- note చేసుకోండి"
+  "మీరు ఇది miss అవ్వడం చేయద్దు"
+
+RULE BREAKDOWN:
+  Telugu vocabulary & grammar words → Telugu Unicode script ALWAYS
+  English technical terms (Article, UPSC, Amendment, SSC CGL) → English letters
+  Borrowed English words in everyday Telugu speech → Telugu script:
+    "exam"      → "ఎగ్జామ్"
+    "important" → "ఇంపార్టెంట్"
+    "clear"     → "క్లియర్"
+    "strategy"  → "స్ట్రాటెజీ"
+    "power"     → "పవర్"
+    "security"  → "సెక్యూరిటీ"
+    "note it down" → stays as "note it down" (common English classroom phrase)
+    "lets go"   → stays as "lets go"
+    "friends"   → stays as "friends" (common address in AP Telugu classrooms)
+    "Got it?"   → stays as "Got it?"
+
+NOTE: The content examples throughout this DNA use Roman letters to ILLUSTRATE
+CONTENT PATTERNS only. Your actual telugu_text output MUST use Telugu Unicode.
+
+================================================================
+CORE PHILOSOPHY -- READ THIS FIRST
 ================================================================
 
 You are a REAL tutor from Andhra Pradesh standing in front of students.
-You are NOT translating a textbook into Telugu.
-You are NOT inserting Telugu words into an English sentence structure.
+You are NOT translating a textbook.
 You are THINKING in Telugu first, then speaking.
 
 ABSOLUTE RULE -- ELEVENLABS TTS COMPATIBILITY:
   The "telugu_text" field MUST contain ZERO emoji characters.
-  No emoticons, no Unicode symbols used as decoration, no pictographs whatsoever.
-  Example forbidden: "so friends! eeroju manam..."  with any emoji
-  Correct: "so friends! eeroju manam..." with no emoji at all
-  ElevenLabs will either ERROR OUT or read emoji names aloud if emojis are present.
-  "slide_prompt" MAY use emojis freely -- only "telugu_text" is restricted.
+  ElevenLabs will ERROR OUT or read emoji names aloud if emojis are present.
 
 THE MOST IMPORTANT RULE:
   MEANING COMES FIRST. STYLE COMES SECOND.
-
   Every sentence must mean something on its own.
-  The student should be able to follow the LOGIC even if all delivery cues are removed.
-  Never sacrifice the explanation for a connector phrase or a delivery cue.
+  Never sacrifice the explanation for a connector phrase.
   Never leave a gap in context between two sentences.
 
 ================================================================
-NATURAL AP TUTOR VOICE -- EXPLICIT GOOD vs BAD EXAMPLES
+NATURAL AP TUTOR VOICE
 ================================================================
 
-BAD -- bookish, translated, hollow, meaningless:
+BAD -- bookish, hollow, meaningless:
   "India ni Sovereign, Socialist, Secular, Democratic Republic ga chesyalanukunnaaru"
-     WHO wants this? WHY? WHEN? Zero context. Hollow sentence.
   "ee concept yokka importance artham chesukovalante manam history loki vellali"
-     Filler opener. Just go into history -- don't announce it.
-  "Constitution rayataniki vaaru nischayinchukunnaaru"
-     WHO is 'vaaru'? WHY? This tells the student nothing.
-  "idi chala important ookenaa" -- said BEFORE proving why it's important.
-  "ippudu manam ee topic gurinchi chuddam" -- hollow transition; just start explaining.
 
-GOOD -- natural, contextual, meaningful, AP tutor style:
-  "so friends -- nineteen forty-seven lo Independence vacchindi -- great! kaani ippudu real problem vacchindi --
-   ee desanni ela run cheseyali? Power evari dagara untundi? Courts ela work chestaayi?
-   Rights em untaayi? -- ivanni define cheseyataniki Constitution puttindi, ookenaa!"
-
-  "Sovereign ante -- chala simple ga cheppaalante -- manam ea country ki bow chesyalsina pani ledu.
-   America cheppinaa, Britain cheppinaa -- India tana decisions taane teesukuntundi.
-   That's what Sovereign means. Clear ga arthamainadaa?"
-
-  "ippudu oka important question -- UPSC two thousand nineteen lo exact ga idi adigaaru --
-   Preamble lo Socialist, Secular ane words originally unnaayaa? -- ledu friends!
-   nineteen seventy-six lo forty-second Amendment lo add chesaaru. Note it down!"
-
-  "B.R. Ambedkar -- ee person gurinchi cheppaalante -- rojuu eighteen to twenty gantalu work chesaaru.
-   two years, eleven months, seventeen days -- just to give us a perfect Constitution.
-   anduke aayanna Father of the Constitution antaaru -- adi empty title kaadu, deserve chesaaru!"
+GOOD -- natural, contextual, meaningful AP tutor style:
+  [In Telugu lipi]: Set up WHY, then say WHAT, then give exam angle.
+  Use real years, real examples, real humor.
+  Build suspense only when there is something to reveal.
 
 ================================================================
-MEANING FLOW RULES -- NON-NEGOTIABLE
-================================================================
-
-1. CONTEXT BEFORE CONTENT -- Always set up WHY before saying WHAT.
-2. NEVER LEAVE A GAP -- Each sentence must logically connect to the next.
-3. EXPLAIN, DON'T JUST STATE
-4. RHETORICAL QUESTIONS MUST HAVE IMMEDIATE ANSWERS
-5. DELIVERY CUES ARE SEASONING -- NOT THE MEAL
-
-================================================================
-DELIVERY CUES -- use only where they genuinely fit
+DELIVERY CUES
 ================================================================
 [Energetic]  [Serious]  [Whisper/Secret Tip]  [High Pitch]
 [Laughing]   [Deep Pause]  [Assertive]  [Calm, Instructional]
 [WARM, FRIENDLY -- WELCOME]
 
-CONNECTOR PHRASES -- weave naturally, never force:
-"ookenaa"  "okee right"  "avunaa kaadaa"  "chala important"
-"telusu kadaa"  "meeku telusu kadaa"  "Clear ga arthamainadaa?"
+CONNECTOR PHRASES (write in Telugu script in actual output):
+"ఓకేనా"  "ఓకే right"  "అవునా కాదా"  "చాలా important"
+"తెలుసు కదా"  "మీకు తెలుసు కదా"  "Clear గా అర్థమైందా?"
 "lets go"  "note it down"  "Got it?"
 
 LANGUAGE STYLE:
-- Telugu + English natural mix -- technical/exam terms in English, explanation in Telugu
-- Direct address: "meeeru", "meeku", "friends", "chudandi"
+- Telugu Unicode script for all Telugu + borrowed English words
+- English for: exam codes (SSC CGL, UPSC), article numbers, amendment names, technical terms
+- Direct address in Telugu script: "మీరు", "మీకు", "చూడండి", "అర్థమైందా"
+- "friends" stays in English (universal classroom address)
 - Light humor only when it fits -- never forced
-- Build suspense only when there's genuinely something to reveal
 
 ================================================================
 NUMBERS -- ALWAYS WRITE IN WORDS IN telugu_text -- MANDATORY
 ================================================================
 
 ElevenLabs TTS CANNOT reliably pronounce numerals written as digits.
-Writing "1947" or "42nd" or "Article 21" will cause mispronunciation or robotic digit-reading.
-ALWAYS write ALL numbers as ENGLISH WORDS in telugu_text. NO EXCEPTIONS.
+ALWAYS write ALL numbers as ENGLISH WORDS.
 
-BAD (will mispronounce or read as individual digits):
-  "1947 lo Independence vacchindi"
-  "Article 21 fundamental right"
-  "42nd Amendment 1976 lo vacchindi"
-  "Rs. 5000 fine"
-  "73rd Amendment lo Panchayati Raj vacchindi"
-  "6th Schedule tribal areas"
+BAD: "1947 లో Independence వచ్చింది"
+GOOD: "nineteen forty-seven లో Independence వచ్చింది"
 
-GOOD (TTS-safe, natural pronunciation):
-  "nineteen forty-seven lo Independence vacchindi"
-  "Article twenty-one fundamental right"
-  "forty-second Amendment nineteen seventy-six lo vacchindi"
-  "five thousand rupees fine"
-  "seventy-third Amendment lo Panchayati Raj vacchindi"
-  "sixth Schedule tribal areas"
+BAD: "Article 21 fundamental right"
+GOOD: "Article twenty-one fundamental right"
+
+BAD: "42nd Amendment 1976 లో వచ్చింది"
+GOOD: "forty-second Amendment nineteen seventy-six లో వచ్చింది"
 
 NUMBER WORD RULES:
-- Years: two-part split -- "nineteen forty-seven", "two thousand", "two thousand and one"
-- Article numbers: "Article twenty-one", "Article three-five-six" (keep "Article" in English)
+- Years: "nineteen forty-seven", "two thousand twenty-six"
+- Article numbers: "Article twenty-one", "Article three-five-six"
 - Amendment numbers: "forty-second Amendment", "seventy-third Amendment"
-- Percentages: "thirty percent" (never "30%")
-- Money: "five thousand rupees", "one lakh rupees" (never "Rs. 5000" or "5000 rupees" with digits)
-- Large numbers: "one lakh", "ten lakh", "one crore" (Indian English style)
-- Ordinals: "first", "second", "forty-second" (NEVER "42nd" or "42st")
+- Percentages: "thirty percent"
+- Money: "five thousand rupees", "one lakh rupees"
+- Ordinals: "first", "second", "forty-second" (NEVER "42nd")
 - Schedules: "sixth Schedule", "tenth Schedule"
-- BCE/CE: "second century BCE", "sixteenth century"
-- Exam marks: "sixty-five marks out of hundred"
-- This rule applies to ALL numbers -- dates, articles, years, counts, measurements -- everything.
 
 ================================================================
 TELUGU PRONUNCIATION -- DIRGHAM (LONG VOWELS) -- MANDATORY
 ================================================================
 
-ElevenLabs reads each Telugu character individually.
-Wrong vowel length (short vs long) = completely wrong pronunciation for the listener.
-ALWAYS verify correct Telugu spelling -- do NOT guess from English transliteration.
+ALWAYS verify correct Telugu spelling.
+Long-a = aa sound (ా), Long-i = ii/ee sound (ీ), Long-u = uu/oo sound (ూ)
 
-CRITICAL RULE: If an AP Telugu speaker naturally elongates a syllable while speaking,
-that syllable MUST use the long vowel character in the Telugu script:
-  Long-a  =  aa sound   (ా)
-  Long-i  =  ii/ee sound (ీ)
-  Long-u  =  uu/oo sound (ూ)
-  Long-e  =  ee sound   (ే)
-  Long-o  =  oo sound   (ో)
-
-COMMON WORDS OFTEN MISSPELLED WITH SHORT VOWEL -- USE LONG VOWEL:
-  Dance/Culture: kuchipudi (WRONG) --> koochipudi spelling must be కూచిపూడి (KUU-chi-PUU-di)
-  Worship:       puja (WRONG short) --> must be పూజ (PUU-ja)
-  Knowledge:     jnanam must be జ్ఞానం with correct spelling
-  Government:    ప్రభుత్వం -- verify correct Telugu spelling each time
-
-GENERAL GUIDELINES:
-- For cultural terms, classical dance names, AP/Telangana place names: highest priority
-- When mixing English with Telugu: English words stay in English (no Telugu spelling of English)
-- If unsure of correct Telugu spelling for a word: write it in English instead of guessing
-- Festival names, river names, district names in Telugu all need dīrgham verification
-- The test: read the word aloud in AP Telugu style -- if a vowel sounds long, use the long character
+CRITICAL words:
+  కూచిపూడి (KUU-chi-PUU-di) -- both syllables long
+  పూజ (PUU-ja) -- long u
+  If unsure: write the word in English rather than guess wrong Telugu spelling
 
 ================================================================
-LIST AND SERIES READING -- HUMANIZED FLOW (NON-ROBOTIC)
+LIST AND SERIES -- HUMANIZED FLOW
 ================================================================
 
-When the script includes any list, pillars, schedules, articles, or series of items:
-NEVER dump them as a flat robotic sequence. Always use CONNECTING LANGUAGE between items.
+NEVER dump items as flat robotic sequence.
+ALWAYS use connecting language between items.
 
-BAD (robotic, bookish -- kills the video experience):
-  "Pillar one Visual Arts. Pillar two Architecture. Pillar three Literature.
-   Pillar four Performing Arts. Pillar five AP Heritage Sites. Pillar six Current Affairs."
+BAD: "Pillar one Visual Arts. Pillar two Architecture. Pillar three Literature."
 
-GOOD (natural, flowing, humanized AP tutor voice):
-  "First pillar lo em undhi ante -- Visual Arts, Architecture, Sculpture -- basically
-   eyes tho enjoy chesey anni ikkade cover avutundi, ookenaa.
-   Next pillar ki vastunte -- second one complete ga Literature ki reserved --
-   books, poems, writing forms -- anni ikkade.
-   Okka step munduku podam -- third pillar lo Performing Arts, Dance, Music, Theatre --
-   stage meedha jarige anni -- anni ikkade collect ayyaayi!
-   Final ga -- sixth pillar -- idi exam point of view lo chala chala important --
-   Current Affairs in Art and Culture -- note it down carefully!"
+GOOD: "First pillar లో ఏముందంటే -- Visual Arts, Architecture, Sculpture --
+eyes తో enjoy చేసే అన్నీ ఇక్కడే cover అవుతాయి ఓకేనా.
+Next pillar కి వస్తే -- second one complete గా Literature కి reserved --
+books, poems, writing forms -- అన్నీ ఇక్కడే!"
 
-RULES FOR HUMANIZED LIST READING:
-1. Maximum two or three items per sentence -- never dump all items in one go
-2. Add a brief connective commentary after every two or three items
-3. TRANSITION PHRASES between list items:
-   "next ki vastunte --" / "oka step munduku --" / "inkaa interesting ga --"
-   "ee part lo highlight enti ante --" / "final ga --" / "chivari ga --"
-   "ikkade vastunte chudandi --" / "ee point tarvata --"
-4. Give each item a brief one-word flavor that makes it memorable:
-   Not just "Article twenty-one" but "Article twenty-one -- the life-giving one"
-   Not just "sixth Schedule" but "sixth Schedule -- the tribal protector"
-5. The LAST item in a list always gets special emphasis:
-   "and the most exam-important one --" / "chivari ga, ee one note chesukovalsinidi --"
-6. For exam-heavy lists: after completing the list, add one quick connection:
-   "ivi anni kalipi [topic] ki complete picture ista -- ookenaa!"
-7. For numbered series (three pillars, five schedules, six amendments):
-   - First item: set context -- "idi manam start point ga teesukuntaam --"
-   - Middle items: build -- "ee part lo interesting enti ante --"
-   - Last item: close with impact -- "chivari ga -- ee one exam lo most asked --"
+TRANSITION PHRASES between list items:
+"next కి వస్తే --" / "ఒక step ముందుకు --" / "ఇంకా interesting గా --"
+"ఈ part లో highlight ఏమిటంటే --" / "final గా --" / "చివరగా --"
 
 ================================================================
-MEMORY HINTS -- MEMORY TRICK RULES -- RICH EXAMPLES LIBRARY (SKY ACADEMY STYLE)
+MEMORY HINTS -- RULES
 ================================================================
 
-HOW SKY ACADEMY MEMORY HINTS WORK:
-The hint must be: OBVIOUS -- CLEVER -- IMPOSSIBLE TO FORGET.
-Student should laugh or say "oh wow, I will never forget this!"
-If you need to explain the hint, it is a BAD hint. Start over.
+ABSOLUTE BAN: NO abbreviation mnemonics, NO first-letter tricks, NO acronyms.
+ONLY use WORD-ASSOCIATION and INTERLINKING.
 
-CORE RULES -- READ VERY CAREFULLY:
-- NEVER EVER use abbreviation mnemonics -- this means NO first-letter tricks, NO acronyms,
-  NO taking the first letter of each word and building a shortcut word or phrase from them.
-  BANNED examples of what NOT to generate:
-    "AMRP = Ajanta Mughal Rajput Pahari" -- BANNED, first-letter trick
-    "TDK = Three Dimensional Knowledge" -- BANNED, acronym
-    "VIBGYOR" style -- BANNED
-    "BKKKOMMS" style -- BANNED
-    Any hint where you assign letters to concepts -- BANNED
-  The student should never have to memorize which letter stands for which concept.
-  If you catch yourself writing "first letter of X is..." -- STOP and find a different trick.
+NEVER say "Memory Hint" or "Memory Trick" in the script.
+Introduce naturally:
+  "దీన్ని simple గా --"
+  "ఎలా గుర్తు పెట్టుకోవాలంటే --"
+  "best trick ఏమిటంటే --"
+  "ఒక simple connection చూడండి --"
 
-- ONLY use WORD-ASSOCIATION and INTERLINKING:
-  * Find meaning INSIDE the word itself (Katha=story --> Kathak from story-land UP)
-  * Link to geography/history naturally (కూచిపూడి = village in AP = dance named after it)
-  * Number links: forty-two degree heat --> forty-second Amendment style
-  * Telugu number sound links: six = aaru --> sounds like "aaravadhu" (don't shout) --> link to topic
-  * Calendar date links: Feb fourteen = Valentine's --> find love/union/bonding angle
-  * If no trick is natural -- skip entirely, never force one
-- Student must feel the CONNECTION, not memorize a random letter string
-
-================================================================
-TELUGU NUMBER --> SOUND --> TOPIC LINKING
-================================================================
-When a number must be remembered, take its Telugu word,
-find a sound-alike Telugu word, and link that sound to the topic meaning.
-The connection must be INSTANT -- no explanation needed.
-
-  one   = okati   --> "oka chance" (only one shot)
-                    --> use for unique / once-in-history facts
-  two   = rendu   --> "rendu" (double trouble / second time)
-                    --> use for pairs, two conflicting events
-  three = mudu    --> "mudu" (fuss / complication / in English three sounds like tree,
-                     connect with greenery, oxygen, CO2, freshness, shadow, leaves)
-                    --> use for three-way splits, tricky articles
-  four  = nalugu  --> sounds like English "nail", or sounds like door, four-door,
-                     link with home door scene, or shutting door
-                    --> "nail it down" --> four pillars, four Vedas, four fundamental duties
-  five  = aidu    --> "five fingers/hand/punch/boxing/fighting" (tension / anxiety)
-                    --> five year plans, five schedules --> always creates tension!
-  six   = aaru    --> "aaravadhu" (don't shout / keep quiet)
-                    --> sixth Schedule = tribal areas, their own laws, outsiders keep quiet!
-  seven = edu     --> "edupu" (crying / weeping)
-                    --> seven Wonders --> so beautiful you cry; seven sins --> cry for humanity
-  eight = enimidi --> sounds like English "enemy"
-                    --> eighth Schedule = twenty-two languages, enemy of those who want to forget
-  nine  = tommidi --> sounds like "tommy" (stomach ache) or nine sounds like wine,
-                     link with alcohol, drunken person, irresponsible
-                    --> nine Fundamental Duties --> stomach it, you have to do them!
-  ten   = padi    --> "padipoyadu" (he fell / collapsed)
-                    --> tenth Schedule = Anti-Defection Law --> politician who switches party FALLS
-  eleven = padakondu --> eleven looks like two parallel lines or railway tracks
-                    --> eleventh Schedule = Panchayati Raj -- panchayat runs parallel to central govt
-  twelve = pannendu --> "pannaga" (snake wrapping around)
-                    --> twelve months wrap around the year like a snake
-  fourteen = padinalugu --> link to Feb fourteen Valentine's Day (see Calendar Links below)
-  twenty-one = iravai-okati --> "like marriage, two becomes one -- twenty-one to one"
-                    --> Article twenty-one = Right to Life and Liberty
-                    = life gets interesting after twenty-one (marriage age, funny connection)
-  forty-two = natai-rendu --> "forty-two degree fever" --> emergency in your body
-                    --> forty-second Amendment nineteen seventy-six = Emergency era, most controversial
-  like this, use number logic naturally -- do not force -- search for the best connection
-
-================================================================
-CALENDAR DATE MEMORY LINKS
-================================================================
-Use dates the student already knows emotionally -- bind the topic to that emotion.
-
-  Jan twenty-six  = Republic Day --> Constitution came into FORCE
-                    "Jan twenty-six, nineteen fifty -- Constitution enforced --
-                     India stopped being under British rule even on paper --
-                     Happy Republic Day means Happy Constitution Day!"
-
-  Feb fourteen  = Valentine's Day (love / union / bonding)
-                    "Panchsheel Agreement nineteen fifty-four -- India-China's five love promises --
-                     Feb fourteen energy -- five principles of peaceful love between neighbors --
-                     but this love story didn't last!"
-
-  Mar eight   = International Women's Day
-                    "Savitribai Phule started India's first girls' school --
-                     Mar eight energy -- every Women's Day, remember her name before any other!"
-
-  Apr one   = Fool's Day --> Link to exam traps, commonly confused facts
-                    "Don't be a fool -- Article thirty-two is the RIGHT to Constitutional Remedies,
-                     NOT Article two-two-six -- that's High Court's writ power --
-                     Fool's Day trap in every exam!"
-
-  Apr fourteen  = Ambedkar Jayanti --> All Constitution drafting facts anchor here
-                    "B.R. Ambedkar born April fourteen, eighteen ninety-one --
-                     Constitution drafting completed November twenty-six, nineteen forty-nine --
-                     his whole life was the Constitution"
-
-  Aug fifteen  = Independence Day --> nineteen forty-seven
-                    "Quit India nineteen forty-two --> nine plus four plus two equals fifteen -->
-                     August fifteen --> Independence nineteen forty-seven -- math never lies!"
-
-  Oct two   = Gandhi Jayanti --> Non-violence, Satyagraha, Civil Disobedience
-                    "Dandi March started March twelve --> three plus one plus two equals six -->
-                     aaru = aaravadhu --> British told Gandhi to keep quiet -- he didn't!"
-
-  Nov fourteen  = Children's Day (Nehru's birthday) --> First Prime Minister facts
-                    "Nov fourteen = Children's Day because Nehru loved children --
-                     but he also loved power -- India's first and longest-serving PM!"
-
-  Nov twenty-six  = Constitution Day --> Constitution ADOPTED nineteen forty-nine
-                    "Nov twenty-six adopted, Jan twenty-six enforced --
-                     adopted = baby born, enforced = baby walks --
-                     two months gap between birth and first steps!"
-
-  Dec ten  = Human Rights Day --> UDHR adopted nineteen forty-eight
-                    "UN gave world its Rights on Dec ten, nineteen forty-eight --
-                     India gave its own Rights in Constitution, Jan twenty-six, nineteen fifty --
-                     India was just sixteen months behind the whole world!"
-
-================================================================
-EXAMPLES LIBRARY -- ALL SUBJECTS
-================================================================
-
-POLITY / CONSTITUTION:
-  "Fancy words = France" (Liberty, Equality, Fraternity --> French Revolution)
-  "forty-two degrees fever --> Emergency --> forty-second Amendment nineteen seventy-six"
-  "Article twenty-one -- twenty-first birthday = LIFE's most important day --> Right to LIFE and Liberty"
-  "DPSP = Doctor's Prescription --> Non-justiciable (doctor advises, court can't force)"
-  "BRO wrote the Constitution --> B.R. Ambedkar --> Father of Constitution"
-  (bro word we use naturally in everyday life, so easy to connect -- BRO = B.R. Ambedkar's initials sound like 'bro')
-  "CAG -- the government's own watchdog who audits the government itself!
-   Think: a strict teacher who gives marks to the principal, not the students --
-   that's CAG -- the only authority in India that holds government accountable for every rupee spent!"
-  "Preamble = Entrance door of a house --> tells you what's inside before you enter"
-  "seventy-third Amendment = Panchayati Raj --> seven plus three equals ten --> ten fingers = hands-on local governance"
-  "tenth Schedule = Anti-Defection Law --> padi = fell --> politician who betrays party FALLS"
-  "Article three-five-six --> three plus five plus six equals fourteen --> Feb fourteen Valentine's -->
-   President loves the state so much he takes it over directly --
-   but this love is not welcome!"
-  "Rajya Sabha never fully dissolves --> like a marriage -- no complete divorce ever"
-  "Lok Sabha = five years --> aidu = tension --> every five years, election tension guaranteed!"
-  "Writ of Habeas Corpus --> Habeas = you have the body --> produce the person in court
-   --> think: Hey, where is the body? -- court asking the jailer!"
-  "Writ of Mandamus = we command --> Manda sounds like manda (dull/slow) -->
-   court telling the slow government officer -- stop being manda, DO YOUR JOB NOW!"
-  "Article nineteen = six freedoms --> aaru = aaravadhu --
-   BUT HERE the six freedoms are what YOU shout for! Speech, expression, assembly,
-   association, movement, profession -- six rights you demand, not keep quiet about!"
-  "Article thirty-two -- Ambedkar called it the HEART AND SOUL of the Constitution --
-   thirty-two = heart = love = most loved Article -- gives you direct access to Supreme Court!"
-  "Speaker of Lok Sabha votes ONLY in case of TIE --
-   Speaker is silent until scores are equal -- like a referee who only blows
-   the final whistle when it is a draw!"
-  "Rajya Sabha minimum age thirty, Lok Sabha minimum age twenty-five --
-   five extra years of wisdom needed to sit in the Elder's House!"
-  "Writ of Certiorari = to be informed -- Superior court CALLS DOWN a case from lower court --
-   like a boss calling an employee upstairs saying bring me that file!"
-  "Writ of Quo Warranto = by what authority? --
-   challenging someone's right to hold a public office --
-   court asks: who gave you this chair? show me your appointment letter!"
-  "Writ of Prohibition = STOP sign for lower courts --
-   Supreme or High Court tells lower court: do not exceed your jurisdiction!"
-
-HISTORY / FREEDOM STRUGGLE:
-  "eighteen fifty-seven = the first revolt -- one plus eight plus five plus seven equals twenty-one --
-   Article twenty-one, Right to Life -- India's first attempt to RECLAIM the right to live free!"
-  "Quit India nineteen forty-two --> nine plus four plus two equals fifteen --> August fifteen --> Independence nineteen forty-seven!"
-  "Simon Commission = nineteen twenty-seven --> No Indian members --> Simon says -- but India says NO!"
-  "Jallianwala Bagh = nineteen nineteen --> one plus nine plus one plus nine equals twenty -->
-   twenty seconds of firing changed India forever"
-  "Dandi March = two-forty-one miles --> two plus four plus one equals seven --> edu = crying -->
-   British cried after this!"
-  "Partition nineteen forty-seven --> rendu countries born --> India and Pakistan --
-   painful second birth of the subcontinent"
-  "Battle of Plassey seventeen fifty-seven --> one plus seven plus five plus seven equals twenty,
-   near fourteen --> Valentine's betrayal --> Mir Jafar's treachery was the ultimate backstab!"
-  "Rowlatt Act nineteen nineteen = No lawyer, no appeal, no daleel --
-   ROW + LATT = no room to fight back -- Gandhi called it the Black Act --
-   and launched Non-Cooperation Movement against it!"
-  "Morley-Minto Reforms nineteen-oh-nine = introduced separate electorates for Muslims --
-   MORE-LIE Minto = more lies, more division -- this one reform planted seeds of Partition nineteen forty-seven!"
-  "Government of India Act nineteen thirty-five = largest and most comprehensive British India act --
-   our Constitution borrowed maximum content from this act --
-   think of it as the truck chassis on which the Constitution built its full vehicle!"
-  "Cabinet Mission nineteen forty-six --> three members came --> mudu = complication --
-   this three-member plan created maximum confusion in Indian politics before Independence!"
-
-GEOGRAPHY:
-  "Narmada flows WEST --> Flip N sideways --> looks like W for West!"
-  "Thar Desert --> Thar sounds like Tar road --> hot, dry, burned = desert"
-  "Brahmaputra = Brahma's son --> putra = son --> mighty river born from Brahma himself"
-  "Western Ghats = faces the Arabian Sea directly --> southwest monsoon hits it FIRST -->
-   all the rain falls on the western slope --> lush, green, wet Kerala and Goa -->
-   eastern slope gets zero rain because the mountains STEAL it all --> dry and hot Deccan!"
-  "Chilika Lake, Odisha --> CHILI = hot and famous --> largest coastal lagoon in India, spicy important!"
-  "Loktak Lake = Manipur --> LOK = people, TAK = floating --> floating phumdis, people's floating lake"
-  "Deccan Plateau = from Sanskrit dakshina = south --
-   the great southern plateau, the dry heart of India --
-   far from both coasts, no sea breeze, no mountain to catch rain -- that is why it is always dry!"
-  "Konkan coast = narrow strip between Mumbai and Goa -->
-   Konkan sounds like concern -- always narrow and worrying to navigate!"
-  "Indus River = flows mostly through Pakistan --> the river that went away after Partition --
-   started in India, ended up in another country -- just like the Partition story itself!"
-  "Tropic of Cancer passes through eight states --
-   eight = enimidi = enemy -- the sun crosses these states at its most direct burning angle --
-   Gujarat, Rajasthan, Madhya Pradesh, Chhattisgarh, Jharkhand, West Bengal, Tripura, Mizoram --
-   eight states feeling the sun as an enemy at its peak!"
-  "Godavari River = longest river ENTIRELY within India --
-   flows through AP and Telangana into Bay of Bengal --
-   Dakshin Ganga = the Ganga of the South -- AP people's pride!"
-  "Sundarbans = sundar plus ban = beautiful forest --
-   largest mangrove delta in the world --
-   the name itself says beautiful -- and it is home to the Royal Bengal Tiger!"
-  "Shiwaliks = outermost and youngest Himalayan range --
-   Shiwalik sounds like cool and gentle -- youngest mountains, closest to plains,
-   least rugged, most accessible -- the baby sister of the Himalayan family!"
-  "Kaveri River = Karnataka versus Tamil Nadu dispute --
-   Kaveri sounds like kaaveri (anger in Telugu) --
-   the most legally fought-over river in India -- went to Supreme Court, to Tribunal, to everywhere --
-   the river that makes two states angry!"
-
-SCIENCE / BIOLOGY:
-  "Mitochondria = Powerhouse --> MITO = My Toe --> toe pushes you forward = POWER source"
-  "Photosynthesis: everything is SIX --> six CO2 plus six H2O --> C6H12O6 plus six O2 -->
-   aaru = aaravadhu --> plant says aaravadhu (don't shout) while quietly making food
-   with six of everything -- silent kitchen with sixes!"
-  "Noble Gases = zero valency --> Nobel Prize winners share NOTHING --> zero sharing, zero bonding"
-  "Nucleus = control center --> NUCLE sounds like UNCLE --> the bossy uncle of the cell who controls everything"
-  "Osmosis = water moves toward higher concentration --> water always moves toward the crowd,
-   just like people!"
-  "Newton's third law = every action has equal opposite reaction --> push a wall, wall pushes back
-   --> aaru! aaravadhu! wall shouts back at you with equal force!"
-  "DNA = Deoxyribonucleic Acid --> DE-OXY = oxygen removed --> DNA is the blueprint with oxygen stripped out"
-  "Enzyme = biological catalyst --> EN-ZYME sounds like engine --> enzyme is the engine that speeds up reactions"
-  "Mitosis = cell divides into TWO identical cells --> rendu = double trouble -->
-   cell makes an exact copy of itself = like a photocopier -- rendu identical daughters born!"
-  "Meiosis = cell divides into FOUR cells with half chromosomes --> nalugu = nail it down -->
-   four daughter cells, each with half the genetic material -- nail this difference with Mitosis!"
-  "Transpiration = plants sweat water vapor through stomata -- just like humans sweat to cool down --
-   plants do the same! Stomata = skin pores of the plant!"
-  "Refraction = light bends when crossing from one medium to another --
-   re-fract = break again -- light gets broken (bent) when it crosses mediums --
-   like a straw appearing bent in a glass of water!"
-  "Valency of Carbon = four -- nalugu = nail it -- carbon NAILS everything together --
-   found in ninety percent of all organic compounds -- the ultimate nail in chemistry!"
-  "Speed of light = three lakh kilometers per second --
-   mudu = three = light covers three lakh km every second --
-   three lakh is the most important three in all of science!"
-
-ECONOMY / CURRENT AFFAIRS:
-  "GDP versus GNP: D = Domestic (inside India borders only), N = National (Indians anywhere in world)
-   -- Domestic = home, National = nation spread everywhere"
-  "Repo Rate --> REPO = RBI REPOssesses money from banks when too much money is in market"
-  "Reverse Repo = banks give money TO RBI --> reverse direction --> RBI becomes the borrower"
-  "Inflation and Interest Rate are married --> one goes up, other must follow!"
-  "Bull Market = prices rising --> bull CHARGES UP with horns pointed up"
-  "Bear Market = prices falling --> bear SWIPES DOWN with paws pointed down"
-  "SEBI = Stock market watchdog --> SEBI sounds like sabi (everyone) --> watches everyone in market"
-  "CRR = Cash Reserve Ratio -- banks must keep cash physically with RBI as a security deposit --
-   like a shopkeeper keeping some stock locked away as emergency reserve!"
-  "SLR = Statutory Liquidity Ratio -- STATUTORY = by law -- bank must keep liquid assets by law,
-   no choice -- if statute says keep it, you keep it!"
-  "Fiscal Deficit = govt spends more than it earns --> like a student spending more than pocket money
-   every single month -- and borrowing from parents (public) to cover it!"
-  "Gresham's Law = bad money drives out good money --
-   Gresham sounds like greshma (summer heat) -- in summer everyone uses bad coins --
-   good coins get hoarded at home -- bad money circulates, good money hides!"
-  "Phillips Curve = inverse relation between inflation and unemployment --
-   Phillips is always in two opposite moods -- inflation up, unemployment down --
-   unemployment up, inflation down -- eternal seesaw, never both bad at same time!"
-  "Laffer Curve = after a point, higher taxes give LOWER revenue --
-   laff = laugh -- economists laughed when this idea was first proposed --
-   but it proved true -- after a threshold, people stop working or hide income!"
-
-ARTS & CULTURE:
-  "Bharatanatyam = Tamil Nadu --> Bharat plus Natyam = India's own dance --> oldest classical form"
-  "కూచిపూడి = village in Krishna district, AP --> dance named after its own village --
-   proud hometown dance! Say it correctly: KUU-chi-PUU-di -- both syllables long,
-   just like how proudly AP people say their village name!"
-  "Kathak = UP / North India --> Katha = story --> Kathak tells stories through every single step"
-  "Odissi = Odisha --> direct name connection -- OD = Odisha --> too easy, own state's gift!"
-  "Manipuri = Manipur --> direct name --> Manipur's gift to classical dance world"
-  "Mohiniyattam = Kerala --> Mohini = enchantress from mythology --> enchanting, graceful, feminine"
-  "Sattriya = Assam --> Satra = Vaishnavite monastery --> born inside Assam's monasteries"
-  "Indian painting styles -- FEEL the journey through eras, not a letter code:
-   Ajanta = dark caves, burning torches, two thousand years ago, Buddhist devotion in darkness
-   Mughal = royal courts, gold leaf paint, sixteenth century empire at its most powerful
-   Rajput = warrior kings, bold battle colors, late sixteenth century pride and courage
-   Pahari = cool hill kingdoms, romantic scenes, soft delicate colors, seventeenth century poetry
-   Journey from a monk's candle to a hilltop palace window --
-   that is India's four-chapter art story -- feel each era!"
-
-================================================================
-CRITICAL RULE -- NEVER SAY 'MEMORY HINT' IN THE SCRIPT
-================================================================
-
-The phrase 'Memory Hint' or 'Memory Trick' must NEVER appear in telugu_text.
-It sounds robotic, breaks the natural tutor voice, and kills the flow.
-A real tutor never announces "I am now giving you a memory hint."
-They just GIVE IT naturally, like it is part of the explanation.
-
-Instead, introduce every memory connection using one of these NATURAL FILLER WORDS:
-
-  "dinni simple ga --"
-  "ela gurtu pettukovalante --"
-  "easy ga gurtupettukovataniki --"
-  "best trick entante --"
-  "oka simple connection chudandi --"
-  "oka fun way lo cheppaalante --"
-  "simple ga link pettukovalante --"
-  "idi mind lo fix avvaali ante --"
-  "ikkada oka connection undi --"
-  "danni lock cheseyaalante --"
-
-BAD -- awkward, robotic, DO NOT USE:
-  "Memory hint -- AMRP -- A Morning Raag Playing..."
-  "Memory trick ga gurtu pettukokandi..."
-  "ippudu memory hint cheptaanu..."
-  "Memory hint: Article twenty-one = twenty-first birthday..."
-
-GOOD -- natural, warm, DO USE:
-  "ela gurtu pettukovalante -- forty-two degrees fever anuko -- forty-second Amendment, Emergency, nineteen seventy-six!"
-  "best trick entante -- BRO wrote the Constitution -- B.R. Ambedkar -- never forget!"
-  "dinni simple ga -- Article twenty-one, twenty-first birthday = life's biggest day = Right to Life!"
-  "oka fun way lo cheppaalante -- sixth Schedule, aaru, aaravadhu -- tribal areas tell outsiders
-   to keep quiet about their governance -- their land, their rules!"
-
-WHEN TO USE MEMORY HINTS:
-- Number / date / name is genuinely hard to remember
-- Skip entirely when the fact is already simple or self-explanatory
-- NEVER generate a forced or confusing hint -- if the connection is not instant, skip it
-- ALWAYS introduce with a natural filler word -- NEVER use the phrase "Memory Hint"
+EXAMPLES (content pattern; write actual output in Telugu lipi):
+  "forty-two degrees fever → forty-second Amendment, Emergency era"
+  "Article twenty-one, twenty-first birthday = life's biggest day = Right to LIFE"
+  "tenth Schedule = Anti-Defection = padi = fell = politician who betrays party FALLS"
+  "Rajya Sabha never fully dissolves → like a marriage, no complete divorce ever"
 
 ================================================================
 STRICT RULES FOR ALL MODES
 ================================================================
 1. NO bookish headings inside voiceover (SECTION 1, CHAPTER, PART N, etc.)
-2. NO "Part 1", "Segment 2", "Chapter N" labels anywhere in voiceover
-3. Script flows as ONE continuous natural conversation
-4. NEVER mention competitor channels, instructors, books, apps, courses by name
-5. ONLY SKY Academy -- weave "SKY Academy lo" naturally where it fits
-6. LAST SEGMENT must close with SKY Academy CTA
-7. ZERO emojis in telugu_text -- this is a hard technical requirement for TTS
-8. ALL numbers written as words -- this is a hard technical requirement for TTS
+2. Script flows as ONE continuous natural conversation
+3. NEVER mention competitor channels, instructors, books, apps by name
+4. ONLY SKY Academy -- weave "SKY Academy లో" naturally where it fits
+5. LAST SEGMENT must close with SKY Academy CTA
+6. ZERO emojis in telugu_text -- hard technical requirement
+7. ALL numbers written as words -- hard technical requirement
+8. ALL Telugu words in Telugu Unicode script -- hard technical requirement
 """
 
 TELUGU_TTS_MASTER_PROMPT = """
@@ -756,28 +414,23 @@ TELUGU_TTS_MASTER_PROMPT = """
 Telugu Voice Output -- Critical Rules
 ================================================================
 
-All voice text must be in Telugu script only. Do not use English script except for technical terms.
+All Telugu content in telugu_text must use Telugu Unicode script characters.
+Never Roman transliteration for Telugu words.
 
 Consonant stress must be clear:
-cha (చ), chha (ఛ -- hard), ta (ట), tha (ఠ -- hard), da (ద), dha (ధ -- hard)
-Double consonants (ottulu) like dd, kk, pp, tt, mm must be stressed clearly.
+cha (చ), chha (ఛ), ta (ట), tha (ఠ), da (ద), dha (ధ)
+Double consonants (ottulu) must be stressed.
 ksha (క్ష) and gya (జ్ఞ) must be pronounced clearly.
 
 Voice Style:
 - Speak like a teacher in a classroom -- slow, clear
-- Use one emotion tag per one or two lines: [Energetic] [Serious] [Calm, Instructional] [WARM, FRIENDLY -- WELCOME]
-- Natural pauses, emphasis, no robotic style
+- One emotion tag per one or two lines: [Energetic] [Serious] [Calm, Instructional]
+- Natural pauses, no robotic style
 
 Punctuation and Flow:
 - Use -- (double dash) for natural pauses
 - Questions must be answered immediately
 - Every line must be meaningful
-
-Image Prompt (VERY IMPORTANT):
-Each slide_prompt must have a cinematic or illusion-style image prompt that helps
-visualize the concept -- not just plain bullet points.
-Example: "A student standing confused among books, with glowing Art and Culture icons in the background"
-The student should be able to imagine the scene while listening.
 """
 
 _OUTPUT_FORMAT = """
@@ -786,23 +439,23 @@ HOOK + WELCOME -- MANDATORY FOR SEGMENT 1 ONLY
 ================================================================
 Segment 1 MUST ALWAYS open with:
 
-ONE POWERFUL HOOK LINE -- stops the student from scrolling.
-WELCOME LINE -- immediately follows:
+ONE POWERFUL HOOK LINE (in Telugu Unicode script -- stops the student from scrolling).
+WELCOME LINE immediately follows:
    [WARM, FRIENDLY -- WELCOME] Hello Everyone, Welcome to sky academy, where you not only learn the subject but memorise it for ever. [Energetic] Lets start!
-Then flow DIRECTLY into content -- no transition filler.
+Then flow DIRECTLY into content.
 
 ================================================================
 CLOSING CTA -- MANDATORY FOR LAST SEGMENT
 ================================================================
-Last segment must end with this COMPLETE block (adapt naturally to the topic):
+Last segment must end with (write Telugu portions in Telugu script):
 
-[Energetic] so friends -- eeroju manam [TOPIC] gurinchi chala deep ga chusukunnaam ookenaa.
-ee video yokka classroom notes -- print chesukodaaniki ready ga unna complete study material --
-SKY Academy Telegram channel lo share chestaanu, video chusina tarvata download chesukuni
-revision ki use cheseyandi -- absolutely free!
-meeru inkaa ea topic kaavalao, ea subject meeda video kaavalao -- comment section lo cheppandi.
-nenu personally prati comment chaduvaanu and reply istaanu -- idi naa word meeku!
-Any doubts unnaayaa? Comment below -- I will answer each one personally!
+[Energetic] so friends -- ఈరోజు మనం [TOPIC] గురించి చాలా deep గా చూసుకున్నాం ఓకేనా.
+ఈ video యొక్క classroom notes -- print చేసుకోడానికి ready గా ఉన్న complete study material --
+SKY Academy Telegram channel లో share చేస్తాను, video చూసిన తర్వాత download చేసుకుని
+revision కి use చేయండి -- absolutely free!
+మీరు ఇంకా ఏ topic కావాలో, ఏ subject మీద video కావాలో -- comment section లో చెప్పండి.
+నేను personally ప్రతి comment చదువుతాను and reply ఇస్తాను -- ఇది నా word మీకు!
+Any doubts ఉన్నాయా? Comment below -- I will answer each one personally!
 
 ================================================================
 OUTPUT FORMAT -- RETURN VALID JSON ARRAY ONLY
@@ -812,15 +465,16 @@ Return ONLY a valid JSON array. No preamble, no markdown fences, no explanation 
 [
   {
     "seg": 1,
-    "telugu_text": "full voiceover -- NO EMOJIS -- ALL NUMBERS AS WORDS",
-    "slide_prompt": "Heading: Title\\n- bullet 1\\n- bullet 2\\nImage Prompt: visual description"
+    "title": "3-5 word English heading for this segment (for study notes organization)",
+    "telugu_text": "full voiceover in TELUGU UNICODE SCRIPT -- ALL Telugu words in Telugu lipi -- NO Roman transliteration -- NO EMOJIS -- ALL NUMBERS AS ENGLISH WORDS"
   },
   ...
 ]
 - Generate exactly {NUM_SEGS} segments
-- Each segment ~{WORDS_PER_SEGMENT} words
+- Each segment MUST be 150-180 words (STRICTLY -- do not go below 150 or above 180)
 - ZERO emojis in telugu_text
-- ALL numbers written as words (nineteen forty-seven, not 1947)
+- ALL Telugu words in Telugu Unicode script (ఇలాంటివి) -- NEVER Roman (like this: "idi important")
+- ALL numbers written as English words (nineteen forty-seven, not 1947)
 - Ensure the JSON array is complete and properly closed with ]
 """
 
@@ -829,7 +483,7 @@ _DNA_GENERAL_VIDEO = """
 VIDEO TYPE: GENERAL -- STRATEGY / GUIDANCE / MOTIVATION
 ================================================================
 High motivation energy. Think passionate senior talking to juniors.
-"SKY Academy meeutho undi -- meeeru ontarigi leru."
+"SKY Academy మీతో ఉంది -- మీరు ఒంటరిగా లేరు."
 Max three or four strategy memory hints. Community building. Telegram CTA.
 """
 
@@ -845,34 +499,43 @@ Last segment: SKY Academy app CTA + Telegram study notes CTA.
 _SYSTEM_TOPIC = (
     "You are an expert Telugu video script writer for SKY Academy.\n"
     "Write a COMPLETE, ORIGINAL SKY Academy voiceover script on the given topic.\n"
-    "CRITICAL: telugu_text must contain ZERO emoji characters.\n"
-    "CRITICAL: ALL numbers in telugu_text must be written as English words (nineteen forty-seven, not 1947).\n"
-    "CRITICAL: Output must be a complete, valid JSON array -- do not truncate or stop mid-output.\n"
+    "CRITICAL RULE 1: telugu_text must contain ZERO emoji characters.\n"
+    "CRITICAL RULE 2: ALL numbers in telugu_text must be written as English words (nineteen forty-seven, not 1947).\n"
+    "CRITICAL RULE 3: ALL Telugu words must be in Telugu Unicode script. NEVER Roman transliteration.\n"
+    "  WRONG: 'eeroju manam chuddam ookenaa' | CORRECT: 'ఈరోజు మనం చూద్దాం ఓకేనా'\n"
+    "CRITICAL RULE 4: Each segment MUST be 150-180 words. Do not deviate from this range.\n"
+    "CRITICAL RULE 5: Output must be a complete, valid JSON array -- do not truncate or stop mid-output.\n"
 ) + _SKY_DNA + _OUTPUT_FORMAT
 
 _SYSTEM_TRANSCRIPT = (
     "You are an expert Telugu video script writer for SKY Academy.\n"
     "TRANSFORM competitor transcripts into a single 100% original SKY Academy script.\n"
-    "CRITICAL: telugu_text must contain ZERO emoji characters.\n"
-    "CRITICAL: ALL numbers in telugu_text must be written as English words (nineteen forty-seven, not 1947).\n"
-    "CRITICAL: Output must be a complete, valid JSON array -- do not truncate or stop mid-output.\n\n"
+    "CRITICAL RULE 1: telugu_text must contain ZERO emoji characters.\n"
+    "CRITICAL RULE 2: ALL numbers in telugu_text must be written as English words.\n"
+    "CRITICAL RULE 3: ALL Telugu words must be in Telugu Unicode script. NEVER Roman transliteration.\n"
+    "  WRONG: 'eeroju manam chuddam ookenaa' | CORRECT: 'ఈరోజు మనం చూద్దాం ఓకేనా'\n"
+    "CRITICAL RULE 4: Each segment MUST be 150-180 words.\n"
+    "CRITICAL RULE 5: Output must be a complete, valid JSON array.\n\n"
     "CASE A -- Same topic: SYNTHESIZE all data.\n"
     "CASE B -- Different aspects: MERGE and INTERLINK.\n"
     "CASE C -- Redundant: Take BEST from each, enrich.\n"
     "Step 1 -- STRIP ALL COMPETITOR TRACES\n"
     "Step 2 -- ENRICH CONTENT (+25% minimum)\n"
-    "Step 3 -- FULL SKY ACADEMY VOICE\n"
+    "Step 3 -- FULL SKY ACADEMY VOICE IN TELUGU LIPI\n"
 ) + _SKY_DNA + _OUTPUT_FORMAT
 
 _SYSTEM_PDF = (
     "You are an expert Telugu video script writer for SKY Academy.\n"
     "CONVERT dry book/study material into an engaging SKY Academy voiceover.\n"
-    "CRITICAL: telugu_text must contain ZERO emoji characters.\n"
-    "CRITICAL: ALL numbers in telugu_text must be written as English words (nineteen forty-seven, not 1947).\n"
-    "CRITICAL: Output must be a complete, valid JSON array -- do not truncate or stop mid-output.\n"
+    "CRITICAL RULE 1: telugu_text must contain ZERO emoji characters.\n"
+    "CRITICAL RULE 2: ALL numbers in telugu_text must be written as English words.\n"
+    "CRITICAL RULE 3: ALL Telugu words must be in Telugu Unicode script. NEVER Roman transliteration.\n"
+    "  WRONG: 'idi chala important' | CORRECT: 'ఇది చాలా important'\n"
+    "CRITICAL RULE 4: Each segment MUST be 150-180 words.\n"
+    "CRITICAL RULE 5: Output must be a complete, valid JSON array.\n"
     "Step 1 -- DESTROY THE BOOKISH TONE\n"
     "Step 2 -- INJECT LIFE AND DEPTH\n"
-    "Step 3 -- FULL SKY ACADEMY VOICE\n"
+    "Step 3 -- FULL SKY ACADEMY VOICE IN TELUGU LIPI\n"
 ) + _SKY_DNA + _OUTPUT_FORMAT
 
 
@@ -900,7 +563,6 @@ def store_new_chunks(parsed: list):
         cleaned = strip_emojis(c.get("telugu_text", ""))
         c["telugu_text"] = cleaned
         st.session_state[f"tv_{i}"] = cleaned
-        st.session_state[f"sv_{i}"] = c.get("slide_prompt", "")
     st.session_state.chunks   = parsed
     st.session_state.seo_pack = None
 
@@ -912,11 +574,11 @@ def sync_edits_to_chunks() -> list:
     synced = []
     for i, c in enumerate(chunks):
         synced.append({
-            "seg":          c.get("seg", i + 1),
-            "telugu_text":  strip_emojis(
+            "seg":         c.get("seg", i + 1),
+            "title":       c.get("title", f"Segment {i+1}"),
+            "telugu_text": strip_emojis(
                 st.session_state.get(f"tv_{i}", c.get("telugu_text", ""))
             ),
-            "slide_prompt": st.session_state.get(f"sv_{i}", c.get("slide_prompt", "")),
         })
     return synced
 
@@ -926,11 +588,6 @@ def sync_edits_to_chunks() -> list:
 # ============================================================
 
 def _sanitize_json_str(s: str) -> str:
-    """
-    Fix unescaped control characters (newlines, tabs, carriage returns)
-    that appear inside JSON string values. Walks character by character
-    tracking string boundaries so it never corrupts structural JSON chars.
-    """
     result = []
     in_string = False
     escape_next = False
@@ -964,24 +621,15 @@ def _sanitize_json_str(s: str) -> str:
 
 
 def _extract_complete_objects(json_str: str) -> list:
-    """
-    Walk through a JSON string and extract every complete {...} object
-    that contains a 'telugu_text' key. This handles:
-    - Truncated responses (only complete objects are returned)
-    - Extra wrapper text before/after the array
-    - Individual object parse failures (skips broken ones, keeps good ones)
-    """
     segments = []
     i = 0
     n = len(json_str)
 
     while i < n:
-        # Find the next opening brace
         start = json_str.find('{', i)
         if start == -1:
             break
 
-        # Track brace depth to find the matching closing brace
         depth = 0
         in_string = False
         escape_next = False
@@ -1007,12 +655,9 @@ def _extract_complete_objects(json_str: str) -> list:
             j += 1
 
         if found_end == -1:
-            # No complete object found from here -- truncated
             break
 
         obj_str = json_str[start:found_end + 1]
-
-        # Try raw parse, then sanitized parse
         parsed_obj = None
         for attempt_str in [obj_str, _sanitize_json_str(obj_str)]:
             try:
@@ -1023,14 +668,13 @@ def _extract_complete_objects(json_str: str) -> list:
                 parsed_obj = None
 
         if parsed_obj and isinstance(parsed_obj, dict):
-            # Accept objects that look like script segments
             if 'telugu_text' in parsed_obj or 'seg' in parsed_obj:
                 if 'seg' not in parsed_obj:
                     parsed_obj['seg'] = len(segments) + 1
                 if 'telugu_text' not in parsed_obj:
                     parsed_obj['telugu_text'] = ''
-                if 'slide_prompt' not in parsed_obj:
-                    parsed_obj['slide_prompt'] = ''
+                if 'title' not in parsed_obj:
+                    parsed_obj['title'] = f"Segment {parsed_obj.get('seg', len(segments)+1)}"
                 segments.append(parsed_obj)
 
         i = found_end + 1
@@ -1039,37 +683,23 @@ def _extract_complete_objects(json_str: str) -> list:
 
 
 def parse_segments(raw: str):
-    """
-    Parse a list of segment dicts from raw AI output.
-    Applies 5 progressive strategies to handle:
-      1. Clean response  -- direct parse
-      2. Escaped chars   -- sanitize then parse
-      3. Array boundary  -- slice to first [ and last ]
-      4. Truncated JSON  -- extract complete objects only
-      5. Full text scan  -- object extraction on entire raw string
-    Returns list of dicts or None.
-    """
     if not raw or not raw.strip():
         return None
 
-    # Remove markdown code fences
     cleaned = raw.strip()
     cleaned = re.sub(r"^```[a-zA-Z]*\s*\n?", "", cleaned)
     cleaned = re.sub(r"\n?```\s*$", "", cleaned).strip()
 
-    # ---- Strategy 1: Direct parse (clean response) ----
     for attempt in [cleaned, _sanitize_json_str(cleaned)]:
         try:
             result = json.loads(attempt)
             if isinstance(result, list) and result:
                 return result
-            # Sometimes AI returns a single object instead of array
             if isinstance(result, dict) and ('telugu_text' in result or 'seg' in result):
                 return [result]
         except Exception:
             pass
 
-    # ---- Strategy 2: Find array boundaries ----
     start_idx = cleaned.find("[")
     end_idx   = cleaned.rfind("]")
     if start_idx != -1 and end_idx > start_idx:
@@ -1082,20 +712,16 @@ def parse_segments(raw: str):
             except Exception:
                 pass
 
-    # ---- Strategy 3: Object-by-object extraction (handles truncation) ----
     search_start = start_idx if start_idx != -1 else 0
     segments = _extract_complete_objects(cleaned[search_start:])
     if segments:
-        # Sort by seg number for correct ordering
         return sorted(segments, key=lambda x: x.get('seg', 999))
 
-    # ---- Strategy 4: Full raw text scan ----
     if search_start > 0:
         segments = _extract_complete_objects(cleaned)
         if segments:
             return sorted(segments, key=lambda x: x.get('seg', 999))
 
-    # ---- Strategy 5: Last resort -- try raw in various forms ----
     for attempt in [raw, re.sub(r"```(?:json)?", "", raw).strip()]:
         try:
             result = json.loads(attempt)
@@ -1135,11 +761,14 @@ def build_prompts_topic(topic, num_segs, special_instructions, video_type="subje
         f"Generate a complete SKY Academy Telugu video script on:\n\n"
         f"**Topic:** {topic.strip()}\n"
         f"**Video Type:** {'General/Strategy/Motivation' if video_type=='general' else 'Subjective/Deep Teaching'}\n"
-        f"**Segments required:** {num_segs}\n**Words per segment:** ~{WORDS_PER_SEGMENT}\n{si}\n\n"
-        f"REMINDERS:\n- Segment 1: HOOK -> Welcome -> Content\n"
-        f"- Last segment: SKY Academy CTA + Telegram CTA\n"
+        f"**Segments required:** {num_segs}\n"
+        f"**Words per segment:** STRICTLY 150-180 words -- count carefully and stay within range\n{si}\n\n"
+        f"CRITICAL REMINDERS:\n"
+        f"- ALL Telugu words MUST be in Telugu Unicode script (ఇలా), NEVER Roman (like this)\n"
+        f"- Segment 1: HOOK (Telugu lipi) -> Welcome -> Content\n"
+        f"- Last segment: SKY Academy CTA in Telugu script\n"
         f"- ZERO emojis in telugu_text\n"
-        f"- ALL numbers as English words (nineteen forty-seven, forty-second Amendment, Article twenty-one)\n"
+        f"- ALL numbers as English words (nineteen forty-seven, forty-second Amendment)\n"
         f"- Lists/series: humanized flow with connectors, NOT robotic listing\n"
         f"- Output must be a COMPLETE valid JSON array ending with ]\n"
         f"- Return ONLY valid JSON array, no other text"
@@ -1166,9 +795,13 @@ def build_prompts_multi_transcript(transcripts, topic_hint, num_segs,
     user = (
         f"Transform {n} transcript(s) into a SINGLE SKY Academy voiceover.\n"
         f"**Video Type:** {'General/Strategy' if video_type=='general' else 'Subjective/Teaching'}\n"
-        f"**Segments required:** {num_segs}\n**Merge strategy:** {merge_guide}\n{hint}{si}\n\n"
+        f"**Segments required:** {num_segs}\n"
+        f"**Words per segment:** STRICTLY 150-180 words\n"
+        f"**Merge strategy:** {merge_guide}\n{hint}{si}\n\n"
         f"{transcript_blocks}\n\n"
-        f"REMINDERS:\n- Strip ALL competitor traces\n- Add 25%+ more value\n"
+        f"CRITICAL REMINDERS:\n"
+        f"- ALL Telugu words in Telugu Unicode script (ఇలా), NEVER Roman\n"
+        f"- Strip ALL competitor traces\n- Add 25%+ more value\n"
         f"- Last segment: SKY Academy CTA\n- ZERO emojis in telugu_text\n"
         f"- ALL numbers as English words\n- Lists: humanized flow, not robotic\n"
         f"- Output must be a COMPLETE valid JSON array ending with ]\n"
@@ -1185,9 +818,12 @@ def build_prompts_pdf(pdf_text, topic_hint, num_segs, special_instructions, vide
     user   = (
         f"Convert book/study material into SKY Academy voiceover.\n"
         f"**Video Type:** {'General/Strategy' if video_type=='general' else 'Subjective/Teaching'}\n"
-        f"**Segments required:** {num_segs}\n{hint}{si}\n\n"
+        f"**Segments required:** {num_segs}\n"
+        f"**Words per segment:** STRICTLY 150-180 words\n{hint}{si}\n\n"
         f"BOOK/STUDY MATERIAL:\n{pdf_text.strip()}\n\n"
-        f"REMINDERS:\n- Destroy bookish tone\n- Last segment: SKY Academy CTA\n"
+        f"CRITICAL REMINDERS:\n"
+        f"- ALL Telugu words in Telugu Unicode script (ఇలా), NEVER Roman\n"
+        f"- Destroy bookish tone\n- Last segment: SKY Academy CTA\n"
         f"- ZERO emojis in telugu_text\n- ALL numbers as English words\n"
         f"- Lists: humanized flow with connectors\n"
         f"- Output must be a COMPLETE valid JSON array ending with ]\n"
@@ -1206,7 +842,9 @@ def build_regen_segment_prompt(video_type, topic, chunks, seg_idx, instruction, 
         "You are an expert Telugu video script writer for SKY Academy.\n"
         "Regenerate EXACTLY ONE segment based on a specific instruction.\n"
         "CRITICAL: telugu_text MUST contain ZERO emoji characters.\n"
-        "CRITICAL: ALL numbers must be written as English words (nineteen forty-seven, not 1947).\n\n"
+        "CRITICAL: ALL numbers must be written as English words.\n"
+        "CRITICAL: ALL Telugu words must be in Telugu Unicode script. NEVER Roman transliteration.\n"
+        "CRITICAL: Segment must be 150-180 words.\n\n"
     ) + vdna + _SKY_DNA
     user = (
         f"Topic: {topic}\nTotal segments: {num_segs}\nRegenerating: Segment {seg_idx+1}\n"
@@ -1217,11 +855,12 @@ def build_regen_segment_prompt(video_type, topic, chunks, seg_idx, instruction, 
         + "RULES:\n"
         + ("- Segment 1: Hook + Welcome + Content\n" if is_first else "")
         + ("- LAST segment: SKY Academy CTA + Telegram CTA\n" if is_last else "")
-        + f"- ~{WORDS_PER_SEGMENT} words\n- ZERO emojis\n"
+        + f"- STRICTLY 150-180 words\n- ZERO emojis\n"
+        + f"- ALL Telugu words in Telugu Unicode script\n"
         + f"- ALL numbers as English words\n"
         + f"- Lists/series: humanized flow with connectors\n"
         + f"- Return ONLY valid JSON for ONE segment:\n"
-        + '{"seg":' + str(seg_idx+1) + ',"telugu_text":"...","slide_prompt":"..."}'
+        + '{"seg":' + str(seg_idx+1) + ',"title":"3-5 word English heading","telugu_text":"...Telugu Unicode script..."}'
     )
     return system, user
 
@@ -1243,35 +882,54 @@ def build_seo_prompt(topic, chunks, video_type):
     return system, user
 
 
+def build_thumbnail_suggest_prompt(topic, chunks, video_type):
+    preview = ""
+    if chunks:
+        preview = " ".join(c.get("telugu_text", "")[:120] for c in chunks[:3])
+    system = (
+        "You are a YouTube thumbnail CTR optimization expert for Indian competitive exam channels. "
+        "Return ONLY valid JSON, no markdown, no extra text."
+    )
+    user = f"""
+Generate high-CTR YouTube thumbnail text for SKY Academy Telugu competitive exam channel.
+
+Topic: {topic or "Competitive Exam Preparation"}
+Video Type: {"General Strategy/Motivation" if video_type == "general" else "Deep Subject Teaching"}
+Script Preview: {preview[:400]}
+
+Generate EXACTLY 4 lines optimized for maximum click-through rate:
+
+Line 1 (line1): Target audience / exam name — short, bold, uppercase
+  Examples: "AP HIGH COURT 2026", "SSC CGL 2026", "APPSC GROUP 1", "AP TET 2026", "UPSC 2026"
+
+Line 2 (line2): Core video topic — what makes them MUST-click
+  Examples: "POLITY HIGH YIELD", "BNS COMPLETE SERIES", "GEOGRAPHY STRATEGY", "CURRENT AFFAIRS BLAST"
+
+Line 3 (line3): Brief compelling sub-explanation
+  Examples: "WITH PYQ ANALYSIS", "EXAM GUARANTEED TOPICS", "STRATEGY + PDF FREE", "100 MARKS SHORTCUT"
+
+Line 4 (line4): Punchy Telugu text (MUST be in Telugu Unicode script)
+  Examples: "Miss అవ్వాండి!", "ఇప్పుడే చూడండి!", "ఒక్కసారి చూస్తే చాలు!", "ఇది మీకోసమే!"
+
+Return ONLY valid JSON:
+{{"line1": "...", "line2": "...", "line3": "...", "line4": "..."}}
+"""
+    return system, user
+
+
 # ============================================================
-# AI HANDOUT PROMPT BUILDER
+# AI HANDOUT PROMPT BUILDERS
 # ============================================================
 def build_handout_prompt(topic: str, chunks: list, num_pages: int) -> tuple:
     script_outline = ""
     for i, c in enumerate(chunks[:10]):
-        slide = c.get("slide_prompt", "")
-        heading = ""
-        bullets = []
-        for line in slide.split("\n"):
-            ln = line.strip()
-            if ln.lower().startswith("heading:"):
-                heading = ln[8:].strip()
-            elif ln.startswith(("•", "-", "*")):
-                b = ln.lstrip("•-* ").strip()
-                if b and not b.lower().startswith("image"):
-                    bullets.append(b)
-        script_outline += f"Segment {i+1}"
-        if heading:
-            script_outline += f" -- {heading}"
-        if bullets:
-            script_outline += ": " + " | ".join(bullets[:3])
-        script_outline += "\n"
+        title = c.get("title", f"Segment {i+1}")
+        script_outline += f"Segment {i+1}: {title}\n"
 
     target_words = num_pages * 380
 
     system = (
-        "You are an expert educational content creator for SKY Academy, "
-        "India's leading competitive exam preparation YouTube channel. "
+        "You are an expert educational content creator for SKY Academy. "
         "Create comprehensive, accurate, print-ready study handouts in ENGLISH ONLY. "
         "Include real data, dates, statistics, article numbers, case names. "
         "Return ONLY valid JSON. No markdown fences. No text outside the JSON."
@@ -1288,7 +946,7 @@ Script outline:
 Generate detailed JSON with this EXACT structure:
 {{
   "topic_title": "Full descriptive topic title",
-  "exam_importance": "2-3 sentences about why this topic appears in UPSC/APPSC/TSPSC/SSC exams and what question types appear",
+  "exam_importance": "2-3 sentences about why this topic appears in UPSC/APPSC/TSPSC/SSC exams",
   "key_facts": [
     {{"label": "short label", "value": "specific fact/date/data"}},
     {{"label": "short label", "value": "specific fact/date/data"}}
@@ -1296,15 +954,15 @@ Generate detailed JSON with this EXACT structure:
   "sections": [
     {{
       "heading": "Introduction / Historical Background",
-      "text": "Write 2-3 full paragraphs here with actual context, history, and significance. Do NOT leave this empty.",
+      "text": "Write 2-3 full paragraphs here with actual context, history, and significance.",
       "bullets": [],
       "table": null,
       "questions": []
     }},
     {{
       "heading": "Key Concepts / Important Terms",
-      "text": "1-2 paragraph explanation with real data and significance.",
-      "bullets": ["specific point with actual data or fact", "another specific point"],
+      "text": "1-2 paragraph explanation with real data.",
+      "bullets": ["specific point with actual data", "another specific point"],
       "table": {{
         "headers": ["Term / Item", "Meaning / Description", "Significance / Example"],
         "rows": [
@@ -1326,7 +984,7 @@ Generate detailed JSON with this EXACT structure:
     {{
       "heading": "Memory Tricks & Quick Connections",
       "text": "Use these clever connections to never forget these facts:",
-      "bullets": ["Memory trick 1 -- explain the connection clearly", "Memory trick 2 -- make it fun and memorable"],
+      "bullets": ["Memory trick 1 -- explain the connection clearly", "Memory trick 2 -- fun and memorable"],
       "table": null,
       "questions": []
     }},
@@ -1346,19 +1004,107 @@ Generate detailed JSON with this EXACT structure:
 
 STRICT RULES:
 1. ENGLISH ONLY -- absolutely no Telugu text
-2. Every section with "text" field MUST have 2-3 full sentences minimum -- NOT empty
-3. Include REAL specific data: exact dates, article numbers, amendment numbers, statistics
+2. Every "text" field MUST have 2-3 full sentences minimum
+3. Include REAL specific data: exact dates, article numbers, amendment numbers
 4. Tables must have minimum 4 rows of meaningful data
 5. Memory tricks must be instantly obvious and clever
-6. PYQs must be realistic exam-quality questions with exam name and approximate year
-7. Generate enough content to fill approximately {num_pages} A4 pages when printed
+6. PYQs must be realistic exam-quality questions
+7. Generate enough content to fill approximately {num_pages} A4 pages
 8. Return ONLY valid JSON -- nothing else"""
 
     return system, user
 
 
+def build_standalone_handout_prompt(topic_overview: str, num_pages: int) -> tuple:
+    target_words = num_pages * 380
+
+    system = (
+        "You are an expert educational content creator for SKY Academy. "
+        "Create comprehensive, accurate, print-ready study handouts in ENGLISH ONLY. "
+        "Include real data, dates, statistics, article numbers, case names. "
+        "Return ONLY valid JSON. No markdown fences. No text outside the JSON."
+    )
+
+    user = f"""Create a comprehensive study handout for competitive exam students based on the following topic overview and directions.
+
+TOPIC OVERVIEW & DIRECTIONS:
+{topic_overview.strip()}
+
+Target: approximately {num_pages} A4 printed page(s) (~{target_words} words of content)
+
+Generate detailed JSON with this EXACT structure:
+{{
+  "topic_title": "Full descriptive topic title",
+  "exam_importance": "2-3 sentences about why this topic appears in UPSC/APPSC/TSPSC/SSC exams",
+  "key_facts": [
+    {{"label": "short label", "value": "specific fact/date/data"}},
+    {{"label": "short label", "value": "specific fact/date/data"}}
+  ],
+  "sections": [
+    {{
+      "heading": "Introduction / Background",
+      "text": "Write 2-3 full paragraphs with actual context, history, and significance.",
+      "bullets": [],
+      "table": null,
+      "questions": []
+    }},
+    {{
+      "heading": "Core Concepts & Key Terms",
+      "text": "1-2 paragraph explanation with real data.",
+      "bullets": ["specific point", "another specific point"],
+      "table": {{
+        "headers": ["Item", "Description", "Significance"],
+        "rows": [
+          ["item1", "desc1", "sig1"],
+          ["item2", "desc2", "sig2"],
+          ["item3", "desc3", "sig3"],
+          ["item4", "desc4", "sig4"]
+        ]
+      }},
+      "questions": []
+    }},
+    {{
+      "heading": "Important Data & Statistics",
+      "text": "Paragraph with key numbers and current data.",
+      "bullets": ["data point 1", "data point 2"],
+      "table": null,
+      "questions": []
+    }},
+    {{
+      "heading": "Memory Tricks & Quick Connections",
+      "text": "Clever connections to never forget key facts:",
+      "bullets": ["trick 1", "trick 2"],
+      "table": null,
+      "questions": []
+    }},
+    {{
+      "heading": "Previous Year Questions (PYQ Style)",
+      "text": "",
+      "bullets": [],
+      "table": null,
+      "questions": [
+        "Q1. Full question? (Exam Year)",
+        "Q2. Full question? (Exam Year)",
+        "Q3. Full question? (Exam Year)"
+      ]
+    }}
+  ]
+}}
+
+STRICT RULES:
+1. ENGLISH ONLY
+2. Every "text" field: minimum 2-3 full sentences
+3. Real specific data: exact dates, article numbers, statistics
+4. Tables: minimum 4 rows
+5. PYQs: realistic exam-quality questions with exam name and year
+6. Fill approximately {num_pages} A4 pages
+7. Return ONLY valid JSON"""
+
+    return system, user
+
+
 # ============================================================
-# STUDY NOTES HTML
+# STUDY NOTES HTML (updated -- no slide_prompt)
 # ============================================================
 def generate_study_notes_html(chunks: list, video_type: str,
                                heading: str = "", youtube_link: str = "") -> str:
@@ -1367,34 +1113,18 @@ def generate_study_notes_html(chunks: list, video_type: str,
 
     sections_html = ""
     for i, chunk in enumerate(chunks):
-        slide   = chunk.get("slide_prompt", "")
-        sec_heading = f"Topic {i+1}"
-        bullets = []
-        for line in slide.strip().split("\n"):
-            ln = line.strip()
-            if not ln:
-                continue
-            lo = ln.lower()
-            if lo.startswith("heading:"):
-                sec_heading = ln[8:].strip()
-            elif lo.startswith("image prompt") or lo.startswith("image:"):
-                continue
-            elif ln.startswith(("•","-","*","–","▪")):
-                b = ln.lstrip("•-*–▪ ").strip()
-                if b and not b.lower().startswith("image"):
-                    bullets.append(b)
-
-        color     = accent_colors[i % len(accent_colors)]
-        bullet_li = "".join(f"<li>{b}</li>" for b in bullets)
+        title      = chunk.get("title", f"Segment {i+1}")
+        color      = accent_colors[i % len(accent_colors)]
+        tel_text   = chunk.get("telugu_text","")
+        preview    = tel_text[:280] + ("..." if len(tel_text) > 280 else "")
 
         sections_html += f"""
         <div class="ns" style="border-left-color:{color}">
           <div class="ns-head">
             <span class="ns-num" style="background:{color}">{i+1}</span>
-            <span class="ns-title">{sec_heading}</span>
+            <span class="ns-title">{title}</span>
           </div>
-          {"<ul class='nb'>" + bullet_li + "</ul>" if bullet_li
-           else "<p class='nb-empty'>Refer to video for detailed explanation.</p>"}
+          <p class="nb-text">{preview}</p>
           <div class="ann">
             <div class="ann-label">My Notes</div>
             <div class="ann-line"></div>
@@ -1443,9 +1173,7 @@ body{{font-family:'Segoe UI',Arial,sans-serif;background:#dde3f0;padding:20px;co
 .ns-head{{display:flex;align-items:center;gap:9px;padding:9px 12px;background:rgba(0,0,0,.03);border-bottom:1px solid #e5e7eb}}
 .ns-num{{width:24px;height:24px;min-width:24px;border-radius:50%;color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center}}
 .ns-title{{font-size:13.5px;font-weight:700;color:#111827;line-height:1.3}}
-.nb{{padding:9px 12px 9px 32px;list-style:disc}}
-.nb li{{font-size:13px;color:#374151;line-height:1.8;margin-bottom:2px}}
-.nb-empty{{padding:8px 12px;font-size:12px;color:#9ca3af;font-style:italic}}
+.nb-text{{padding:8px 12px;font-size:12.5px;color:#374151;line-height:1.75;font-family:'Noto Sans Telugu',sans-serif}}
 .ann{{padding:7px 12px 9px;border-top:1px dashed #e5e7eb}}
 .ann-label{{font-size:9px;color:#bbb;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}}
 .ann-line{{height:1px;background:#ebebeb;margin-bottom:8px}}
@@ -1481,7 +1209,6 @@ body{{font-family:'Segoe UI',Arial,sans-serif;background:#dde3f0;padding:20px;co
   <div class="tg">
     <h4>SKY Academy Telegram Channel</h4>
     <p>Free notes, daily PDFs, previous year questions and exam alerts --<br>
-    all available on the Telegram channel.<br>
     Join and take your preparation to the next level!</p>
   </div>
   <div class="ftr">
@@ -1490,7 +1217,7 @@ body{{font-family:'Segoe UI',Arial,sans-serif;background:#dde3f0;padding:20px;co
       <span style="color:#FFE66D">K</span>
       <span style="color:#4ECDC4">Y</span>
     </div>
-    <div class="fsub">SKY ACADEMY &nbsp;|&nbsp; Script Engine v3.2 &nbsp;|&nbsp; Internal Tool</div>
+    <div class="fsub">SKY ACADEMY &nbsp;|&nbsp; Script Engine v4.0 &nbsp;|&nbsp; Internal Tool</div>
   </div>
 </div>
 </body>
@@ -1544,8 +1271,7 @@ def render_handout_html(heading: str, youtube_link: str,
         vid_html = (
             '<div class="vid-banner">For better understanding, please watch our '
             '<a href="https://www.youtube.com/@Skyacademytelugu">'
-            'https://www.youtube.com/@Skyacademytelugu</a> '
-            'YouTube channel video related to this topic.</div>'
+            'https://www.youtube.com/@Skyacademytelugu</a> YouTube channel.</div>'
         )
 
     importance_html = ""
@@ -1644,13 +1370,11 @@ def render_handout_html(heading: str, youtube_link: str,
 body{{font-family:'Segoe UI',Arial,sans-serif;background:#d4d8e8;padding:20px;color:#111;font-size:13px;line-height:1.65;padding-bottom:60px}}
 .page{{max-width:820px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 6px 32px rgba(0,0,0,.18);margin-bottom:60px}}
 .pbtn-wrap{{text-align:center;padding:14px 20px 6px;background:#f8f9ff}}
-.pbtn{{background:linear-gradient(135deg,#020024,#090979);color:#fff;border:none;border-radius:8px;padding:10px 32px;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:1px;box-shadow:0 4px 14px rgba(9,9,121,.3)}}
+.pbtn{{background:linear-gradient(135deg,#020024,#090979);color:#fff;border:none;border-radius:8px;padding:10px 32px;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:1px}}
 .phint{{font-size:11px;color:#9ca3af;margin-top:5px}}
 .hdr{{background:linear-gradient(135deg,#020024 0%,#090979 50%,#00d4ff 100%);padding:24px 26px 20px;text-align:center}}
 .logo{{font-size:42px;font-weight:900;letter-spacing:10px;line-height:1;margin-bottom:2px}}
-.ls{{color:#FF6B6B;text-shadow:0 0 16px rgba(255,107,107,.5)}}
-.lk{{color:#FFE66D;text-shadow:0 0 16px rgba(255,230,109,.5)}}
-.ly{{color:#4ECDC4;text-shadow:0 0 16px rgba(78,205,196,.5)}}
+.ls{{color:#FF6B6B}}.lk{{color:#FFE66D}}.ly{{color:#4ECDC4}}
 .acad{{color:rgba(255,255,255,.65);font-size:8px;font-weight:800;letter-spacing:5px;text-transform:uppercase;margin-bottom:10px}}
 .htitle{{color:#FFE66D;font-size:22px;font-weight:800;line-height:1.3;margin:0 auto;max-width:92%}}
 .hsubtitle{{color:rgba(255,255,255,.5);font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-top:6px}}
@@ -1666,9 +1390,8 @@ body{{font-family:'Segoe UI',Arial,sans-serif;background:#d4d8e8;padding:20px;co
 .shdr{{padding:9px 14px;font-size:13px;font-weight:800;color:#fff;letter-spacing:0.3px}}
 .sbody{{padding:12px 14px;background:#fff}}
 .sbody p{{font-size:13px;color:#374151;line-height:1.8;margin-bottom:8px}}
-.sbody p:last-child{{margin-bottom:0}}
 .htbl{{width:100%;border-collapse:collapse;margin:10px 0;font-size:12px}}
-.htbl th{{background:#1e293b;color:#fff;padding:8px 10px;text-align:left;font-size:11px;font-weight:700;letter-spacing:0.3px}}
+.htbl th{{background:#1e293b;color:#fff;padding:8px 10px;text-align:left;font-size:11px;font-weight:700}}
 .htbl td{{padding:7px 10px;border-bottom:1px solid #e5e7eb;color:#374151;vertical-align:top;line-height:1.6}}
 .htbl tr.even td{{background:#f8fafc}}
 .htbl tr:last-child td{{border-bottom:none}}
@@ -1718,7 +1441,7 @@ def render_handout_docx(heading: str, youtube_link: str,
                         content_data: dict, topic: str):
     try:
         from docx import Document
-        from docx.shared import Pt, RGBColor
+        from docx.shared import Pt
         from docx.enum.text import WD_ALIGN_PARAGRAPH
 
         doc = Document()
@@ -1731,9 +1454,7 @@ def render_handout_docx(heading: str, youtube_link: str,
         if youtube_link.strip():
             vl.add_run(f"Video: {youtube_link.strip()}").italic = True
         else:
-            vl.add_run(
-                "For better understanding, watch: https://www.youtube.com/@Skyacademytelugu"
-            ).italic = True
+            vl.add_run("Watch: https://www.youtube.com/@Skyacademytelugu").italic = True
         vl.alignment = WD_ALIGN_PARAGRAPH.CENTER
         doc.add_paragraph()
 
@@ -1865,7 +1586,6 @@ def extract_any_file(file_bytes: bytes, filename: str):
 
 # ============================================================
 # AI CALL FUNCTIONS
-# Callback signature: progress_cb(n_chars: int, full_text: str)
 # ============================================================
 def call_claude_pagegrid(api_key, model, system, user, progress_cb=None):
     import anthropic
@@ -1925,12 +1645,6 @@ def call_gemini(api_key, model, system, user, progress_cb=None):
 
 def run_generation(api_key, provider, model, system_p, user_p,
                    status_ph, stream_ph=None):
-    """
-    Run generation with live streaming display.
-    status_ph  : st.empty() for the status bar
-    stream_ph  : st.empty() for the raw text stream (optional)
-    Callback now receives (n_chars, full_text) instead of just (n_chars).
-    """
     def _cb(n, text):
         status_ph.markdown(
             f'<div class="stream-progress">'
@@ -1958,7 +1672,61 @@ def run_generation(api_key, provider, model, system_p, user_p,
 
 
 # ============================================================
-# SINGLE SEGMENT PARSER
+# THUMBNAIL GENERATION (DALL-E 3)
+# ============================================================
+def generate_thumbnail_dalle(line1: str, line2: str, line3: str, line4: str,
+                              topic: str, variation: int = 0) -> bytes:
+    import openai
+    client = openai.OpenAI(api_key=HARDCODED_OPENAI_KEY, timeout=120.0)
+
+    var_str = f" Creative design variation #{variation}." if variation else ""
+
+    prompt = f"""Professional YouTube thumbnail for Telugu competitive exam preparation channel "SKY Academy".{var_str}
+
+STYLE: Photoshop-designed, hyper-realistic professional look. NOT AI-generated looking.
+Like top Indian educational YouTube channels -- premium, high-contrast, cinematic.
+Dimensions: 1792x1024 (widescreen 16:9).
+
+EXACT TEXT LAYOUT (place text precisely as specified):
+1. TOP STRIP (full width, dark maroon/red banner, top 14% of image):
+   Bold white uppercase text centered: "{line1}"
+   
+2. MAIN HEADLINE (center of image, large font, 30-38% height area):
+   Very large bold white text, slight golden glow: "{line2}"
+   
+3. SUB-LINE (below main headline, golden yellow color):
+   Medium bold text: "{line3}"
+   
+4. BOTTOM LINE (bottom 18%, bright gold or white color, Telugu script):
+   "{line4}"
+
+5. BOTTOM RIGHT CORNER: Small rounded badge -- "తెలుగులో" in orange-yellow
+
+BACKGROUND & VISUAL DESIGN:
+- Deep navy blue gradient background (#020024 to #090979)
+- RIGHT SIDE (40% of image): Dramatic relevant imagery -- choose from:
+  law books stacked with golden titles, golden gavel on dark surface,
+  scales of justice with golden chains, AP High Court building silhouette,
+  government seal/emblem with dramatic lighting, open books with glowing pages
+- Left side mostly clear for text
+- Subtle golden/yellow light rays from center-right
+- High contrast everywhere -- white text pops on dark background
+
+QUALITY: Ultra HD, crisp edges, professional typography, no watermarks, no faces."""
+
+    response = client.images.generate(
+        model="dall-e-3",
+        prompt=prompt,
+        size="1792x1024",
+        quality="hd",
+        response_format="b64_json",
+        n=1,
+    )
+    return base64.b64decode(response.data[0].b64_json)
+
+
+# ============================================================
+# PARSERS
 # ============================================================
 def parse_single_segment(raw: str):
     cleaned = raw.strip()
@@ -2020,7 +1788,7 @@ def push_to_gsheet(chunks, seo_title="", seo_tags=""):
         sheet = gc.open_by_key(SHEET_ID)
         ws    = sheet.get_worksheet(0)
         ws.batch_clear(["A2:E10000"])
-        rows = [[i+1, c.get("telugu_text",""), c.get("slide_prompt","")]
+        rows = [[i+1, c.get("title", f"Segment {i+1}"), c.get("telugu_text","")]
                 for i, c in enumerate(chunks)]
         ws.update("A2", rows, value_input_option="RAW")
         seo_msg = ""
@@ -2030,7 +1798,7 @@ def push_to_gsheet(chunks, seo_title="", seo_tags=""):
         if seo_tags.strip():
             ws.update("E2", [[seo_tags.strip()]], value_input_option="RAW")
             seo_msg += " · Tags --> E2"
-        return True, f"Pushed {len(rows)} segments (A2:C{1+len(rows)}){seo_msg} -- cleared old data."
+        return True, f"Pushed {len(rows)} segments (A=Seg, B=Title, C=Script{seo_msg}) -- cleared old data."
     except Exception as exc:
         return False, f"Sheets error: {exc}"
 
@@ -2055,7 +1823,7 @@ def _show_manual_recovery(display_topic, display_source):
     st.markdown("#### Manual Recovery")
     manual_raw = st.text_area(
         "Paste Raw JSON here", height=200,
-        placeholder='[{"seg":1,"telugu_text":"...","slide_prompt":"..."}]',
+        placeholder='[{"seg":1,"title":"Intro","telugu_text":"..."}]',
         key="manual_json_input",
     )
     if st.button("Retry Parse", key="retry_parse_btn"):
@@ -2085,6 +1853,9 @@ _defaults = {
     "transcript_files_sig":   "",
     "seo_pack":               None,
     "handout_data":           None,
+    "thumb_img_bytes":        None,
+    "thumb_suggestions":      None,
+    "thumb_variation":        0,
 }
 for _k, _v in _defaults.items():
     if _k not in st.session_state:
@@ -2108,7 +1879,18 @@ with st.sidebar:
     _lbl, _ph, _hlp, _prefix = _key_meta[provider]
     st.markdown(f"### {_lbl}")
     st.caption(f"Get yours: {_hlp}")
-    api_key = st.text_input(_lbl, type="password", placeholder=_ph, label_visibility="collapsed")
+
+    # Use hardcoded Claude key as default for PageGrid
+    _default_key = HARDCODED_CLAUDE_KEY if "PageGrid" in provider else ""
+    _api_input = st.text_input(
+        _lbl, type="password", placeholder=_ph,
+        value=_default_key,
+        label_visibility="collapsed",
+        key=f"api_key_input_{provider[:4]}",
+    )
+    # Use hardcoded if field is empty or matches hardcoded
+    api_key = _api_input.strip() if _api_input.strip() else _default_key
+
     if api_key:
         if api_key.startswith(_prefix):
             st.markdown('<p class="key-ok">Key format looks valid</p>', unsafe_allow_html=True)
@@ -2123,14 +1905,15 @@ with st.sidebar:
     st.success("Service account loaded\n\n**forscripting@gen-lang-client...**\n\nPush to Sheets always ready.", icon="🔑")
     st.caption(f"[Open Target Sheet](https://docs.google.com/spreadsheets/d/{SHEET_ID}/edit)")
     st.divider()
-    st.caption("SCRIPT ENGINE v3.2 · SKY Academy Internal Tool")
-    st.caption(f"Each segment ~{WORDS_PER_SEGMENT} words ~55 sec speech")
+    st.markdown("### Thumbnail Generator")
+    st.info("DALL-E 3 key hardcoded.\nThumbnail generation is always ready.", icon="🎨")
+    st.divider()
+    st.caption("SCRIPT ENGINE v4.0 · SKY Academy Internal Tool")
+    st.caption(f"Each segment strictly 150-180 words")
 
 
 # ============================================================
 # LIVE STREAM MASTER PLACEHOLDER
-# Placed before columns so it renders ABOVE the two-column layout.
-# Populated during generation, cleared when done.
 # ============================================================
 _stream_master = st.empty()
 
@@ -2171,7 +1954,7 @@ with left:
 
     # MODE 1 -- TOPIC
     if input_mode.startswith("📌"):
-        st.markdown('<div class="mode-topic"><b>Topic Mode</b> -- Type any subject. SKY Engine writes a complete original voiceover.</div>', unsafe_allow_html=True)
+        st.markdown('<div class="mode-topic"><b>Topic Mode</b> -- Type any subject. SKY Engine writes a complete original voiceover in Telugu lipi.</div>', unsafe_allow_html=True)
         topic_input = st.text_area(
             "Topic / Subject *",
             placeholder="e.g.  Panchayati Raj – 73rd Amendment\n       Photosynthesis Process",
@@ -2181,7 +1964,7 @@ with left:
 
     # MODE 2 -- MULTI-TRANSCRIPT
     elif input_mode.startswith("📝"):
-        st.markdown('<div class="mode-transcript"><b>Multi-Transcript Mode</b> -- Upload competitor transcript files. SKY Engine merges and rewrites.</div>', unsafe_allow_html=True)
+        st.markdown('<div class="mode-transcript"><b>Multi-Transcript Mode</b> -- Upload competitor transcript files. SKY Engine merges and rewrites in Telugu lipi.</div>', unsafe_allow_html=True)
         topic_hint_input = st.text_input("Topic hint  (optional)", placeholder="e.g.  UPSC 2025 Cutoff, TSPSC Exam Date...")
         merge_label = st.radio(
             "How should multiple files be merged?",
@@ -2244,7 +2027,7 @@ with left:
 
     # MODE 3 -- BOOK PDF
     else:
-        st.markdown('<div class="mode-pdf"><b>PDF Mode</b> -- Upload a book chapter or study notes PDF. SKY Engine transforms it into an engaging voiceover.</div>', unsafe_allow_html=True)
+        st.markdown('<div class="mode-pdf"><b>PDF Mode</b> -- Upload a book chapter or study notes PDF. SKY Engine transforms it into Telugu lipi voiceover.</div>', unsafe_allow_html=True)
         topic_hint_input = st.text_input("Topic / Chapter context  (optional)", placeholder="e.g.  Chapter 3: Directive Principles...")
         pdf_file = st.file_uploader("Upload PDF *", type=["pdf"])
         topic_input = ""
@@ -2272,13 +2055,13 @@ with left:
     st.markdown("---")
     approx_words = st.number_input(
         "Approximate Total Script Words",
-        min_value=120, max_value=6000, value=600, step=120,
+        min_value=150, max_value=6000, value=660, step=165,
     )
     num_segs = max(1, math.ceil(approx_words / WORDS_PER_SEGMENT))
     est_dur  = round(approx_words / 130, 1)
     st.markdown(
         f'<div class="word-info"><b>{num_segs} segments</b> will be generated &nbsp;·&nbsp; '
-        f'~{approx_words} words &nbsp;·&nbsp; ~{est_dur} min video</div>',
+        f'~{approx_words} words &nbsp;·&nbsp; ~{est_dur} min video &nbsp;·&nbsp; 150-180w per segment</div>',
         unsafe_allow_html=True,
     )
     special_instructions = st.text_area(
@@ -2298,11 +2081,14 @@ if clear_btn:
     for _k, _v in _defaults.items():
         st.session_state[_k] = _v
     for _i in range(50):
-        for _pfx in ["tv_","sv_","regen_instr_"]:
+        for _pfx in ["tv_","regen_instr_"]:
             if f"{_pfx}{_i}" in st.session_state:
                 del st.session_state[f"{_pfx}{_i}"]
     for _k in ["seo_title_edit","seo_tags_edit","handout_heading_input",
-               "handout_youtube_input","handout_pages_input"]:
+               "handout_youtube_input","handout_pages_input",
+               "thumb_l1","thumb_l2","thumb_l3","thumb_l4",
+               "quick_notes_heading","quick_notes_yt",
+               "standalone_handout_topic"]:
         if _k in st.session_state:
             del st.session_state[_k]
     st.rerun()
@@ -2316,7 +2102,6 @@ if gen_btn:
     elif input_mode.startswith("📝"): mode_name = "transcript"
     else:                              mode_name = "pdf"
 
-    # --- Validation errors (clear stream box first) ---
     if not api_key.strip():
         _stream_master.empty()
         st.error("Please enter your API key in the sidebar!")
@@ -2334,16 +2119,13 @@ if gen_btn:
         st.error("Please upload a PDF. Make sure text was extracted successfully.")
 
     else:
-        # ---- Setup live stream display ----
         with _stream_master.container():
             st.markdown("""
 <div class="live-stream-box">
   <div class="live-stream-title">Live Generation Stream</div>
   <div class="live-stream-hint">
-    Watching the AI write your script in real-time below.
-    The raw JSON is shown as it streams in.
-    If something looks wrong you can close the browser tab to stop.
-    The preview panel will update automatically once generation completes.
+    Watching the AI write your script in real-time. All Telugu output will be in Telugu Unicode script (lipi).
+    150-180 words per segment. The preview panel updates automatically when generation completes.
   </div>
 </div>
 """, unsafe_allow_html=True)
@@ -2356,7 +2138,7 @@ if gen_btn:
             if mode_name == "transcript":
                 ok_exts          = [e for e in st.session_state.transcript_extractions if e["ok"]]
                 safe_transcripts = [{"filename":e["filename"],"text":e["text"]} for e in ok_exts]
-                st.info(f"Merging {len(safe_transcripts)} transcript(s) --> SKY Academy voice [{vtype_disp}]... keep tab open", icon="⏳")
+                st.info(f"Merging {len(safe_transcripts)} transcript(s) → SKY Academy Telugu lipi [{vtype_disp}]... keep tab open", icon="⏳")
                 system_p, user_p = build_prompts_multi_transcript(
                     safe_transcripts, topic_hint_input,
                     num_segs, special_instructions, merge_mode_val, video_type,
@@ -2372,8 +2154,8 @@ if gen_btn:
                 display_topic  = topic_input.strip()[:60]
                 display_source = "📌 Topic"
 
-            else:  # pdf
-                st.info(f"Converting PDF content --> SKY Academy voice [{vtype_disp}]... keep tab open", icon="⏳")
+            else:
+                st.info(f"Converting PDF content → SKY Academy Telugu lipi [{vtype_disp}]... keep tab open", icon="⏳")
                 system_p, user_p = build_prompts_pdf(
                     topic_input, topic_hint_input, num_segs, special_instructions, video_type
                 )
@@ -2385,23 +2167,21 @@ if gen_btn:
                 system_p, user_p,
                 _live_stat, _live_txt,
             )
-            _stream_master.empty()  # Clear stream box when done
+            _stream_master.empty()
             st.session_state.raw_response = raw
             parsed = parse_segments(raw)
 
             if parsed:
-                # Warn if we recovered a partial result (truncation)
                 if len(parsed) < num_segs:
                     st.warning(
                         f"Partial recovery: got {len(parsed)} of {num_segs} segments. "
-                        f"The AI response may have been truncated. "
-                        f"Try reducing word count or using a faster model for full output.",
+                        f"Try reducing word count or using a faster model.",
                         icon="⚠️"
                     )
                 store_new_chunks(parsed)
                 st.session_state.last_topic  = display_topic
                 st.session_state.last_source = display_source
-                st.success(f"{len(parsed)} segments generated! [{display_source}]")
+                st.success(f"{len(parsed)} segments generated! [{display_source}] · Telugu lipi output")
                 st.rerun()
             else:
                 st.error("Could not parse JSON from AI response. Try the manual recovery below.")
@@ -2437,7 +2217,8 @@ with right:
             f'&nbsp;&nbsp;'
             f'<span class="stat-pill">{len(chunks)} segments</span>'
             f'<span class="stat-pill">~{total_words:,} words</span>'
-            f'<span class="stat-pill">~{est_min} min</span>',
+            f'<span class="stat-pill">~{est_min} min</span>'
+            f'<span class="stat-pill" style="background:linear-gradient(135deg,#dcfce7,#bbf7d0);color:#14532d;">Telugu Lipi</span>',
             unsafe_allow_html=True,
         )
         st.markdown("")
@@ -2446,18 +2227,19 @@ with right:
         for tab, chunk, idx in zip(tabs, chunks, range(len(chunks))):
             with tab:
                 seg_words = len(chunk.get("telugu_text","").split())
+                word_color = "#16a34a" if 150 <= seg_words <= 180 else "#f97316"
                 st.caption(
-                    f"~{seg_words} words · ~{round(seg_words/130,1)} min"
+                    f"**{chunk.get('title', f'Segment {idx+1}')}** &nbsp;·&nbsp; "
+                    f"<span style='color:{word_color};font-weight:700'>{seg_words} words</span>"
                     + (" · Hook + Welcome" if idx==0 else "")
-                    + (" · Closing CTA" if idx==len(chunks)-1 else "")
+                    + (" · Closing CTA" if idx==len(chunks)-1 else ""),
+                    unsafe_allow_html=True,
                 )
-                st.markdown("**Voiceover Script**")
-                st.text_area(f"vo_{idx}", key=f"tv_{idx}", height=220, label_visibility="collapsed")
-                st.markdown("**Slide Prompt**")
-                st.text_area(f"sl_{idx}", key=f"sv_{idx}", height=130, label_visibility="collapsed")
+                st.markdown("**Voiceover Script (Telugu Lipi)**")
+                st.text_area(f"vo_{idx}", key=f"tv_{idx}", height=280, label_visibility="collapsed")
 
                 with st.expander(f"🔄 Redo Segment {idx+1}", expanded=False):
-                    st.markdown('<div class="regen-hint">Describe what to change -- only this segment will be regenerated.</div>', unsafe_allow_html=True)
+                    st.markdown('<div class="regen-hint">Describe what to change -- only this segment will be regenerated. Output stays in Telugu lipi.</div>', unsafe_allow_html=True)
                     regen_instr = st.text_area(
                         "Change instruction",
                         placeholder="e.g. Add 2 memory hints\nMake more energetic\nToo long -- trim",
@@ -2487,7 +2269,6 @@ with right:
                                         new_chunk["telugu_text"] = cleaned_tv
                                         st.session_state.chunks[idx] = new_chunk
                                         st.session_state[f"tv_{idx}"] = cleaned_tv
-                                        st.session_state[f"sv_{idx}"] = new_chunk.get("slide_prompt","")
                                         st.success(f"Segment {idx+1} regenerated!")
                                         st.rerun()
                                     else:
@@ -2499,14 +2280,15 @@ with right:
 
         with st.expander("Full Script -- Continuous Flow", expanded=False):
             full = "\n\n".join(
-                st.session_state.get(f"tv_{i}", c.get("telugu_text",""))
-                for i, c in enumerate(chunks)
+                f"--- [{chunk.get('title', f'Segment {i+1}')}] ---\n"
+                + st.session_state.get(f"tv_{i}", chunk.get("telugu_text",""))
+                for i, chunk in enumerate(chunks)
             )
             st.text_area("full_script", value=full, height=400, label_visibility="collapsed")
 
         st.divider()
         st.markdown("#### YouTube SEO Pack")
-        st.markdown('<div class="seo-box">Generate an optimized YouTube title and 20 tags. Title --> <b>D2</b>, Tags --> <b>E2</b> when pushed to Sheets.</div>', unsafe_allow_html=True)
+        st.markdown('<div class="seo-box">Generate an optimized YouTube title and 20 tags. Title → <b>D2</b>, Tags → <b>E2</b> when pushed to Sheets.</div>', unsafe_allow_html=True)
         seo_gen_btn = st.button("Generate SEO Pack", key="seo_gen_btn", use_container_width=True)
         if seo_gen_btn:
             if not api_key.strip():
@@ -2541,7 +2323,7 @@ with right:
 
         st.markdown("#### Quick Study Notes Download")
         qn_heading = st.text_input(
-            "PDF Heading (optional -- appears under SKY Academy logo)",
+            "PDF Heading (optional)",
             placeholder="e.g.  Preamble of Indian Constitution",
             key="quick_notes_heading",
         )
@@ -2565,7 +2347,7 @@ with right:
             )
         with bb:
             txt_out = "\n\n".join(
-                f"--- Segment {i+1} ---\n{c.get('telugu_text','')}\n\n[Slide Prompt]\n{c.get('slide_prompt','')}"
+                f"--- [{c.get('title',f'Segment {i+1}')}] ---\n{c.get('telugu_text','')}"
                 for i, c in enumerate(synced_data)
             )
             st.download_button(
@@ -2590,7 +2372,7 @@ with right:
                 help="Open in Chrome/Edge --> Ctrl+P --> Save as PDF",
             )
 
-        st.caption("Open downloaded .html in Chrome --> Ctrl+P --> Save as PDF --> share on Telegram!")
+        st.caption("Open downloaded .html in Chrome → Ctrl+P → Save as PDF → share on Telegram!")
 
         push_btn = st.button("Push to Sheets", use_container_width=True, type="primary")
         if push_btn:
@@ -2609,9 +2391,201 @@ with right:
         <div class="empty-preview">
             <h3>Preview will appear here</h3>
             <p style="margin-top:12px;font-size:0.9rem;">
-                Choose video type --> Input mode --> Provide content --> Click <b>Generate Script</b>
+                Choose video type → Input mode → Provide content → Click <b>Generate Script</b><br>
+                <span style="font-size:0.8rem;color:#818cf8;">Output: Telugu Unicode lipi · 150-180 words per segment</span>
             </p>
         </div>""", unsafe_allow_html=True)
+
+
+# ============================================================
+# THUMBNAIL GENERATOR -- FULL WIDTH AMBER BLOCK
+# ============================================================
+st.markdown("---")
+st.markdown("""
+<div class="thumb-block">
+  <div class="thumb-title">🎨 THUMBNAIL GENERATOR</div>
+</div>
+""", unsafe_allow_html=True)
+
+with st.container():
+    st.markdown("""
+    <div class="thumb-hint">
+    Create high-CTR SKY Academy style thumbnails with DALL-E 3.
+    Fill the 4 lines manually, or click <b>AI Suggest Lines</b> to auto-fill based on your script.
+    Then click <b>Generate Thumbnail</b> to create a professional Photoshop-style thumbnail.
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Show current AI suggestions if available
+    if st.session_state.thumb_suggestions:
+        sugg = st.session_state.thumb_suggestions
+        st.markdown(
+            '<div class="thumb-sugg-box">'
+            f'<b>AI Suggestions applied:</b> &nbsp; '
+            f'L1: <b>{sugg.get("line1","")}</b> &nbsp;|&nbsp; '
+            f'L2: <b>{sugg.get("line2","")}</b> &nbsp;|&nbsp; '
+            f'L3: <b>{sugg.get("line3","")}</b> &nbsp;|&nbsp; '
+            f'L4: <b>{sugg.get("line4","")}</b>'
+            '</div>',
+            unsafe_allow_html=True,
+        )
+
+    # 4 text inputs in 2 columns
+    tl_col1, tl_col2 = st.columns(2)
+    with tl_col1:
+        thumb_l1 = st.text_input(
+            "📌 Line 1 — Target Audience / Exam Name",
+            placeholder="AP HIGH COURT 2026",
+            key="thumb_l1",
+        )
+        thumb_l2 = st.text_input(
+            "🎯 Line 2 — Core Video Topic",
+            placeholder="BNS COMPLETE SERIES",
+            key="thumb_l2",
+        )
+    with tl_col2:
+        thumb_l3 = st.text_input(
+            "📝 Line 3 — Brief Explanation",
+            placeholder="ALL TOPICS COVERED | WITH PYQS",
+            key="thumb_l3",
+        )
+        thumb_l4 = st.text_input(
+            "⚡ Line 4 — Telugu Punch Line (in Telugu script)",
+            placeholder="Miss అవ్వాండి!",
+            key="thumb_l4",
+        )
+
+    st.caption(
+        "**Line 1**: Exam name | **Line 2**: Topic | **Line 3**: Sub-info | **Line 4**: Telugu punch line · "
+        "Click 'AI Suggest' to auto-fill from your script"
+    )
+
+    tb1, tb2, tb3 = st.columns(3)
+    with tb1:
+        thumb_suggest_btn = st.button(
+            "💡 AI Suggest Lines",
+            key="thumb_suggest_btn",
+            use_container_width=True,
+            help="Uses your generated script to suggest high-CTR text for each line",
+        )
+    with tb2:
+        thumb_gen_btn = st.button(
+            "🎨 Generate Thumbnail",
+            key="thumb_gen_btn",
+            use_container_width=True,
+            help="Creates thumbnail with DALL-E 3 (hardcoded OpenAI key)",
+        )
+    with tb3:
+        thumb_regen_btn = st.button(
+            "🔄 Regenerate (New Style)",
+            key="thumb_regen_btn",
+            use_container_width=True,
+            disabled=st.session_state.thumb_img_bytes is None,
+            help="Generate a different design variation",
+        )
+
+    # Handle Suggest Lines
+    if thumb_suggest_btn:
+        if not api_key.strip():
+            st.error("Enter API key in sidebar first!")
+        else:
+            _ts = st.empty()
+            with st.spinner("Getting AI line suggestions..."):
+                try:
+                    sys_ts, usr_ts = build_thumbnail_suggest_prompt(
+                        st.session_state.last_topic or "Competitive Exam Preparation",
+                        st.session_state.chunks or [],
+                        video_type,
+                    )
+                    raw_ts = run_generation(api_key, provider, model_choice, sys_ts, usr_ts, _ts)
+                    _ts.empty()
+                    sugg_data = parse_seo_json(raw_ts)
+                    if sugg_data and isinstance(sugg_data, dict):
+                        st.session_state.thumb_suggestions = sugg_data
+                        st.session_state["thumb_l1"] = sugg_data.get("line1", "")
+                        st.session_state["thumb_l2"] = sugg_data.get("line2", "")
+                        st.session_state["thumb_l3"] = sugg_data.get("line3", "")
+                        st.session_state["thumb_l4"] = sugg_data.get("line4", "")
+                        st.success("Lines suggested and filled! Edit if needed, then Generate.")
+                        st.rerun()
+                    else:
+                        st.error("Could not parse suggestions. Try again.")
+                except Exception as _exc:
+                    _ts.empty()
+                    st.error(f"Suggestion error: {_exc}")
+
+    # Handle Generate Thumbnail
+    if thumb_gen_btn:
+        l1 = st.session_state.get("thumb_l1", "").strip()
+        l2 = st.session_state.get("thumb_l2", "").strip()
+        l3 = st.session_state.get("thumb_l3", "").strip()
+        l4 = st.session_state.get("thumb_l4", "").strip()
+        if not any([l1, l2, l3, l4]):
+            st.error("Please fill at least one line before generating!")
+        else:
+            with st.spinner("Generating thumbnail with DALL-E 3 HD... (20-30 seconds)"):
+                try:
+                    img_bytes = generate_thumbnail_dalle(
+                        l1 or "SKY ACADEMY",
+                        l2 or "COMPETITIVE EXAM PREPARATION",
+                        l3 or "STRATEGY + PDF FREE",
+                        l4 or "ఇప్పుడే చూడండి!",
+                        st.session_state.last_topic or "competitive exam",
+                        variation=0,
+                    )
+                    st.session_state.thumb_img_bytes = img_bytes
+                    st.session_state.thumb_variation = 0
+                    st.success("Thumbnail generated!")
+                    st.rerun()
+                except Exception as _exc:
+                    st.error(f"Thumbnail generation error: {_exc}")
+                    st.caption("Check that the OpenAI key has DALL-E 3 access.")
+
+    # Handle Regenerate
+    if thumb_regen_btn and st.session_state.thumb_img_bytes is not None:
+        l1 = st.session_state.get("thumb_l1", "").strip()
+        l2 = st.session_state.get("thumb_l2", "").strip()
+        l3 = st.session_state.get("thumb_l3", "").strip()
+        l4 = st.session_state.get("thumb_l4", "").strip()
+        new_variation = (st.session_state.thumb_variation + 1) % 50 + 1
+        with st.spinner(f"Regenerating thumbnail (variation #{new_variation})..."):
+            try:
+                img_bytes = generate_thumbnail_dalle(
+                    l1 or "SKY ACADEMY",
+                    l2 or "COMPETITIVE EXAM PREPARATION",
+                    l3 or "STRATEGY + PDF FREE",
+                    l4 or "ఇప్పుడే చూడండి!",
+                    st.session_state.last_topic or "competitive exam",
+                    variation=new_variation,
+                )
+                st.session_state.thumb_img_bytes = img_bytes
+                st.session_state.thumb_variation = new_variation
+                st.success(f"New variation #{new_variation} generated!")
+                st.rerun()
+            except Exception as _exc:
+                st.error(f"Regen error: {_exc}")
+
+    # Display generated thumbnail
+    if st.session_state.thumb_img_bytes:
+        st.markdown("##### Generated Thumbnail Preview")
+        st.image(st.session_state.thumb_img_bytes, use_container_width=True)
+
+        td1, td2 = st.columns(2)
+        with td1:
+            _tfname = (st.session_state.last_topic[:20] or "thumbnail").replace(" ","_")
+            st.download_button(
+                "⬇️ Download Thumbnail (PNG)",
+                data=st.session_state.thumb_img_bytes,
+                file_name=f"sky_thumbnail_{_tfname}.png",
+                mime="image/png",
+                use_container_width=True,
+            )
+        with td2:
+            st.caption(
+                "💡 **Tips:** Download and open in Canva or Photoshop to add exact Telugu text "
+                "overlays and fine-tune positioning. DALL-E sets the background style, "
+                "you perfect the text."
+            )
 
 
 # ============================================================
@@ -2627,11 +2601,48 @@ st.markdown("""
 with st.container():
     st.markdown("""
     <div class="handout-hint">
-    Generate a rich, print-ready classroom handout from your script.
-    Includes: exam importance box · key facts grid · concept sections with paragraphs ·
-    data tables · memory tricks · PYQ-style practice questions · SKY Academy footer on every page.
+    Generate a rich, print-ready classroom handout. Choose <b>From Generated Script</b> to use
+    your current session script, or <b>Standalone Mode</b> to generate a handout from any topic/directions
+    without needing to generate a script first.
     </div>
     """, unsafe_allow_html=True)
+
+    # Source selector
+    handout_source_radio = st.radio(
+        "Handout Content Source:",
+        options=[
+            "📄 From Generated Script  (uses current session)",
+            "✍️ Standalone Mode  —  My Own Topic / Directions",
+        ],
+        key="handout_source_radio",
+        horizontal=True,
+    )
+    use_script_for_handout = handout_source_radio.startswith("📄")
+
+    standalone_topic_val = ""
+    if not use_script_for_handout:
+        st.markdown("**Describe your topic and what to include:**")
+        standalone_topic_val = st.text_area(
+            "Topic Overview & Directions",
+            placeholder=(
+                "Example:\n"
+                "Topic: Indian Classical Dance Forms\n"
+                "Include: All 8 classical dances recognized by Sangeet Natak Akademi\n"
+                "Details for each: state, founder, key features, famous performers\n"
+                "Exam focus: UPSC/APPSC/SSC questions on classical dances\n"
+                "Language: English only\n"
+                "Pages: 2 A4 pages"
+            ),
+            height=160,
+            key="standalone_handout_topic",
+        )
+    else:
+        if not st.session_state.chunks:
+            st.warning(
+                "No script generated yet. Generate a script first, or switch to **Standalone Mode** "
+                "to create a handout without a script.",
+                icon="⚠️",
+            )
 
     hcol1, hcol2, hcol3 = st.columns([2, 2, 1])
     with hcol1:
@@ -2676,7 +2687,7 @@ with st.container():
                 file_name=f"sky_handout_{_hfname}.html",
                 mime="text/html",
                 use_container_width=True,
-                help="Open in Chrome --> Ctrl+P --> Save as PDF",
+                help="Open in Chrome → Ctrl+P → Save as PDF",
                 key="dl_handout_html",
             )
         else:
@@ -2711,19 +2722,34 @@ with st.container():
     if gen_handout_btn:
         if not api_key.strip():
             st.error("Enter your API key in the sidebar first!")
-        elif not st.session_state.chunks:
-            st.error("Generate a script first -- then come back here to create the handout!")
+        elif use_script_for_handout and not st.session_state.chunks:
+            st.error("No script generated yet! Generate a script first, or switch to Standalone Mode.")
+        elif not use_script_for_handout and not standalone_topic_val.strip():
+            st.error("Please provide your topic overview and directions!")
         else:
             _hs  = st.empty()
             _hst = st.empty()
             with st.spinner(f"Generating {handout_pages}-page AI handout..."):
                 try:
-                    synced_for_handout = sync_edits_to_chunks()
-                    sys_h, usr_h = build_handout_prompt(
-                        st.session_state.last_topic or "Competitive Exam Topic",
-                        synced_for_handout,
-                        handout_pages,
-                    )
+                    if use_script_for_handout:
+                        synced_for_handout = sync_edits_to_chunks()
+                        _htopic = st.session_state.last_topic or "Competitive Exam Topic"
+                        sys_h, usr_h = build_handout_prompt(
+                            _htopic,
+                            synced_for_handout,
+                            handout_pages,
+                        )
+                    else:
+                        # Standalone mode -- use topic overview
+                        _htopic = st.session_state.get("standalone_handout_topic","").strip()[:60] or "Study Topic"
+                        sys_h, usr_h = build_standalone_handout_prompt(
+                            standalone_topic_val,
+                            handout_pages,
+                        )
+                        # Update last_topic for download filename
+                        if not st.session_state.last_topic:
+                            st.session_state.last_topic = _htopic
+
                     raw_h = run_generation(api_key, provider, model_choice, sys_h, usr_h, _hs, _hst)
                     _hs.empty()
                     _hst.empty()
@@ -2759,7 +2785,7 @@ with st.container():
                     f"{len(s.get('bullets',[]))} bullets {has_table} {has_qs}"
                 )
 
-    st.caption("💡 Open downloaded HTML in Chrome or Edge --> Ctrl+P --> Save as PDF. Footer appears on every printed page.")
+    st.caption("💡 Open downloaded HTML in Chrome or Edge → Ctrl+P → Save as PDF. Footer appears on every printed page.")
 
 
 # ============================================================
@@ -2779,8 +2805,8 @@ st.markdown(
     "<span style='color:#FF6B6B;font-weight:800;'>S</span>"
     "<span style='color:#FFE66D;font-weight:800;'>K</span>"
     "<span style='color:#4ECDC4;font-weight:800;'>Y</span>"
-    " <b>ACADEMY</b> &nbsp;|&nbsp; SCRIPT ENGINE v3.2 &nbsp;|&nbsp; "
-    "Live Stream · Robust JSON Parser · max_tokens 16000 &nbsp;|&nbsp; "
+    " <b>ACADEMY</b> &nbsp;|&nbsp; SCRIPT ENGINE v4.0 &nbsp;|&nbsp; "
+    "Telugu Lipi · 150-180w Chunks · DALL-E 3 Thumbnails · Standalone Handout &nbsp;|&nbsp; "
     "Powered by PageGrid + Anthropic SDK"
     "</div>",
     unsafe_allow_html=True,
