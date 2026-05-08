@@ -226,7 +226,7 @@ _HARDCODED_CREDS = {
 }
 
 MODEL_OPTIONS = {
-    "☁️  Claude  (via PageGrid)": ["claude-opus-4-6","claude-sonnet-4-6","claude-haiku-4-5"],
+    "☁️  Claude  (via PageGrid)": ["claude-opus-4-7","claude-sonnet-4-6","claude-haiku-4-5"],
     "🟢  OpenAI  (GPT)":          ["o3","o1","gpt-4.5-preview","gpt-4o"],
     "🔵  Google  (Gemini)":       ["gemini-2.5-pro","gemini-2.0-pro-exp","gemini-2.0-flash","gemini-1.5-pro"],
 }
@@ -2056,7 +2056,7 @@ with st.sidebar:
             st.markdown(f'<p class="key-warn">Key should start with <code>{_prefix}</code></p>', unsafe_allow_html=True)
 
     if "PageGrid" in provider:
-        st.info("**PageGrid models:**\n- `claude-opus-4-6`\n- `claude-sonnet-4-6`\n- `claude-haiku-4-5`\n\n**base_url:** `https://api.pagegrid.in`", icon="📋")
+        st.info("**PageGrid models:**\n- `claude-opus-4-7`\n- `claude-sonnet-4-6`\n- `claude-haiku-4-5`\n\n**base_url:** `https://api.pagegrid.in`", icon="📋")
 
     st.divider()
     st.markdown("### Google Sheets")
